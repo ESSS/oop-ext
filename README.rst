@@ -1,5 +1,5 @@
 ======================================================================
-Oop ext
+OOP Extensions
 ======================================================================
 
 
@@ -21,10 +21,10 @@ Oop ext
 .. image:: https://img.shields.io/readthedocs/pip.svg
     :target: https://oop-ext.readthedocs.io/en/latest/
 
-What is Oop ext ?
+What is OOP Extensions ?
 ================================================================================
 
-OOP Extensions is a set of utilities for object orienting programming which is missing on Python core libraries.
+OOP Extensions is a set of utilities for object oriented programming which is missing on Python core libraries.
 
 
 Contributing
@@ -40,7 +40,7 @@ Release
 -------
 A reminder for the maintainers on how to make a new release.
 
-Note that the VERSION should folow the semantic versioning as X.Y.Z
+Note that the VERSION should follow the semantic versioning as X.Y.Z
 Ex.: v1.0.5
 
 1. Create a ``release-VERSION`` branch from ``upstream/master``.
