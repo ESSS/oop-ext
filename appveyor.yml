@@ -8,9 +8,6 @@ environment:
     - PYTHON: "C:\\Python36"
       TOXENV: "docs"
 
-    - PYTHON: "C:\\Python27"
-      TOXENV: "py27"
-
     - PYTHON: "C:\\Python36"
       TOXENV: "py36"
 
