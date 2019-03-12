@@ -1,13 +1,17 @@
 language: python
+
 stages:
 - test
 - name: deploy
   if: repo = ESSS/oop_ext AND tag IS present
+
 install:
 - pip install -U pip
 - pip install -U tox
+
 script:
 - tox
+
 jobs:
   include:
   - python: '3.6'

@@ -1,6 +1,10 @@
-import setuptools
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""The setup script."""
 
 import io
+from setuptools import find_packages, setup
 
 with io.open("README.rst", encoding="UTF-8") as readme_file:
     readme = readme_file.read()
@@ -13,11 +17,11 @@ extras_require = {
     "docs": ["sphinx >= 1.4", "sphinx_rtd_theme", "sphinx-autodoc-typehints"],
     "testing": ["codecov", "pytest", "pytest-cov", "pytest-mock", "pre-commit", "tox"],
 }
-setuptools.setup(
-    author='ESSS',
-    author_email='foss@esss.co',
+setup(
+    author="ESSS",
+    author_email="foss@esss.co",
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.6",
@@ -32,7 +36,7 @@ setuptools.setup(
     python_requires=">=3.6",
     keywords="oop_ext",
     name="oop-ext",
-    packages=setuptools.find_packages(where="src"),
+    packages=find_packages(where="src"),
     package_dir={"": "src"},
     url="http://github.com/ESSS/oop-ext",
     use_scm_version=True,
