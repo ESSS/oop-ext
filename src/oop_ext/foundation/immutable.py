@@ -1,37 +1,38 @@
 
-'''
+"""
     Defines types and functions to generate immutable structures.
 
     USER: The cache-manager uses this module to generate a valid KEY for its cache dictionary.
-'''
+"""
 
 _IMMUTABLE_TYPES = {float, str, bytes, bool, type(None)}
 _IMMUTABLE_TYPES.update({int})
 
 
-#===================================================================================================
+# ===================================================================================================
 # RegisterAsImmutable
-#===================================================================================================
+# ===================================================================================================
 def RegisterAsImmutable(immutable_type):
-    '''
+    """
     Registers the given class as being immutable. This makes it be immutable for this module and
     also registers a faster copy in the copy module (to return the same instance being copied).
 
     :param type immutable_type:
         The type to be considered immutable.
-    '''
+    """
     _IMMUTABLE_TYPES.add(immutable_type)
 
     # Fix it for the copy too!
     import copy
+
     copy._copy_dispatch[immutable_type] = copy._copy_immutable
 
 
-#===================================================================================================
+# ===================================================================================================
 # AsImmutable
-#===================================================================================================
+# ===================================================================================================
 def AsImmutable(value, return_str_if_not_expected=True):
-    '''
+    """
     Returns the given instance as a immutable object:
         - Converts lists to tuples
         - Converts dicts to ImmutableDicts
@@ -48,7 +49,7 @@ def AsImmutable(value, return_str_if_not_expected=True):
     :rtype: object
     :returns:
         Returns an immutable representation of the passed object
-    '''
+    """
 
     # Micro-optimization (a 40% improvement on the AsImmutable function overall in a real case
     # using sci20 processes).
@@ -88,14 +89,14 @@ def AsImmutable(value, return_str_if_not_expected=True):
         return str(value)
 
     else:
-        raise RuntimeError('Cannot make %s immutable (not supported).' % value)
+        raise RuntimeError("Cannot make %s immutable (not supported)." % value)
 
 
-#===================================================================================================
+# ===================================================================================================
 # ImmutableDict
-#===================================================================================================
+# ===================================================================================================
 class ImmutableDict(dict):
-    '''A hashable dict.'''
+    """A hashable dict."""
 
     def __init__(self, *args, **kwds):
         dict.__init__(self, *args, **kwds)
@@ -122,7 +123,7 @@ class ImmutableDict(dict):
         raise NotImplementedError("dict is immutable")
 
     def __hash__(self):
-        if not hasattr(self, '_hash'):
+        if not hasattr(self, "_hash"):
             # must be sorted (could give different results for dicts that should be the same
             # if it's not).
             self._hash = hash(tuple(sorted(self.items())))
@@ -130,10 +131,10 @@ class ImmutableDict(dict):
         return self._hash
 
     def AsMutable(self):
-        '''
+        """
             :rtype: this dict as a new dict that can be changed (without altering the state
             of this immutable dict).
-        '''
+        """
         return dict(self.items())
 
     def __reduce__(self):
@@ -157,11 +158,11 @@ class ImmutableDict(dict):
         return (ImmutableDict, (list(self.items()),))
 
 
-#===================================================================================================
+# ===================================================================================================
 # IdentityHashableRef
-#===================================================================================================
+# ===================================================================================================
 class IdentityHashableRef:
-    '''
+    """
     Represents a immutable reference to an object.
 
     Useful when is desired to use some mutable object as key in a dict or element in a set.
@@ -185,7 +186,7 @@ class IdentityHashableRef:
     adict[IdentityHashableRef(foo)] = 7
     IdentityHashableRef(foo) in adict  # True
     ```
-    '''
+    """
 
     _SENTINEL = object()
 
@@ -193,10 +194,10 @@ class IdentityHashableRef:
         self._original = original
 
     def __eq__(self, other):
-        return self._original is getattr(other, '_original', self._SENTINEL)
+        return self._original is getattr(other, "_original", self._SENTINEL)
 
     def __ne__(self, other):
-        return self._original is not getattr(other, '_original', self._SENTINEL)
+        return self._original is not getattr(other, "_original", self._SENTINEL)
 
     def __hash__(self):
         return id(self._original)

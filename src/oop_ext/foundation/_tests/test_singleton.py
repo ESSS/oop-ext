@@ -4,7 +4,11 @@ import pytest
 from oop_ext.foundation.callback import After
 from oop_ext.foundation.decorators import Override
 from oop_ext.foundation.singleton import (
-    PushPopSingletonError, Singleton, SingletonAlreadySetError, SingletonNotSetError)
+    PushPopSingletonError,
+    Singleton,
+    SingletonAlreadySetError,
+    SingletonNotSetError,
+)
 
 
 def CheckCurrentSingleton(singleton_class, value):
@@ -13,9 +17,7 @@ def CheckCurrentSingleton(singleton_class, value):
 
 
 def testSingleton():
-
     class MySingleton(Singleton):
-
         def __init__(self, value):
             self.value = value
 
@@ -60,9 +62,7 @@ def testSingleton():
 
 
 def testSetSingleton():
-
     class MySingleton(Singleton):
-
         def __init__(self, value=None):
             self.value = value
 
@@ -83,9 +83,7 @@ def testSetSingleton():
 
 
 def testPushPop():
-
     class MySingleton(Singleton):
-
         def __init__(self, value=None):
             self.value = value
 
@@ -110,7 +108,6 @@ def testPushPop():
 
 
 def testSingletonOptimization():
-
     class MySingleton(Singleton):
         pass
 
@@ -136,7 +133,6 @@ def testGetSingletonThreadSafe(mocker):
     from threading import Event, Thread
 
     class MySingleton(Singleton):
-
         @classmethod
         def SlowConstructor(cls, event):
             event.wait(1)

@@ -5,7 +5,6 @@ from oop_ext.foundation.callback.single_call_callback import SingleCallCallback
 
 
 def testSingleCallCallback():
-
     class Stub:
         pass
 
@@ -50,7 +49,6 @@ def testSingleCallCallback():
 
 
 def testSingleCallCallbackNoParameter():
-
     class Stub:
         pass
 
@@ -59,20 +57,20 @@ def testSingleCallCallbackNoParameter():
     called = []
 
     def Method1():
-        called.append('Method1')
+        called.append("Method1")
 
     def Method2():
-        called.append('Method2')
+        called.append("Method2")
 
     callback.Register(Method1)
 
     callback()
 
-    assert called == ['Method1']
+    assert called == ["Method1"]
 
     callback.Register(Method2)
 
-    assert called == ['Method1', 'Method2']
+    assert called == ["Method1", "Method2"]
 
     with pytest.raises(AssertionError):
         callback()
@@ -80,11 +78,11 @@ def testSingleCallCallbackNoParameter():
     callback.AllowCallingAgain()
     callback()
 
-    assert called == ['Method1', 'Method2', 'Method1', 'Method2']
+    assert called == ["Method1", "Method2", "Method1", "Method2"]
 
     callback.Register(Method1)
-    assert called == ['Method1', 'Method2', 'Method1', 'Method2']
+    assert called == ["Method1", "Method2", "Method1", "Method2"]
 
     callback.Unregister(Method1)
     callback.Register(Method1)
-    assert called == ['Method1', 'Method2', 'Method1', 'Method2', 'Method1']
+    assert called == ["Method1", "Method2", "Method1", "Method2", "Method1"]

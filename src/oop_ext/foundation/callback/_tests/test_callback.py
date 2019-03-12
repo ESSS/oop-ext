@@ -8,11 +8,10 @@ from oop_ext.foundation.types_ import Null
 from oop_ext.foundation.weak_ref import GetWeakProxy, WeakMethodProxy, WeakMethodRef
 
 
-#===================================================================================================
+# ===================================================================================================
 # _MyClass
-#===================================================================================================
+# ===================================================================================================
 class _MyClass:
-
     def SetAlpha(self, value):
         self.alpha = value
 
@@ -21,7 +20,6 @@ class _MyClass:
 
 
 class C:
-
     def __init__(self, test_case):
         self.test_case = test_case
 
@@ -31,7 +29,6 @@ class C:
 
 
 class Stub:
-
     def call(self, *args, **kwargs):
         pass
 
@@ -54,11 +51,10 @@ def restore_test_classes():
     C.foo = original_c_foo
 
 
-#===================================================================================================
+# ===================================================================================================
 # Test
-#===================================================================================================
+# ===================================================================================================
 class Test:
-
     def setup_method(self, method):
         self.foo_called = None
 
@@ -161,9 +157,7 @@ class Test:
         assert self.after_count == 1
 
     def testReferenceDies(self):
-
         class Receiver:
-
             def before(dummy, *args):  # @NoSelf
                 self.before_count += 1
                 self.before_args = args
@@ -186,9 +180,7 @@ class Test:
         assert self.before_count == 1
 
     def testSenderDies(self):
-
         class Sender:
-
             def foo(s, *args):  # @NoSelf
                 s.args = args
 
@@ -213,9 +205,7 @@ class Test:
         assert w() is None
 
     def testLessArgs(self):
-
         class C:
-
             def foo(self, _x, _y, **_kwargs):
                 pass
 
@@ -244,14 +234,11 @@ class Test:
         assert self.after_0_res == 0
 
     def testWithCallable(self):
-
         class Stub:
-
             def call(self, _b):
                 pass
 
         class Aux:
-
             def __call__(self, _b):
                 self.called = True
 
@@ -284,15 +271,16 @@ class Test:
         c(10, 20)
         assert self.args[0] == None
 
-        def foo(): pass
+        def foo():
+            pass
 
         # self.assertNotRaises(FunctionNotRegisteredError, c.Unregister, foo)
         c.Unregister(foo)
 
     def test_extra_args(self):
-        '''
+        """
             Tests the extra-args parameter in Register method.
-        '''
+        """
         self.zulu_calls = []
 
         def zulu_one(*args):
@@ -306,27 +294,22 @@ class Test:
 
         assert self.zulu_calls == []
 
-        alpha('a')
-        assert self.zulu_calls == [
-            (1, 2, 'a')
-            ]
+        alpha("a")
+        assert self.zulu_calls == [(1, 2, "a")]
 
-        alpha('a', 'b', 'c')
-        assert self.zulu_calls == [
-            (1, 2, 'a'),
-            (1, 2, 'a', 'b', 'c')
-            ]
+        alpha("a", "b", "c")
+        assert self.zulu_calls == [(1, 2, "a"), (1, 2, "a", "b", "c")]
 
         # Test a second method with extra-args
         alpha.Register(zulu_too, [9])
 
-        alpha('a')
+        alpha("a")
         assert self.zulu_calls == [
-            (1, 2, 'a'),
-            (1, 2, 'a', 'b', 'c'),
-            (1, 2, 'a'),
-            (9, 'a'),
-            ]
+            (1, 2, "a"),
+            (1, 2, "a", "b", "c"),
+            (1, 2, "a"),
+            (9, "a"),
+        ]
 
     def test_sender_as_parameter(self):
         self.zulu_calls = []
@@ -367,7 +350,6 @@ class Test:
         assert self.zulu_calls == [(1, (self.a, 0)), (2, (0,))]
 
     def testContains(self):
-
         def foo(x):
             pass
 
@@ -380,9 +362,7 @@ class Test:
         assert not c.Contains(foo)
 
     def testCallbackReceiverDies(self):
-
         class A:
-
             def on_foo(dummy, *args):  # @NoSelf
                 self.args = args
 
@@ -407,9 +387,7 @@ class Test:
         assert self.args == (3, 4)
 
     def testActionMethodDies(self):
-
         class A:
-
             def foo(self):
                 pass
 
@@ -436,9 +414,7 @@ class Test:
         assert weak_a() is None
 
     def testAfterRegisterMultipleAndUnregisterOnce(self):
-
         class A:
-
             def foo(self):
                 pass
 
@@ -477,9 +453,7 @@ class Test:
         assert 5 == self.after_exec
 
     def testOnClassMethod(self):
-
         class A:
-
             @classmethod
             def foo(cls):
                 pass
@@ -596,12 +570,10 @@ class Test:
         self._value = []
 
         class B:
-
             def event(s, value):  # @NoSelf
                 self._b_value = value
 
         class A:
-
             def event(s, obj, value):  # @NoSelf
                 self._a_value = value
 
@@ -623,9 +595,7 @@ class Test:
         assert w() is None
 
     def testRemoveCallback(self):
-
         class C:
-
             def __init__(self, name):
                 self.name = name
 
@@ -638,8 +608,8 @@ class Test:
             def __ne__(self, other):
                 return not self == other
 
-        instance1 = C('instance')
-        instance2 = C('instance')
+        instance1 = C("instance")
+        instance2 = C("instance")
         assert instance1 == instance2
 
         c = Callback()
@@ -682,17 +652,19 @@ class Test:
 
             def After(*args, **kwargs):
                 self.called += 1
-                raise RuntimeError('test')
+                raise RuntimeError("test")
 
             def After2(*args, **kwargs):
                 self.called += 1
-                raise RuntimeError('test2')
+                raise RuntimeError("test2")
 
             c = Callback(handle_errors=True)
             c.Register(After)
             c.Register(After2)
 
-            mocked = mocker.patch('oop_ext.foundation.handle_exception.HandleException', autospec=True)
+            mocked = mocker.patch(
+                "oop_ext.foundation.handle_exception.HandleException", autospec=True
+            )
             c()
             assert self.called == 2
             assert mocked.call_count == 2
@@ -702,10 +674,11 @@ class Test:
             assert self.called == 4
             assert mocked.call_count == 2
             from _pytest.pytester import LineMatcher
+
             matcher = LineMatcher(mocked.call_args[0][0].splitlines())
             expected = [
-                'Error while trying to call <function Test.testHandleErrorOnCallback.<locals>.After2 at 0x*>',
-                'Args: (1,)',
+                "Error while trying to call <function Test.testHandleErrorOnCallback.<locals>.After2 at 0x*>",
+                "Args: (1,)",
                 "Kwargs: {'a': 2}",
             ]
             matcher.fnmatch_lines(expected)
@@ -722,9 +695,7 @@ class Test:
             Callback.DEFAULT_HANDLE_ERRORS = old_default_handle_errors
 
     def testAfterBeforeHandleError(self, mocker):
-
         class C:
-
             def Method(self, x):
                 return x * 2
 
@@ -743,7 +714,9 @@ class Test:
         Before(c.Method, BeforeMethod)
         After(c.Method, AfterMethod)
 
-        mocked = mocker.patch('oop_ext.foundation.callback.HandleErrorOnCallback', autospec=True)
+        mocked = mocker.patch(
+            "oop_ext.foundation.callback.HandleErrorOnCallback", autospec=True
+        )
         assert c.Method(10) == 20
         assert self.before_called == 1
         assert self.after_called == 1
@@ -761,7 +734,7 @@ class Test:
             self._gotten_key = True
             return 1
 
-        monkeypatch.setattr(Callback, '_GetKey', GetKey)
+        monkeypatch.setattr(Callback, "_GetKey", GetKey)
 
         def AfterMethod(*args):
             pass
@@ -786,7 +759,6 @@ class Test:
         assert self._gotten_key
 
         class A:
-
             def __init__(self):
                 self._a = 0
 
@@ -819,6 +791,7 @@ class Test:
 
         a = A()
         from oop_ext.foundation.callback._callback_wrapper import _CallbackWrapper
+
         c.Register(_CallbackWrapper(WeakMethodRef(a.SetA)))
         assert len(c) == 1
         del a
@@ -856,26 +829,26 @@ class Test:
         vals = []
 
         def OnCall1(instance, val):
-            vals.append(('call_instance', val))
+            vals.append(("call_instance", val))
 
         def OnCall2(val):
-            vals.append(('call_class', val))
+            vals.append(("call_class", val))
 
         After(Stub.call, OnCall1)
         s = Stub()
         After(s.call, OnCall2)
 
         s.call(True)
-        assert [('call_instance', True), ('call_class', True)] == vals
+        assert [("call_instance", True), ("call_class", True)] == vals
 
     def testOnClassAndOnInstance2(self):
         vals = []
 
         def OnCall1(instance, val):
-            vals.append(('call_class', val))
+            vals.append(("call_class", val))
 
         def OnCall2(val):
-            vals.append(('call_instance', val))
+            vals.append(("call_instance", val))
 
         s = Stub()
         After(s.call, OnCall2)
@@ -888,12 +861,10 @@ class Test:
         # A solution could be keeping track of all callbacks and rebinding all existent ones in the
         # instances to the one in the class, but it seems overkill for such an odd situation.
         s.call(True)
-        assert [('call_instance', True), ] == vals
+        assert [("call_instance", True)] == vals
 
     def testOnNullClass(self):
-
         class _MyNullSubClass(Null):
-
             def GetIstodraw(self):
                 return True
 
@@ -905,23 +876,22 @@ class Test:
         After(s.SetIstodraw, AfterSetIstodraw)
 
     def testListMethodAsCallback(self, mocker):
-        '''
+        """
         This was based on a failure on
         souring20.core.model.multiple_simulation_runs._tests.test_multiple_simulation_runs.testNormalExecution
         which failed with "TypeError: cannot create weak reference to 'list' object"
-        '''
+        """
         vals = []
 
         class Stub:
-
             def call(self, *args, **kwargs):
                 pass
 
         s = Stub()
         After(s.call, vals.append)
 
-        s.call('call_append')
-        assert ['call_append'] == vals
+        s.call("call_append")
+        assert ["call_append"] == vals
 
     def testCallbackWithMagicMock(self, mocker):
         """
@@ -958,20 +928,21 @@ class Test:
         c = Callback()
         c.Register(magic_mock)
 
-        c(10, name='X')
-        assert magic_mock.call_args_list == [mocker.call(10, name='X')]
+        c(10, name="X")
+        assert magic_mock.call_args_list == [mocker.call(10, name="X")]
 
-        c(20, name='Y')
-        assert magic_mock.call_args_list == [mocker.call(10, name='X'), mocker.call(20, name='Y')]
+        c(20, name="Y")
+        assert magic_mock.call_args_list == [
+            mocker.call(10, name="X"),
+            mocker.call(20, name="Y"),
+        ]
 
         c.Unregister(magic_mock)
-        c(30, name='Z')
+        c(30, name="Z")
         assert len(magic_mock.call_args_list) == 2
 
     def testCallbackInstanceWeakRef(self):
-
         class Obj:
-
             def __init__(self):
                 self.called = False
 
@@ -988,9 +959,7 @@ class Test:
         assert obj() is None
 
     def testBeforeAfterWeakProxy(self):
-
         class Foo:
-
             def __init__(self):
                 Before(self.SetFilename, GetWeakProxy(self._BeforeSetFilename))
                 After(self.SetFilename, GetWeakProxy(self._AfterSetFilename))
@@ -1007,12 +976,11 @@ class Test:
                 pass
 
         foo = Foo()
-        foo.SetFilename('bar')
+        foo.SetFilename("bar")
         assert foo.before
         assert foo.after
 
     def testKeepStrongReference(self):
-
         class Obj:
             __CALLBACK_KEEP_STRONG_REFERENCE__ = True
 
@@ -1033,9 +1001,7 @@ class Test:
         assert obj() is not None
 
     def testWeakMethodProxy(self):
-
         class Obj:
-
             def Foo(self):
                 self.called = True
 
@@ -1053,7 +1019,6 @@ class Test:
         assert len(c) == 0
 
     def testWeakMethodProxy2(self):
-
         def Foo():
             self.called = True
 
@@ -1072,13 +1037,14 @@ class Test:
 
     def testCallbackAndPartial(self):
         from functools import partial
+
         called = []
 
         def Method(a):
             called.append(a)
 
         c = Callback()
-        c.Register(lambda: Method('lambda'))
-        c.Register(partial(Method, 'partial'))
+        c.Register(lambda: Method("lambda"))
+        c.Register(partial(Method, "partial"))
         c()
-        assert called == ['lambda', 'partial']
+        assert called == ["lambda", "partial"]

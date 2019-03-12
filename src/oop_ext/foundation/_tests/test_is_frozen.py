@@ -1,5 +1,10 @@
 
-from oop_ext.foundation.is_frozen import IsDevelopment, IsFrozen, SetIsDevelopment, SetIsFrozen
+from oop_ext.foundation.is_frozen import (
+    IsDevelopment,
+    IsFrozen,
+    SetIsDevelopment,
+    SetIsFrozen,
+)
 
 
 def testIsFrozenIsDevelopment():

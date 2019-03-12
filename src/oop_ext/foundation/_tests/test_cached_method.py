@@ -2,7 +2,10 @@
 import pytest
 
 from oop_ext.foundation.cached_method import (
-    AttributeBasedCachedMethod, CachedMethod, LastResultCachedMethod)
+    AttributeBasedCachedMethod,
+    CachedMethod,
+    LastResultCachedMethod,
+)
 
 
 def testCacheMethod(_cached_obj):
@@ -72,13 +75,12 @@ def testCacheMethodObjectInKey(_cached_obj):
     cache = MyMethod = CachedMethod(_cached_obj.CachedMethod)
 
     class MyObject:
-
         def __init__(self):
-            self.name = 'alpha'
+            self.name = "alpha"
             self.id = 1
 
         def __str__(self):
-            return '%s %d' % (self.name, self.id)
+            return "%s %d" % (self.name, self.id)
 
     alpha = MyObject()
 
@@ -88,7 +90,7 @@ def testCacheMethodObjectInKey(_cached_obj):
     MyMethod(alpha)
     _cached_obj.CheckCounts(cache, hit=1)
 
-    alpha.name = 'bravo'
+    alpha.name = "bravo"
     alpha.id = 2
 
     MyMethod(alpha)
@@ -96,48 +98,45 @@ def testCacheMethodObjectInKey(_cached_obj):
 
 
 def testCacheMethodAttributeBasedCachedMethod():
-
     class TestObject:
-
         def __init__(self):
-            self.name = 'alpha'
+            self.name = "alpha"
             self.id = 1
             self.n_calls = 0
 
         def Foo(self, par):
             self.n_calls += 1
-            return '%s %d' % (par, self.id)
+            return "%s %d" % (par, self.id)
 
     alpha = TestObject()
-    alpha.Foo = AttributeBasedCachedMethod(alpha.Foo, 'id', cache_size=3)
-    alpha.Foo('test1')
-    alpha.Foo('test1')
+    alpha.Foo = AttributeBasedCachedMethod(alpha.Foo, "id", cache_size=3)
+    alpha.Foo("test1")
+    alpha.Foo("test1")
 
     assert alpha.n_calls == 1
 
-    alpha.Foo('test2')
+    alpha.Foo("test2")
     assert alpha.n_calls == 2
     assert len(alpha.Foo._results) == 2
 
     alpha.id = 3
-    alpha.Foo('test2')
+    alpha.Foo("test2")
     assert alpha.n_calls == 3
 
     assert len(alpha.Foo._results) == 3
 
-    alpha.Foo('test3')
+    alpha.Foo("test3")
     assert alpha.n_calls == 4
     assert len(alpha.Foo._results) == 3
 
 
 @pytest.fixture
 def _cached_obj():
-    '''
+    """
     A test_object common to many cached_method tests.
-    '''
+    """
 
     class TestObj:
-
         def __init__(self):
             self.method_count = 0
 
@@ -147,17 +146,17 @@ def _cached_obj():
 
         def CheckCounts(self, cache, method=0, miss=0, hit=0):
 
-            if not hasattr(cache, 'check_counts'):
+            if not hasattr(cache, "check_counts"):
                 cache.check_counts = dict(method=0, miss=0, hit=0, call=0)
 
-            cache.check_counts['method'] += method
-            cache.check_counts['miss'] += miss
-            cache.check_counts['hit'] += hit
-            cache.check_counts['call'] += (miss + hit)
+            cache.check_counts["method"] += method
+            cache.check_counts["miss"] += miss
+            cache.check_counts["hit"] += hit
+            cache.check_counts["call"] += miss + hit
 
-            assert self.method_count == cache.check_counts['method']
-            assert cache.miss_count == cache.check_counts['miss']
-            assert cache.hit_count == cache.check_counts['hit']
-            assert cache.call_count == cache.check_counts['call']
+            assert self.method_count == cache.check_counts["method"]
+            assert cache.miss_count == cache.check_counts["miss"]
+            assert cache.hit_count == cache.check_counts["hit"]
+            assert cache.call_count == cache.check_counts["call"]
 
     return TestObj()

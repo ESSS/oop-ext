@@ -16,11 +16,11 @@ from ._callback_wrapper import _CallbackWrapper
 log = logging.getLogger(__name__)
 
 
-#===================================================================================================
+# ===================================================================================================
 # Callback
-#===================================================================================================
+# ===================================================================================================
 class Callback:
-    '''
+    """
     Object that provides a way for others to connect in it and later call it to call
     those connected.
 
@@ -95,13 +95,9 @@ class Callback:
     * has__self__: hasattr(obj, '__self__')
     * has__call__: hasattr(obj, '__call__')
     * has__call__self__: hasattr(obj.__call__, '__self__') if hasattr(obj, '__call__') else False
-    '''
+    """
 
-    __slots__ = [
-        '_callbacks',
-        '_handle_errors',
-        '__weakref__',
-    ]
+    __slots__ = ["_callbacks", "_handle_errors", "__weakref__"]
 
     # This constant defines whether the errors will be handled by default in all Callbacks or not.
     # Handled errors won't stop the execution if an exception happens when executing the callbacks.
@@ -116,12 +112,12 @@ class Callback:
     DEBUG_NEW_WEAKREFS = False
 
     def __init__(self, handle_errors=None):
-        '''
+        """
         :param bool handle_errors:
             If True, any errors raised while calling the callbacks will not stop the execution
             flow of the application, but will call the system error handler so that error
             does not fail silently.
-        '''
+        """
         if handle_errors is None:
             handle_errors = self.DEFAULT_HANDLE_ERRORS
         self._handle_errors = handle_errors
@@ -130,7 +126,7 @@ class Callback:
         self._callbacks = odict()
 
     def _GetKey(self, func, extra_args):
-        '''
+        """
         :param object func:
             The function for which we want the key.
 
@@ -140,14 +136,18 @@ class Callback:
 
         .. note:: The key is guaranteed to be unique among the living objects, but if the object
         is garbage collected, a new function may end up having the same key.
-        '''
+        """
         if func.__class__ == _CallbackWrapper:
             func = func.OriginalMethod()
 
         try:
             if func.__self__ is not None:
                 # bound method
-                return (id(func.__self__), id(func.__func__), id(func.__self__.__class__))
+                return (
+                    id(func.__self__),
+                    id(func.__func__),
+                    id(func.__self__.__class__),
+                )
             else:
                 return (id(func.__func__), id(GetClassForUnboundMethod(func)))
 
@@ -157,12 +157,12 @@ class Callback:
             return id(func)
 
     def _GetInfo(self, func):
-        '''
+        """
         :rtype: tuple(func_obj, func_func, func_class)
         :returns:
             Returns a tuple with the information needed to call a method later on (close to the
             WeakMethodRef, but a bit more specialized -- and faster for this context).
-        '''
+        """
         # Note: if it's a _CallbackWrapper, we want to register it and not the 'original method'
         # at this point, but if it's a WeakMethodProxy, register the original method (we'll make a
         # weak reference later anyways).
@@ -171,12 +171,12 @@ class Callback:
 
         if _IsCallableObject(func):
             if self.DEBUG_NEW_WEAKREFS:
-                obj_str = '{}'.format(func.__class__)
-                print('Changed behavior for: %s' % obj_str)
+                obj_str = "{}".format(func.__class__)
+                print("Changed behavior for: %s" % obj_str)
 
                 def ondie(r):
                     # I.e.: the hint here is that a reference may die before expected
-                    print('Reference died: {}'.format(obj_str))
+                    print("Reference died: {}".format(obj_str))
 
                 return (weakref.ref(func, ondie), None, None)
             return (weakref.ref(func), None, None)
@@ -184,7 +184,11 @@ class Callback:
         try:
             if func.__self__ is not None and func.__func__ is not None:
                 # bound method
-                return (weakref.ref(func.__self__), func.__func__, func.__self__.__class__)
+                return (
+                    weakref.ref(func.__self__),
+                    func.__func__,
+                    func.__self__.__class__,
+                )
             else:
                 # unbound method
                 return (None, func.__func__, GetClassForUnboundMethod(func))
@@ -194,9 +198,9 @@ class Callback:
             return (None, func, None)
 
     def __call__(self, *args, **kwargs):  # @DontTrace
-        '''
+        """
         Calls every registered function with the given args and kwargs.
-        '''
+        """
         callbacks = self._callbacks
         if not callbacks:
             return
@@ -220,7 +224,7 @@ class Callback:
                         to_call.append(
                             (
                                 types.MethodType(func_func, func_obj),
-                                info_and_extra_args[1]
+                                info_and_extra_args[1],
                             )
                         )
             else:
@@ -244,27 +248,32 @@ class Callback:
                     func(*extra_args + args, **kwargs)
                 except Exception as e:
                     from oop_ext.foundation.callback import ErrorNotHandledInCallback
+
                     # Note that if some error shouldn't really be handled here, clients can raise
                     # a subclass of ErrorNotHandledInCallback
                     if isinstance(e, ErrorNotHandledInCallback):
-                        Reraise(e, 'Error while trying to call %r' % func)
+                        Reraise(e, "Error while trying to call %r" % func)
                     else:
                         import traceback
                         from oop_ext.foundation.callback import HandleErrorOnCallback
+
                         # We need to log the current stack so we can at least know who called this
                         # callback.
-                        log.error('Error while trying to call {!r}:\n\n{}'.format(
-                            func, ''.join(traceback.format_stack())))
+                        log.error(
+                            "Error while trying to call {!r}:\n\n{}".format(
+                                func, "".join(traceback.format_stack())
+                            )
+                        )
                         HandleErrorOnCallback(func, *extra_args + args, **kwargs)
         else:
             for func, extra_args in to_call:
                 try:
                     func(*extra_args + args, **kwargs)
                 except Exception as e:
-                    Reraise(e, 'Error while trying to call %r' % func)
+                    Reraise(e, "Error while trying to call %r" % func)
 
     def _FilterToCall(self, to_call, args, kwargs):
-        '''
+        """
         Provides a chance for subclasses to filter the function/extra arguments to call.
 
         :param list(tuple(method,tuple)) to_call:
@@ -278,13 +287,13 @@ class Callback:
 
         :return list(tuple(method,tuple):
             Return the filtered list with the function/extra arguments to call.
-        '''
+        """
         return to_call
 
     _EXTRA_ARGS_CONSTANT = tuple()
 
     def Register(self, func, extra_args=_EXTRA_ARGS_CONSTANT):
-        '''
+        """
         Registers a function in the callback.
 
         :param object func:
@@ -292,13 +301,12 @@ class Callback:
 
         :param list(object) extra_args:
             A list with the objects to be used
-        '''
-        if IsDevelopment() and hasattr(func, 'im_class'):
+        """
+        if IsDevelopment() and hasattr(func, "im_class"):
             # TODO: Python 3 - This can be removed after deprecating Python 2
-            if not inspect.isclass(getattr(func, 'im_class')):
-                msg = '%r object has inconsistent internal attributes and is not compatible with ' \
-                    'Callback.\nim_class = %r\n(If using a MagicMock, remember to pass spec=lambda:None).'
-                raise RuntimeError(msg % (func, getattr(func, 'im_class')))
+            if not inspect.isclass(getattr(func, "im_class")):
+                msg = "%r object has inconsistent internal attributes and is not compatible with " "Callback.\nim_class = %r\n(If using a MagicMock, remember to pass spec=lambda:None)."
+                raise RuntimeError(msg % (func, getattr(func, "im_class")))
         if extra_args is not self._EXTRA_ARGS_CONSTANT:
             extra_args = tuple(extra_args)
 
@@ -308,7 +316,7 @@ class Callback:
         callbacks[key] = (self._GetInfo(func), extra_args)
 
     def Contains(self, func, extra_args=_EXTRA_ARGS_CONSTANT):
-        '''
+        """
         :param object func:
             The function that may be contained in this callback.
 
@@ -316,7 +324,7 @@ class Callback:
         :returns:
             True if the function is already registered within the callbacks and False
             otherwise.
-        '''
+        """
         key = self._GetKey(func, extra_args)
 
         callbacks = self._callbacks
@@ -342,7 +350,10 @@ class Callback:
                 del callbacks[key]
                 return False
             else:
-                return func is func_obj or (func_func is not None and func == types.MethodType(func_func, func_obj))
+                return func is func_obj or (
+                    func_func is not None
+                    and func == types.MethodType(func_func, func_obj)
+                )
         else:
             if func_func.__class__ == _CallbackWrapper:
                 # The instance of the _CallbackWrapper already died! (func_obj is None)
@@ -361,15 +372,15 @@ class Callback:
             else:
                 return f == func_func
 
-        raise AssertionError('Should not get here!')
+        raise AssertionError("Should not get here!")
 
     def Unregister(self, func, extra_args=_EXTRA_ARGS_CONSTANT):
-        '''
+        """
         Unregister a function previously registered with Register.
 
         :param object func:
             The function to be unregistered.
-        '''
+        """
         key = self._GetKey(func, extra_args)
 
         try:
@@ -383,9 +394,9 @@ class Callback:
             pass
 
     def UnregisterAll(self):
-        '''
+        """
         Unregisters all functions
-        '''
+        """
         self._callbacks.clear()
 
     def __len__(self):
@@ -393,9 +404,11 @@ class Callback:
 
 
 def _IsCallableObject(func):
-    return not inspect.isbuiltin(func) and \
-        not inspect.isfunction(func) and \
-        not inspect.ismethod(func) and \
-        not func.__class__ == functools.partial and \
-        func.__class__ != _CallbackWrapper and \
-        not getattr(func, '__CALLBACK_KEEP_STRONG_REFERENCE__', False)
+    return (
+        not inspect.isbuiltin(func)
+        and not inspect.isfunction(func)
+        and not inspect.ismethod(func)
+        and not func.__class__ == functools.partial
+        and func.__class__ != _CallbackWrapper
+        and not getattr(func, "__CALLBACK_KEEP_STRONG_REFERENCE__", False)
+    )

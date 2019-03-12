@@ -2,24 +2,25 @@
 from ._fast_callback import Callback
 
 
-#===================================================================================================
+# ===================================================================================================
 # SingleCallCallback
-#===================================================================================================
+# ===================================================================================================
 class SingleCallCallback:
-    '''
+    """
     Callback-like implementation used for a callback to which __call__ is called only once (and
     subsequent calls will always trigger the same callback).
 
     The callback parameter is pre-registered and kept as a weak-reference.
-    '''
+    """
 
     def __init__(self, callback_parameter):
-        '''
+        """
         :param object callback_parameter:
             A weak-reference is kept to this object (because the usual use-case is making a call
             passing the object that contains this callback).
-        '''
+        """
         from oop_ext.foundation.weak_ref import GetWeakRef
+
         if callback_parameter is None:
             self._callback_parameter = None
         else:
@@ -32,7 +33,7 @@ class SingleCallCallback:
 
     def __call__(self, *args, **kwargs):
         if self._done:
-            raise AssertionError('This callback can only be called once.')
+            raise AssertionError("This callback can only be called once.")
 
         # Keep the args passed to call it later on...
         self._args = args
@@ -41,7 +42,7 @@ class SingleCallCallback:
         if self._callback_parameter is not None:
             callback_parameter = self._callback_parameter()
             if callback_parameter is None:
-                raise ReferenceError('Callback parameter is already garbage collected.')
+                raise ReferenceError("Callback parameter is already garbage collected.")
         else:
             callback_parameter = None
 
@@ -62,7 +63,7 @@ class SingleCallCallback:
         if self._callback_parameter is not None:
             callback_parameter = self._callback_parameter()
             if callback_parameter is None:
-                raise ReferenceError('Callback parameter is already garbage collected.')
+                raise ReferenceError("Callback parameter is already garbage collected.")
         else:
             callback_parameter = None
 
@@ -76,11 +77,11 @@ class SingleCallCallback:
                 fn(*self._args, **self._kwargs)
 
     def AllowCallingAgain(self):
-        '''
+        """
         This callback is usually called only once, afterwards, any registry will call it directly
         (and the callback cannot be called anymore).
 
         By calling this method, we allow calling this callback again (and stop directly notifying
         clients just registered until it's called again).
-        '''
+        """
         self._done = False

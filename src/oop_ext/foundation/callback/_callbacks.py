@@ -2,16 +2,16 @@
 from ._shortcuts import After, Before, Remove
 
 
-#===================================================================================================
+# ===================================================================================================
 # Callbacks
-#===================================================================================================
+# ===================================================================================================
 class Callbacks:
-    '''
+    """
     Holds created callbacks, making it easy to disconnect later.
 
     Note: keeps a strong reference to the callback and the sender, thus, they won't be garbage-
     collected while still connected in this case.
-    '''
+    """
 
     def __init__(self):
         self._callbacks = []

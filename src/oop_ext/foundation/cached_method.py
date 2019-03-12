@@ -5,14 +5,14 @@ from .types_ import Method
 from .weak_ref import WeakMethodRef
 
 
-#===================================================================================================
+# ===================================================================================================
 # AbstractCachedMethod
-#===================================================================================================
+# ===================================================================================================
 class AbstractCachedMethod(Method):
-    '''
+    """
     Base class for cache-manager.
     The abstract class does not implement the storage of results.
-    '''
+    """
 
     def __init__(self, cached_method=None):
         # REMARKS: Use WeakMethodRef to avoid cyclic reference.
@@ -39,9 +39,9 @@ class AbstractCachedMethod(Method):
         return self._method()(*args, **kwargs)
 
     def GetCacheKey(self, *args, **kwargs):
-        '''
+        """
         Use the arguments to build the cache-key.
-        '''
+        """
         if args:
             if kwargs:
                 return AsImmutable(args), AsImmutable(kwargs)
@@ -73,13 +73,13 @@ class AbstractCachedMethod(Method):
         raise NotImplementedError()
 
 
-#===================================================================================================
+# ===================================================================================================
 # CachedMethod
-#===================================================================================================
+# ===================================================================================================
 class CachedMethod(AbstractCachedMethod):
-    '''
+    """
         Stores ALL the different results and never delete them.
-    '''
+    """
 
     def __init__(self, cached_method=None):
         super().__init__(cached_method)
@@ -98,29 +98,29 @@ class CachedMethod(AbstractCachedMethod):
         return self._results[key]
 
 
-#===================================================================================================
+# ===================================================================================================
 # ImmutableParamsCachedMethod
-#===================================================================================================
+# ===================================================================================================
 class ImmutableParamsCachedMethod(CachedMethod):
-    '''
+    """
     Expects all parameters to already be immutable
     Considers only the positional parameters of key, ignoring the keyword arguments
-    '''
+    """
 
     def GetCacheKey(self, *args, **kwargs):
-        '''
+        """
         Use the arguments to build the cache-key.
-        '''
+        """
         return args
 
 
-#===================================================================================================
+# ===================================================================================================
 # LastResultCachedMethod
-#===================================================================================================
+# ===================================================================================================
 class LastResultCachedMethod(AbstractCachedMethod):
-    '''
+    """
     A cache that stores only the last result.
-    '''
+    """
 
     def __init__(self, cached_method=None):
         super().__init__(cached_method)
@@ -142,16 +142,16 @@ class LastResultCachedMethod(AbstractCachedMethod):
         return self._result
 
 
-#===================================================================================================
+# ===================================================================================================
 # AttributeBasedCachedMethod
-#===================================================================================================
+# ===================================================================================================
 class AttributeBasedCachedMethod(CachedMethod):
-    '''
+    """
     This cached method consider changes in object attributes
-    '''
+    """
 
     def __init__(self, cached_method, attr_name_list, cache_size=1, results=None):
-        '''
+        """
         :type cached_method: bound method to be cached
         :param cached_method:
         :type attr_name_list: attr names in a C{str} separated by spaces OR in a sequence of C{str}
@@ -160,7 +160,7 @@ class AttributeBasedCachedMethod(CachedMethod):
         :param cache_size:
         :type results: an optional ref. to an C{odict} for keep cache results
         :param results:
-        '''
+        """
         CachedMethod.__init__(self, cached_method)
         if isinstance(attr_name_list, str):
             self._attr_name_list = attr_name_list.split()
@@ -175,7 +175,7 @@ class AttributeBasedCachedMethod(CachedMethod):
     def GetCacheKey(self, *args, **kwargs):
         instance = self._method().__self__
         for attr_name in self._attr_name_list:
-            kwargs['_object_%s' % attr_name] = getattr(instance, attr_name)
+            kwargs["_object_%s" % attr_name] = getattr(instance, attr_name)
         return AbstractCachedMethod.GetCacheKey(self, *args, **kwargs)
 
     def _AddCacheResult(self, key, result):

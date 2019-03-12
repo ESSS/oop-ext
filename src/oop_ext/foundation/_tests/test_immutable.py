@@ -6,19 +6,18 @@ from oop_ext.foundation.immutable import AsImmutable, IdentityHashableRef, Immut
 
 
 def testImmutable():
-
     class MyClass:
         pass
 
     d = AsImmutable(dict(a=1, b=dict(b=2)))
-    assert d == {'a': 1, 'b': {'b': 2}}
+    assert d == {"a": 1, "b": {"b": 2}}
     with pytest.raises(NotImplementedError):
-        d.__setitem__('a', 2)
+        d.__setitem__("a", 2)
 
-    assert d['b'].AsMutable() == dict(b=2)
+    assert d["b"].AsMutable() == dict(b=2)
     AsImmutable(d, return_str_if_not_expected=False)
     d = d.AsMutable()
-    d['a'] = 2
+    d["a"] = 2
 
     c = deepcopy(d)
     assert c == d
@@ -40,10 +39,10 @@ def testImmutable():
     AssertIsSame(True)
     AssertIsSame(1.)
     AssertIsSame(1)
-    AssertIsSame('a')  # native string
-    AssertIsSame(b'b')  # native bytes
-    AssertIsSame(str('a'))  # future's str compatibility type
-    AssertIsSame(bytes(b'b'))  # future's byte compatibility type
+    AssertIsSame("a")  # native string
+    AssertIsSame(b"b")  # native bytes
+    AssertIsSame(str("a"))  # future's str compatibility type
+    AssertIsSame(bytes(b"b"))  # future's byte compatibility type
 
     # Dealing with derived values
     a = MyClass()
@@ -55,7 +54,7 @@ def testImmutable():
     class MyStr(str):
         pass
 
-    assert AsImmutable(MyStr('alpha')) == 'alpha'
+    assert AsImmutable(MyStr("alpha")) == "alpha"
 
     class MyList(list):
         pass
@@ -72,22 +71,22 @@ def testImmutableDict():
     d = ImmutableDict(alpha=1, bravo=2)
 
     with pytest.raises(NotImplementedError):
-        d['charlie'] = 3
+        d["charlie"] = 3
 
     with pytest.raises(NotImplementedError):
-        del d['alpha']
+        del d["alpha"]
 
     with pytest.raises(NotImplementedError):
         d.clear()
 
     with pytest.raises(NotImplementedError):
-        d.setdefault('charlie', 3)
+        d.setdefault("charlie", 3)
 
     with pytest.raises(NotImplementedError):
         d.popitem()
 
     with pytest.raises(NotImplementedError):
-        d.update({'charlie':3})
+        d.update({"charlie": 3})
 
 
 def testIdentityHashableRef():
