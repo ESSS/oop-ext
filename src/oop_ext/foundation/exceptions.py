@@ -1,8 +1,8 @@
 
 
-#===================================================================================================
+# ===================================================================================================
 # ExceptionToUnicode
-#===================================================================================================
+# ===================================================================================================
 def ExceptionToUnicode(exception):
     """
     Python 3 exception handling already deals with string error messages. Here we
@@ -14,4 +14,4 @@ def ExceptionToUnicode(exception):
     while exception:
         messages.append(str(exception))
         exception = exception.__cause__ or exception.__context__
-    return '\n'.join(messages)
+    return "\n".join(messages)

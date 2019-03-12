@@ -1,22 +1,22 @@
-'''
+"""
 Extensions to python native types.
-'''
+"""
 
-#===================================================================================================
+# ===================================================================================================
 # Method
-#===================================================================================================
+# ===================================================================================================
 class Method:
-    '''
+    """
     This class is an 'organization' class, so that subclasses are considered as methods
     (and its __call__ method is checked for the parameters)
-    '''
+    """
 
 
-#===================================================================================================
+# ===================================================================================================
 # Null
-#===================================================================================================
+# ===================================================================================================
 class Null:
-    '''
+    """
     This is a sample implementation of the 'Null Object' design pattern.
 
     Roughly, the goal with Null objects is to provide an 'intelligent'
@@ -66,14 +66,14 @@ class Null:
     the respective methods' implementation will depend very much
     on the environment and, hence, these special methods are not
     provided here.
-    '''
+    """
 
     # object constructing
 
     def __init__(self, *_args, **_kwargs):
         "Ignore parameters."
         # Setting the name of what's gotten (so that __name__ is properly preserved).
-        self.__dict__['_Null__name__'] = 'Null'
+        self.__dict__["_Null__name__"] = "Null"
         return None
 
     def __call__(self, *_args, **_kwargs):
@@ -82,11 +82,13 @@ class Null:
 
     def __getattr__(self, mname):
         "Ignore attribute requests."
-        if mname == '__getnewargs__':
-            raise AttributeError('No support for that (pickle causes error if it returns self in this case.)')
+        if mname == "__getnewargs__":
+            raise AttributeError(
+                "No support for that (pickle causes error if it returns self in this case.)"
+            )
 
-        if mname == '__name__':
-            return self.__dict__['_Null__name__']
+        if mname == "__name__":
+            return self.__dict__["_Null__name__"]
 
         return self
 

@@ -1,6 +1,4 @@
-
-
-def Reraise(exception, message, separator='\n'):
+def Reraise(exception, message, separator="\n"):
     """
     Forwards to a `raise exc from cause` statement. Kept alive for backwards compatibility
     (`separator` argument only kept for this reason).

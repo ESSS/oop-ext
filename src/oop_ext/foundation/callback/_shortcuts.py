@@ -8,9 +8,9 @@ from ._callback_wrapper import _CallbackWrapper
 from ._fast_callback import Callback, GetClassForUnboundMethod
 
 
-#===================================================================================================
+# ===================================================================================================
 # _CreateBeforeOrAfter
-#===================================================================================================
+# ===================================================================================================
 def _CreateBeforeOrAfter(method, callback, sender_as_parameter, before=True):
 
     wrapper = WrapForCallback(method)
@@ -38,11 +38,11 @@ def _CreateBeforeOrAfter(method, callback, sender_as_parameter, before=True):
     return wrapper
 
 
-#===================================================================================================
+# ===================================================================================================
 # Before
-#===================================================================================================
+# ===================================================================================================
 def Before(method, callback, sender_as_parameter=False):
-    '''
+    """
         Registers the given callback to be executed before the given method is called, with the
         same arguments.
 
@@ -53,15 +53,15 @@ def Before(method, callback, sender_as_parameter=False):
         Remarks:
             The function has changed its signature to accept an extra parameter (sender_as_parameter).
             Using "*args" as before made impossible to add new parameters to the function.
-    '''
+    """
     return _CreateBeforeOrAfter(method, callback, sender_as_parameter)
 
 
-#===================================================================================================
+# ===================================================================================================
 # After
-#===================================================================================================
+# ===================================================================================================
 def After(method, callback, sender_as_parameter=False):
-    '''
+    """
         Registers the given callbacks to be execute after the given method is called, with the same
         arguments.
 
@@ -72,36 +72,32 @@ def After(method, callback, sender_as_parameter=False):
         Remarks:
             This function has changed its signature to accept an extra parameter (sender_as_parameter).
             Using "*args" as before made impossible to add new parameters to the function.
-    '''
+    """
     return _CreateBeforeOrAfter(method, callback, sender_as_parameter, before=False)
 
 
-#===================================================================================================
+# ===================================================================================================
 # Remove
-#===================================================================================================
+# ===================================================================================================
 def Remove(method, callback):
-    '''
+    """
         Removes the given callback from a method previously connected using after or before.
         Return true if the callback was removed, false otherwise.
-    '''
+    """
     wrapped = _GetWrapped(method)
     if wrapped:
         return wrapped.Remove(callback)
     return False
 
 
-#===================================================================================================
+# ===================================================================================================
 # Implementation Details
-#===================================================================================================
-class _MethodWrapper(Method):  # It needs to be a subclass of Method for interface checks.
+# ===================================================================================================
+class _MethodWrapper(
+    Method
+):  # It needs to be a subclass of Method for interface checks.
 
-    __slots__ = [
-        '_before',
-        '_after',
-        '_method',
-        '_name',
-        'OriginalMethod',
-    ]
+    __slots__ = ["_before", "_after", "_method", "_name", "OriginalMethod"]
 
     def __init__(self, method):
         self._before = None
@@ -113,7 +109,7 @@ class _MethodWrapper(Method):  # It needs to be a subclass of Method for interfa
         self.OriginalMethod = self._method
 
     def __repr__(self):
-        return '_MethodWrapper({}): {}'.format(id(self), self._name)
+        return "_MethodWrapper({}): {}".format(id(self), self._name)
 
     def __call__(self, *args, **kwargs):
 
@@ -124,7 +120,8 @@ class _MethodWrapper(Method):  # It needs to be a subclass of Method for interfa
         if m is None:
             raise ReferenceError(
                 "Error: the object that contained this method (%s) has already been garbage collected"
-                % self._name)
+                % self._name
+            )
 
         result = m(*args, **kwargs)
 
@@ -134,9 +131,9 @@ class _MethodWrapper(Method):  # It needs to be a subclass of Method for interfa
         return result
 
     def AppendBefore(self, callback, extra_args=None, handle_errors=True):
-        '''
+        """
             Append the given callbacks in the list of callback to be executed BEFORE the method.
-        '''
+        """
         if extra_args is None:
             extra_args = []
 
@@ -145,9 +142,9 @@ class _MethodWrapper(Method):  # It needs to be a subclass of Method for interfa
         self._before.Register(callback, extra_args)
 
     def AppendAfter(self, callback, extra_args=None, handle_errors=True):
-        '''
+        """
             Append the given callbacks in the list of callback to be executed AFTER the method.
-        '''
+        """
         if extra_args is None:
             extra_args = []
 
@@ -156,9 +153,9 @@ class _MethodWrapper(Method):  # It needs to be a subclass of Method for interfa
         self._after.Register(callback, extra_args)
 
     def Remove(self, callback):
-        '''
+        """
             Remove the given callback from both the BEFORE and AFTER callbacks lists.
-        '''
+        """
         result = False
 
         if self._before is not None and self._before.Contains(callback):
@@ -171,13 +168,13 @@ class _MethodWrapper(Method):  # It needs to be a subclass of Method for interfa
         return result
 
 
-#===================================================================================================
+# ===================================================================================================
 # _GetWrapped
-#===================================================================================================
+# ===================================================================================================
 def _GetWrapped(method):
-    '''
+    """
         Returns true if the given method is already wrapped.
-    '''
+    """
     if isinstance(method, _MethodWrapper):
         return method
     try:
@@ -186,17 +183,17 @@ def _GetWrapped(method):
         return None
 
 
-#===================================================================================================
+# ===================================================================================================
 # WrapForCallback
-#===================================================================================================
+# ===================================================================================================
 def WrapForCallback(method):
-    '''Generates a wrapper for the given method, or returns the method itself
+    """Generates a wrapper for the given method, or returns the method itself
     if it is already a wrapper.
-    '''
+    """
     wrapped = _GetWrapped(method)
     if wrapped is not None:
         # its a wrapper already
-        if not hasattr(method, '__self__'):
+        if not hasattr(method, "__self__"):
             return wrapped
 
         # Taking care for the situation where we add a callback to the class and later to the
@@ -209,7 +206,7 @@ def WrapForCallback(method):
                 return wrapped
 
     wrapper = _MethodWrapper(method)
-    if not hasattr(method, '__self__') or method.__self__ is None:
+    if not hasattr(method, "__self__") or method.__self__ is None:
         # override the class method
 
         # we must make it a regular call for classmethods (it MUST not be a bound
