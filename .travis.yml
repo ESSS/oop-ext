@@ -3,7 +3,7 @@ language: python
 stages:
 - test
 - name: deploy
-  if: repo = ESSS/oop_ext AND tag IS present
+  if: repo = ESSS/oop-ext AND tag IS present
 
 install:
 - pip install -U pip
