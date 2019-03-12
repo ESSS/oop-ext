@@ -9,7 +9,7 @@ from setuptools import find_packages, setup
 with io.open("README.rst", encoding="UTF-8") as readme_file:
     readme = readme_file.read()
 
-with io.open("CHANGELOG.RST", encoding="UTF-8") as changelog_file:
+with io.open("CHANGELOG.rst", encoding="UTF-8") as changelog_file:
     history = changelog_file.read()
 
 requirements = []
@@ -27,7 +27,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],
-    description="OOP Extensions is a set of utilities for object orienting programming which is missing on Python core libraries.",
+    description="OOP Extensions is a set of utilities for object oriented programming which is missing on Python core libraries.",
     extras_require=extras_require,
     install_requires=requirements,
     license="MIT license",
