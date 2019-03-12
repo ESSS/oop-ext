@@ -10,7 +10,7 @@ OOP Extensions
     :target: https://pypi.org/project/oop-ext
 
 .. image:: https://img.shields.io/travis/ESSS/oop-ext.svg
-    :target: https://travis-ci.org/ESSS/oop-ext
+    :target: https://travis-ci.com/ESSS/oop-ext
 
 .. image:: https://ci.appveyor.com/api/projects/status/github/ESSS/oop-ext?branch=master
     :target: https://ci.appveyor.com/project/ESSS/oop-ext/?branch=master&svg=true
