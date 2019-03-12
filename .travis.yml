@@ -3,7 +3,7 @@ language: python
 stages:
 - test
 - name: deploy
-  if: repo = ESSS/oop_ext AND tag IS present
+  if: repo = ESSS/oop-ext AND tag IS present
 
 install:
 - pip install -U pip
@@ -37,7 +37,7 @@ jobs:
         secure: j5/b7JtmPg4xCHShWKgNLDbXTqHI2aRzrGA/ItJmR+k6GQkeiIZy12N72F6vbx/b3HSJi9vfElVM9zzWQFAfxAk86FFpzDQ1K7kFv9haLDYG/z76j6x1Kq4QD1VYHiqY9G1XRBvTEUrwBROa76/vxC5vX0Mg8cqXpj4TLRD/qw6jCzUwmSY6garFRciAaa5ppyLdxgTSQEYZN04nT0YnxvIeNaXhQSWGI44HFAJTlxk9VRmbb5BGRP/bX2UIt//pdLsYfFMNIvR0qymQBeeFOf5H8yB4uGpKKmco1Qv415Pe7vvuZgeiL8ou1R2ZkmkdGu8taZzK8WPkzZ2Fe+KWl4joqgrU/jsYuNnwK0v7PHUGZEW7zj5lZcm1+68hjY90XsItrJy/RT6xquBZvfyOZeiOkKFtB5K8VgmnxnG0V5t9eflv0Kk3lwydFV+8fGKJA7CxMT0Qo+DMabbYlRSg6xy+AfiLEzE1hj5azs9ox2JYyoPSIcquHjxh8u5D3kmqh0E7R6KWtOIHSghHJ7MY3VbPb/QgnyvHVTOI+NvMP9uXVXAke0j1bZAscKZFsYdXnG58wqjKSmA0cXEgDyFUw8pPj46EC5ecbqZTGkRlY0C7tPXCaZx0eK79byS8tZL4D/55ffYbbVD70t8Glr0k11yOdSqK2WlXI/UXUQGCGaA=
       on:
         tags: true
-        repo: ESSS/oop_ext
+        repo: ESSS/oop-ext
         python: 3.6
 branches:
   only:
