@@ -810,7 +810,6 @@ def test_interface_subclass_mocked(mocker, check_before, autospec):
     assert interface.IsImplementation(Bar, II) == (autospec or check_before)
 
 
-@pytest.mark.xfail(run=False, reason="core dumped")
 def testErrorOnInterfaceDeclaration(handled_exceptions):
     def Check():
         class Foo:
