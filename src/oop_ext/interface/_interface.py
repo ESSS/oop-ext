@@ -798,29 +798,25 @@ def ImplementsInterface(*interfaces, **kwargs):
                         created_at_line = traceback.extract_stack(
                             sys._getframe(), limit=10
                         )
-                    try:
-                        if isinstance(created_at_line, "".__class__):
-                            created_at_str = created_at_line
-                        else:
-                            created_at_str = str("").join(
-                                traceback.format_list(created_at_line)
-                            )
 
-                        raise AssertionError(
-                            "A call with ImplementsInterface({}) was not properly done as a class decorator.\nCreated at: {}".format(
-                                ", ".join(
-                                    tuple(
-                                        str(x.__name__ if hasattr(x, "__name__") else x)
-                                        for x in interfaces
-                                    )
-                                ),
-                                created_at_str,
-                            )
+                    if isinstance(created_at_line, "".__class__):
+                        created_at_str = created_at_line
+                    else:
+                        created_at_str = str("").join(
+                            traceback.format_list(created_at_line)
                         )
-                    except:
-                        from oop_ext.foundation import handle_exception
 
-                        handle_exception.HandleException()
+                    raise AssertionError(
+                        "A call with ImplementsInterface({}) was not properly done as a class decorator.\nCreated at: {}".format(
+                            ", ".join(
+                                tuple(
+                                    str(x.__name__ if hasattr(x, "__name__") else x)
+                                    for x in interfaces
+                                )
+                            ),
+                            created_at_str,
+                        )
+                    )
 
             import weakref
 

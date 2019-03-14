@@ -1,0 +1,10 @@
+name: oop-ext
+
+dependencies:
+  - python>=3.6
+  - pytest
+  - pytest-mock>=1.10
+
+environment:
+  PYTHONPATH:
+    - root + '/src'

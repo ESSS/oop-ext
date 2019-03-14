@@ -808,19 +808,3 @@ def test_interface_subclass_mocked(mocker, check_before, autospec):
     mocker.patch.object(Foo, "foo", autospec=autospec)
 
     assert interface.IsImplementation(Bar, II) == (autospec or check_before)
-
-
-def testErrorOnInterfaceDeclaration(handled_exceptions):
-    def Check():
-        class Foo:
-
-            from oop_ext import interface
-
-            interface.ImplementsInterface(_InterfM1)
-
-    from oop_ext.foundation.handle_exception import IgnoringHandleException
-
-    with IgnoringHandleException():
-        Check()
-        assert len(handled_exceptions.GetHandledExceptions()) == 1
-        handled_exceptions.ClearHandledExceptions()
