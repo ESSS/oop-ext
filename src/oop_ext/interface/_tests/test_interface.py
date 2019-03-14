@@ -810,18 +810,14 @@ def test_interface_subclass_mocked(mocker, check_before, autospec):
     assert interface.IsImplementation(Bar, II) == (autospec or check_before)
 
 
-@pytest.mark.xfail(run=False, reason="core dumped")
-def testErrorOnInterfaceDeclaration(handled_exceptions):
+def testErrorOnInterfaceDeclaration():
     def Check():
         class Foo:
+            pass
 
-            from oop_ext import interface
+        from oop_ext import interface
 
-            interface.ImplementsInterface(_InterfM1)
+        interface.ImplementsInterface(_InterfM1)(Foo)
 
-    from oop_ext.foundation.handle_exception import IgnoringHandleException
-
-    with IgnoringHandleException():
+    with pytest.raises(AssertionError):
         Check()
-        assert len(handled_exceptions.GetHandledExceptions()) == 1
-        handled_exceptions.ClearHandledExceptions()

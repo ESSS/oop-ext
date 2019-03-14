@@ -662,27 +662,6 @@ class Test:
             c.Register(After)
             c.Register(After2)
 
-            mocked = mocker.patch(
-                "oop_ext.foundation.handle_exception.HandleException", autospec=True
-            )
-            c()
-            assert self.called == 2
-            assert mocked.call_count == 2
-
-            mocked.reset_mock()
-            c(1, a=2)
-            assert self.called == 4
-            assert mocked.call_count == 2
-            from _pytest.pytester import LineMatcher
-
-            matcher = LineMatcher(mocked.call_args[0][0].splitlines())
-            expected = [
-                "Error while trying to call <function Test.testHandleErrorOnCallback.<locals>.After2 at 0x*>",
-                "Args: (1,)",
-                "Kwargs: {'a': 2}",
-            ]
-            matcher.fnmatch_lines(expected)
-
             # test the default behaviour: errors are not handled and stop execution as usual
             self.called = 0
             c = Callback()

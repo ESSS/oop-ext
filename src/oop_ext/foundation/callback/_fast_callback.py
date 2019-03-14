@@ -8,7 +8,6 @@ import weakref
 from oop_ext.foundation.compat import GetClassForUnboundMethod
 from oop_ext.foundation.is_frozen import IsDevelopment
 from oop_ext.foundation.odict import odict
-from oop_ext.foundation.reraise import Reraise
 from oop_ext.foundation.weak_ref import WeakMethodProxy
 
 from ._callback_wrapper import _CallbackWrapper
@@ -251,9 +250,7 @@ class Callback:
 
                     # Note that if some error shouldn't really be handled here, clients can raise
                     # a subclass of ErrorNotHandledInCallback
-                    if isinstance(e, ErrorNotHandledInCallback):
-                        Reraise(e, "Error while trying to call %r" % func)
-                    else:
+                    if not isinstance(e, ErrorNotHandledInCallback):
                         import traceback
                         from oop_ext.foundation.callback import HandleErrorOnCallback
 
@@ -267,10 +264,7 @@ class Callback:
                         HandleErrorOnCallback(func, *extra_args + args, **kwargs)
         else:
             for func, extra_args in to_call:
-                try:
-                    func(*extra_args + args, **kwargs)
-                except Exception as e:
-                    Reraise(e, "Error while trying to call %r" % func)
+                func(*extra_args + args, **kwargs)
 
     def _FilterToCall(self, to_call, args, kwargs):
         """

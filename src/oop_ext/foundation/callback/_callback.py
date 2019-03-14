@@ -52,6 +52,4 @@ def HandleErrorOnCallback(func, *args, **kwargs):
     if kwargs:
         msg += "Kwargs: {}\n".format(kwargs)
 
-    from oop_ext.foundation import handle_exception
-
-    handle_exception.HandleException(msg)
+    raise ErrorNotHandledInCallback(msg)
