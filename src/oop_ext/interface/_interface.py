@@ -799,7 +799,7 @@ def ImplementsInterface(*interfaces, **kwargs):
                             sys._getframe(), limit=10
                         )
 
-                    if isinstance(created_at_line, "".__class__):
+                    if isinstance(created_at_line, str):
                         created_at_str = created_at_line
                     else:
                         created_at_str = str("").join(
