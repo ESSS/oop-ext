@@ -808,3 +808,16 @@ def test_interface_subclass_mocked(mocker, check_before, autospec):
     mocker.patch.object(Foo, "foo", autospec=autospec)
 
     assert interface.IsImplementation(Bar, II) == (autospec or check_before)
+
+
+def testErrorOnInterfaceDeclaration():
+    def Check():
+        class Foo:
+            pass
+
+        from oop_ext import interface
+
+        interface.ImplementsInterface(_InterfM1)(Foo)
+
+    with pytest.raises(AssertionError):
+        Check()

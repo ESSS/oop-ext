@@ -40,7 +40,6 @@ import sys
 
 from oop_ext.foundation.decorators import Deprecated
 from oop_ext.foundation.is_frozen import IsDevelopment
-from oop_ext.foundation.reraise import Reraise
 from oop_ext.foundation.types_ import Method
 
 
@@ -209,11 +208,7 @@ def IsImplementation(class_or_instance, interface):
 
     :see: :py:func:`.AssertImplements`
     """
-    try:
-        is_interface = issubclass(interface, Interface)
-    except TypeError as e:
-        Reraise(e, "interface={} (type {})".format(interface, type(interface)))
-
+    is_interface = issubclass(interface, Interface)
     if not is_interface:
         raise InterfaceError(
             "To check against an interface, an interface is required (received: %s -- mro:%s)"
@@ -610,11 +605,7 @@ def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True)
     # Moved from the file to avoid cyclic import:
     from oop_ext.foundation.types_ import Null
 
-    try:
-        is_interface = issubclass(interface, Interface)
-    except TypeError as e:
-        Reraise(e, "interface={} (type {})".format(interface, type(interface)))
-
+    is_interface = issubclass(interface, Interface)
     if not is_interface:
         raise InterfaceError(
             "To check against an interface, an interface is required (received: %s -- mro:%s)"
@@ -805,13 +796,15 @@ def ImplementsInterface(*interfaces, **kwargs):
                         created_at_str = str("").join(
                             traceback.format_list(created_at_line)
                         )
-
+                    print(
+                        "triggering error: ",
+                        tuple(str(getattr(x, "__name__", x)) for x in interfaces),
+                    )
                     raise AssertionError(
                         "A call with ImplementsInterface({}) was not properly done as a class decorator.\nCreated at: {}".format(
                             ", ".join(
                                 tuple(
-                                    str(x.__name__ if hasattr(x, "__name__") else x)
-                                    for x in interfaces
+                                    str(getattr(x, "__name__", x)) for x in interfaces
                                 )
                             ),
                             created_at_str,
