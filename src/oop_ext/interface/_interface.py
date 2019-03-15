@@ -794,10 +794,7 @@ def ImplementsInterface(*interfaces, **kwargs):
                         created_at_str = created_at_line
                     else:
                         created_at_str = "".join(traceback.format_list(created_at_line))
-                    print(
-                        "triggering error: ",
-                        tuple(str(getattr(x, "__name__", x)) for x in interfaces),
-                    )
+
                     raise AssertionError(
                         "A call with ImplementsInterface({}) was not properly done as a class decorator.\nCreated at: {}".format(
                             ", ".join(
