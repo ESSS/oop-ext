@@ -110,13 +110,15 @@ class Callback:
     # properly test the new behavior).
     DEBUG_NEW_WEAKREFS = False
 
-    def __init__(self, handle_errors=DEFAULT_HANDLE_ERRORS):
+    def __init__(self, handle_errors=None):
         """
         :param bool handle_errors:
             If True, any errors raised while calling the callbacks will not stop the execution
             flow of the application, but will call the system error handler so that error
             does not fail silently.
         """
+        if handle_errors is None:
+            handle_errors = self.DEFAULT_HANDLE_ERRORS
         self._handle_errors = handle_errors
         # _callbacks is no longer lazily created: This makes the creation a bit slower, but
         # everything else is faster (as having to check for hasattr each time is slow).
