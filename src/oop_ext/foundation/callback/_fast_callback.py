@@ -98,10 +98,6 @@ class Callback:
 
     __slots__ = ["_callbacks", "_handle_errors", "__weakref__"]
 
-    # This constant defines whether the errors will be handled by default in all Callbacks or not.
-    # Handled errors won't stop the execution if an exception happens when executing the callbacks.
-    DEFAULT_HANDLE_ERRORS = True
-
     INFO_POS_FUNC_OBJ = 0
     INFO_POS_FUNC_FUNC = 1
     INFO_POS_FUNC_CLASS = 2
@@ -110,16 +106,7 @@ class Callback:
     # properly test the new behavior).
     DEBUG_NEW_WEAKREFS = False
 
-    def __init__(self, handle_errors=None):
-        """
-        :param bool handle_errors:
-            If True, any errors raised while calling the callbacks will not stop the execution
-            flow of the application, but will call the system error handler so that error
-            does not fail silently.
-        """
-        if handle_errors is None:
-            handle_errors = self.DEFAULT_HANDLE_ERRORS
-        self._handle_errors = handle_errors
+    def __init__(self):
         # _callbacks is no longer lazily created: This makes the creation a bit slower, but
         # everything else is faster (as having to check for hasattr each time is slow).
         self._callbacks = odict()
@@ -240,35 +227,28 @@ class Callback:
 
         to_call = self._FilterToCall(to_call, args, kwargs)
 
-        # let's keep the 'if' outside of the iteration...
-        if self._handle_errors:
-            for func, extra_args in to_call:
-                try:
-                    func(*extra_args + args, **kwargs)
-                except Exception as e:
-                    from oop_ext.foundation.callback import ErrorNotHandledInCallback
-
-                    # Note that if some error shouldn't really be handled here, clients can raise
-                    # a subclass of ErrorNotHandledInCallback
-                    if not isinstance(e, ErrorNotHandledInCallback):
-                        # We need to log the current stack so we can at least know who called this
-                        # callback.
-                        import traceback
-
-                        log.error(
-                            "Error while trying to call {!r}:\n\n{}".format(
-                                func, "".join(traceback.format_stack())
-                            )
-                        )
-                        self._HandleErrorOnCall(func, *extra_args + args, **kwargs)
-        else:
-            for func, extra_args in to_call:
+        # Iterate over callbacks running and checking for exceptions...
+        for func, extra_args in to_call:
+            try:
                 func(*extra_args + args, **kwargs)
+            except Exception as e:
+                from oop_ext.foundation.callback import ErrorNotHandledInCallback
 
-    def _HandleErrorOnCall(self, func, *args, **kwargs):
-        from oop_ext.foundation.callback import HandleErrorOnCallback
+                # Note that if some error shouldn't really be handled here, clients can raise
+                # a subclass of ErrorNotHandledInCallback
+                if not isinstance(e, ErrorNotHandledInCallback):
+                    # We need to log the current stack so we can at least know who called this
+                    # callback.
+                    import traceback
 
-        HandleErrorOnCallback(func, args, kwargs)
+                    log.error(
+                        "Error while trying to call {!r}:\n\n{}".format(
+                            func, "".join(traceback.format_stack())
+                        )
+                    )
+                    from oop_ext.foundation.callback import HandleErrorOnCallback
+
+                    HandleErrorOnCallback(func, args, kwargs)
 
     def _FilterToCall(self, to_call, args, kwargs):
         """

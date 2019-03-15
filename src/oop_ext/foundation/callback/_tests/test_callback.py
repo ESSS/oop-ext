@@ -644,34 +644,28 @@ class Test:
         assert self.called == 1
 
     def testHandleErrorOnCallback(self, mocker):
-        old_default_handle_errors = Callback.DEFAULT_HANDLE_ERRORS
-        Callback.DEFAULT_HANDLE_ERRORS = False
-        try:
+        self.called = 0
 
-            self.called = 0
+        def After(*args, **kwargs):
+            self.called += 1
+            raise RuntimeError("test")
 
-            def After(*args, **kwargs):
-                self.called += 1
-                raise RuntimeError("test")
+        def After2(*args, **kwargs):
+            self.called += 1
+            raise RuntimeError("test2")
 
-            def After2(*args, **kwargs):
-                self.called += 1
-                raise RuntimeError("test2")
+        c = Callback()
+        c.Register(After)
+        c.Register(After2)
 
-            c = Callback(handle_errors=True)
-            c.Register(After)
-            c.Register(After2)
-
-            # test the default behaviour: errors are not handled and stop execution as usual
-            self.called = 0
-            c = Callback()
-            c.Register(After)
-            c.Register(After2)
-            with pytest.raises(RuntimeError):
-                c()
-            assert self.called == 1
-        finally:
-            Callback.DEFAULT_HANDLE_ERRORS = old_default_handle_errors
+        # test the default behaviour: errors are not handled and stop execution as usual
+        self.called = 0
+        c = Callback()
+        c.Register(After)
+        c.Register(After2)
+        with pytest.raises(RuntimeError):
+            c()
+        assert self.called == 1
 
     def testAfterBeforeHandleError(self, mocker):
         class C:

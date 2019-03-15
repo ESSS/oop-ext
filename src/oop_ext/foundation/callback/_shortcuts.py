@@ -130,7 +130,7 @@ class _MethodWrapper(
 
         return result
 
-    def AppendBefore(self, callback, extra_args=None, handle_errors=True):
+    def AppendBefore(self, callback, extra_args=None):
         """
             Append the given callbacks in the list of callback to be executed BEFORE the method.
         """
@@ -138,10 +138,10 @@ class _MethodWrapper(
             extra_args = []
 
         if self._before is None:
-            self._before = Callback(handle_errors=handle_errors)
+            self._before = Callback()
         self._before.Register(callback, extra_args)
 
-    def AppendAfter(self, callback, extra_args=None, handle_errors=True):
+    def AppendAfter(self, callback, extra_args=None):
         """
             Append the given callbacks in the list of callback to be executed AFTER the method.
         """
@@ -149,7 +149,7 @@ class _MethodWrapper(
             extra_args = []
 
         if self._after is None:
-            self._after = Callback(handle_errors=handle_errors)
+            self._after = Callback()
         self._after.Register(callback, extra_args)
 
     def Remove(self, callback):
