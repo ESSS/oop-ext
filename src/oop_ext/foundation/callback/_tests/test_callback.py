@@ -667,7 +667,7 @@ class Test:
             c()
         assert self.called == 1
 
-    def testAfterBeforeHandleError(self, mocker):
+    def testAfterBeforeHandleError(self):
         class C:
             def Method(self, x):
                 return x * 2
@@ -692,12 +692,6 @@ class Test:
             assert c.Method(10) == 20
 
         assert self.before_called == 1
-        assert self.after_called == 0
-
-        with pytest.raises(RuntimeError):
-            assert c.Method(20) == 40
-
-        assert self.before_called == 2
         assert self.after_called == 0
 
     def testKeyReusedAfterDead(self, monkeypatch):
@@ -1055,6 +1049,6 @@ class Test:
             def _UpdateAValue(self, new_value):
                 self._a.SetValue(new_value)
 
-        a = B()
+        b = B()
         with pytest.raises(ZeroDivisionError):
-            a.SetValue(5)
+            b.SetValue(5)
