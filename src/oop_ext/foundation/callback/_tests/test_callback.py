@@ -274,7 +274,6 @@ class Test:
         def foo():
             pass
 
-        # self.assertNotRaises(FunctionNotRegisteredError, c.Unregister, foo)
         c.Unregister(foo)
 
     def test_extra_args(self):
