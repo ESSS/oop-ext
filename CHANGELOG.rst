@@ -2,7 +2,7 @@
 0.2.4 (2019-03-22)
 ------------------
 
-* Remove function not registered error in callback.
+* Remove ``FunctionNotRegisteredError`` exception, which has not been in use for a few years.
 
 
 0.2.3 (2019-03-22)
