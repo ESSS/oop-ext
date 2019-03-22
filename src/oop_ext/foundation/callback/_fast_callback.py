@@ -229,26 +229,7 @@ class Callback:
 
         # Iterate over callbacks running and checking for exceptions...
         for func, extra_args in to_call:
-            try:
-                func(*extra_args + args, **kwargs)
-            except Exception as e:
-                from oop_ext.foundation.callback import ErrorNotHandledInCallback
-
-                # Note that if some error shouldn't really be handled here, clients can raise
-                # a subclass of ErrorNotHandledInCallback
-                if not isinstance(e, ErrorNotHandledInCallback):
-                    # We need to log the current stack so we can at least know who called this
-                    # callback.
-                    import traceback
-
-                    log.error(
-                        "Error while trying to call {!r}:\n\n{}".format(
-                            func, "".join(traceback.format_stack())
-                        )
-                    )
-                    from oop_ext.foundation.callback import HandleErrorOnCallback
-
-                    HandleErrorOnCallback(func, args, kwargs)
+            func(*extra_args + args, **kwargs)
 
     def _FilterToCall(self, to_call, args, kwargs):
         """

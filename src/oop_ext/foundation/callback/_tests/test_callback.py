@@ -667,17 +667,17 @@ class Test:
             c()
         assert self.called == 1
 
-    def testAfterBeforeHandleError(self, mocker):
+    def testAfterBeforeHandleError(self):
         class C:
             def Method(self, x):
                 return x * 2
 
         def AfterMethod(*args):
-            self.before_called += 1
+            self.after_called += 1
             raise RuntimeError
 
         def BeforeMethod(*args):
-            self.after_called += 1
+            self.before_called += 1
             raise RuntimeError
 
         self.before_called = 0
@@ -687,18 +687,12 @@ class Test:
         Before(c.Method, BeforeMethod)
         After(c.Method, AfterMethod)
 
-        mocked = mocker.patch(
-            "oop_ext.foundation.callback.HandleErrorOnCallback", autospec=True
-        )
-        assert c.Method(10) == 20
-        assert self.before_called == 1
-        assert self.after_called == 1
-        assert mocked.call_count == 2
+        # Now behavior changed and it will fail on first callback error
+        with pytest.raises(RuntimeError):
+            assert c.Method(10) == 20
 
-        mocked.reset_mock()
-        assert c.Method(20) == 40
-        assert self.before_called == 2
-        assert self.after_called == 2
+        assert self.before_called == 1
+        assert self.after_called == 0
 
     def testKeyReusedAfterDead(self, monkeypatch):
         self._gotten_key = False
@@ -1021,3 +1015,40 @@ class Test:
         c.Register(partial(Method, "partial"))
         c()
         assert called == ["lambda", "partial"]
+
+    def testCallbackInsideCallback(self):
+        class A(object):
+            c = Callback()
+
+            def __init__(self, **ka):
+                super().__init__(**ka)
+                self.value = 0.0
+                self.other_value = 0.0
+                self.c.Register(self._UpdateBValue)
+
+            def SetValue(self, value):
+                self.value = value
+                self.c(value)
+
+            def _UpdateBValue(self, new_value):
+                self.other_value = new_value / 0  # division by zero
+
+        class B(object):
+            c = Callback()
+
+            def __init__(self, **ka):
+                super().__init__(**ka)
+                self._a = A()
+                self.value = 0.0
+                self.c.Register(self._UpdateAValue)
+
+            def SetValue(self, value):
+                self.value = value
+                self.c(value * 0.1)
+
+            def _UpdateAValue(self, new_value):
+                self._a.SetValue(new_value)
+
+        b = B()
+        with pytest.raises(ZeroDivisionError):
+            b.SetValue(5)
