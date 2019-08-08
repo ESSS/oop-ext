@@ -1,3 +1,7 @@
+0.3.0 (2019-08-08)
+------------------
+
+* Interfaces now support keyword-only arguments.
 
 0.2.4 (2019-03-22)
 ------------------
