@@ -821,3 +821,23 @@ def testErrorOnInterfaceDeclaration():
 
     with pytest.raises(AssertionError):
         Check()
+
+
+def testKeywordOnlyArguments():
+    from oop_ext import interface
+
+    class IFoo(interface.Interface):
+        def foo(self, x, *, active, enabled=True):
+            pass
+
+    @interface.ImplementsInterface(IFoo)
+    class Foo:
+        def foo(self, x, *, enabled=True, active):
+            pass
+
+    with pytest.raises(AssertionError):
+
+        @interface.ImplementsInterface(IFoo)
+        class BadFoo:
+            def foo(self, x, *, active=False, enabled=True):
+                pass

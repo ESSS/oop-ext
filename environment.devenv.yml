@@ -1,9 +1,10 @@
 name: oop-ext
 
 dependencies:
-  - python>=3.6
+  - pre_commit
   - pytest
   - pytest-mock>=1.10
+  - python>=3.6
 
 environment:
   PYTHONPATH:

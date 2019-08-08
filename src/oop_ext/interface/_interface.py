@@ -644,25 +644,24 @@ def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True)
                 msg = msg % (attr_name, class_or_instance, interface)
                 raise BadImplementationError(msg)
 
-    def GetArgSpec(method):
+    def GetSignature(method) -> inspect.Signature:
         """
-            Get the arguments for the method, considering the possibility of instances of Method,
-            in which case, we must obtain the arguments of the instance "__call__" method.
-
-            USER: cache mechanism for coilib50.basic.process
+        Get the inspect.Signature object for the method, considering the possibility of instances of Method,
+        in which case, we must obtain the arguments of the instance "__call__" method.
         """
         if isinstance(method, Method):
-            argspec = inspect.getfullargspec(method.__call__)
+            return inspect.signature(type(method).__call__)
         else:
-            argspec = inspect.getfullargspec(method)
-        assert (not argspec.kwonlyargs) and (
-            not argspec.kwonlydefaults
-        ), "Not supported"
-        return argspec[:4]
+            return inspect.signature(method)
+
+    # methods which use the following signatures always match against interface method checks
+    acceptable_impl_signatures = {
+        inspect.Signature.from_callable(lambda *args, **kwargs: None),
+        inspect.Signature.from_callable(lambda self, *args, **kwargs: None),
+        inspect.Signature.from_callable(lambda cls, *args, **kwargs: None),
+    }
 
     for name in interface_methods:
-        # only check the interface methods (because trying to get all the instance methods is
-        # too slow).
         try:
             cls_method = getattr(class_or_instance, name)
             if not _IsMethod(cls_method, True):
@@ -674,44 +673,20 @@ def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True)
         else:
             interface_method = interface_methods[name]
 
-            c_args, c_varargs, c_varkw, c_defaults = GetArgSpec(cls_method)
+            impl_sig = GetSignature(cls_method)
 
-            if c_varargs is not None and c_varkw is not None:
-                if not c_args or c_args == ["self"] or c_args == ["cls"]:
-                    # Accept the implementor if it matches the signature: (*args, **kwargs)
-                    # Accept the implementor if it matches the signature: (self, *args, **kwargs)
-                    # Accept the implementor if it matches the signature: (cls, *args, **kwargs)
-                    continue
+            if impl_sig in acceptable_impl_signatures:
+                continue
 
-            i_args, i_varargs, i_varkw, i_defaults = GetArgSpec(interface_method)
+            interface_sig = GetSignature(interface_method)
 
-            # Rules:
-            #
-            #   1. Variable arguments or keyword arguments: if present
-            #      in interface, then it MUST be present in class too
-            #
-            #   2. Arguments: names must be the same
-            #
-            #   3. Defaults: for now we assume that default values
-            #      must be the same too
-            mismatch_varargs = i_varargs is not None and c_varargs is None
-            mismatch_varkw = i_varkw is not None and c_varkw is None
-            mismatch_args = i_args != c_args
-            mismatch_defaults = i_defaults != c_defaults
-            if mismatch_varargs or mismatch_varkw or mismatch_args or mismatch_defaults:
-                class_sign = inspect.formatargspec(
-                    c_args, c_varargs, c_varkw, c_defaults
-                )
-                interface_sign = inspect.formatargspec(
-                    i_args, i_varargs, i_varkw, i_defaults
-                )
-                msg = "\nMethod %s.%s signature:\n  %s\ndiffers from defined in interface %s\n  %s"
-                msg = msg % (
-                    classname,
-                    name,
-                    class_sign,
-                    interface.__name__,
-                    interface_sign,
+            if interface_sig != impl_sig:
+                msg = (
+                    f"\n"
+                    f"Method {classname}.{name} signature:\n"
+                    f"  {impl_sig}\n"
+                    f"differs from defined in interface {interface.__name__}\n"
+                    f"  {interface_sig}"
                 )
                 raise BadImplementationError(msg)
 
