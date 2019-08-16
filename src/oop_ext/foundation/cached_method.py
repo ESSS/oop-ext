@@ -5,9 +5,6 @@ from .types_ import Method
 from .weak_ref import WeakMethodRef
 
 
-# ===================================================================================================
-# AbstractCachedMethod
-# ===================================================================================================
 class AbstractCachedMethod(Method):
     """
     Base class for cache-manager.
@@ -73,9 +70,6 @@ class AbstractCachedMethod(Method):
         raise NotImplementedError()
 
 
-# ===================================================================================================
-# CachedMethod
-# ===================================================================================================
 class CachedMethod(AbstractCachedMethod):
     """
         Stores ALL the different results and never delete them.
@@ -98,9 +92,6 @@ class CachedMethod(AbstractCachedMethod):
         return self._results[key]
 
 
-# ===================================================================================================
-# ImmutableParamsCachedMethod
-# ===================================================================================================
 class ImmutableParamsCachedMethod(CachedMethod):
     """
     Expects all parameters to already be immutable
@@ -114,9 +105,6 @@ class ImmutableParamsCachedMethod(CachedMethod):
         return args
 
 
-# ===================================================================================================
-# LastResultCachedMethod
-# ===================================================================================================
 class LastResultCachedMethod(AbstractCachedMethod):
     """
     A cache that stores only the last result.
@@ -142,9 +130,6 @@ class LastResultCachedMethod(AbstractCachedMethod):
         return self._result
 
 
-# ===================================================================================================
-# AttributeBasedCachedMethod
-# ===================================================================================================
 class AttributeBasedCachedMethod(CachedMethod):
     """
     This cached method consider changes in object attributes

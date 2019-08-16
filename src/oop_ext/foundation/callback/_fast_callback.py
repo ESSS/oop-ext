@@ -15,9 +15,6 @@ from ._callback_wrapper import _CallbackWrapper
 log = logging.getLogger(__name__)
 
 
-# ===================================================================================================
-# Callback
-# ===================================================================================================
 class Callback:
     """
     Object that provides a way for others to connect in it and later call it to call

@@ -2,45 +2,30 @@
 import threading
 
 
-# ===================================================================================================
-# SingletonError
-# ===================================================================================================
 class SingletonError(RuntimeError):
     """
     Base class for all Singleton-related exceptions.
     """
 
 
-# ===================================================================================================
-# SingletonAlreadySetError
-# ===================================================================================================
 class SingletonAlreadySetError(SingletonError):
     """
     Trying to set a singleton when the class already have one defined.
     """
 
 
-# ===================================================================================================
-# SingletonNotSetError
-# ===================================================================================================
 class SingletonNotSetError(SingletonError):
     """
     Trying to clear a singleton when there's none defined.
     """
 
 
-# ===================================================================================================
-# PushPopSingletonError
-# ===================================================================================================
 class PushPopSingletonError(SingletonError):
     """
     Trying to set a singleton between a PushSingleton/PopSingleton calls.
     """
 
 
-# ===================================================================================================
-# Singleton
-# ===================================================================================================
 class Singleton:
     """
     Base class for singletons.

@@ -2,9 +2,6 @@
 from ._shortcuts import After, Before, Remove
 
 
-# ===================================================================================================
-# Callbacks
-# ===================================================================================================
 class Callbacks:
     """
     Holds created callbacks, making it easy to disconnect later.

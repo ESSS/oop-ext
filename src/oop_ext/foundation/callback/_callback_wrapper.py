@@ -2,9 +2,6 @@
 from oop_ext.foundation.types_ import Method
 
 
-# ===================================================================================================
-# _CallbackWrapper
-# ===================================================================================================
 class _CallbackWrapper(Method):
     def __init__(self, weak_method_callback):
         self.weak_method_callback = weak_method_callback

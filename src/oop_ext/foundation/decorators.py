@@ -1,16 +1,11 @@
-
+"""
+Collection of decorator with ONLY standard library dependencies.
+"""
 import warnings
 
 from oop_ext.foundation.is_frozen import IsDevelopment
 
-"""
-Collection of decorator with ONLY standard library dependencies.
-"""
 
-
-# ===================================================================================================
-# Override
-# ===================================================================================================
 def Override(method):
     """
     Decorator that marks that a method overrides a method in the superclass.
@@ -52,9 +47,6 @@ def Override(method):
     return Wrapper
 
 
-# ===================================================================================================
-# Implements
-# ===================================================================================================
 def Implements(method):
     """
     Decorator that marks that a method implements a method in some interface.
@@ -100,9 +92,6 @@ def Implements(method):
     return Wrapper
 
 
-# ===================================================================================================
-# Deprecated
-# ===================================================================================================
 def Deprecated(name=None):
     """
     Decorator that marks a method as deprecated.
@@ -145,9 +134,6 @@ def Deprecated(name=None):
     return DeprecatedDecorator
 
 
-# ===================================================================================================
-# Abstract
-# ===================================================================================================
 def Abstract(func):
     '''
     Decorator to make methods 'abstract', which are meant to be overwritten in subclasses. If some

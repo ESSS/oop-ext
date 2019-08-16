@@ -2,9 +2,6 @@
 from ._interface import Interface
 
 
-# ===================================================================================================
-# IAdaptable
-# ===================================================================================================
 class IAdaptable(Interface):
     """
         An interface for an object that is adaptable.

@@ -8,9 +8,6 @@ from oop_ext.foundation.types_ import Null
 from oop_ext.foundation.weak_ref import GetWeakProxy, WeakMethodProxy, WeakMethodRef
 
 
-# ===================================================================================================
-# _MyClass
-# ===================================================================================================
 class _MyClass:
     def SetAlpha(self, value):
         self.alpha = value
@@ -51,9 +48,6 @@ def restore_test_classes():
     C.foo = original_c_foo
 
 
-# ===================================================================================================
-# Test
-# ===================================================================================================
 class Test:
     def setup_method(self, method):
         self.foo_called = None
