@@ -321,7 +321,7 @@ def testCallbackAndInterfaces():
     AssertImplements(o, _InterfM1)  # Not raises BadImplementationError
 
 
-def testInterfaceStub():
+def testInterfaceStubFromClasses():
     @ImplementsInterface(_InterfM1)
     class My:
         def m1(self):
@@ -340,6 +340,27 @@ def testInterfaceStub():
         getattr(m1, "m2")
 
     _InterfM1(m1)  # Not raise BadImplementationError
+
+
+def testStubsFromInstances():
+    """Check that creating interface stubs (``foo = IFoo(foo)``) work as expected"""
+
+    class IFoo(Interface):
+        def foo(self):
+            ...
+
+    class Foo:
+        def foo(self):
+            return 10
+
+        def bar(self):
+            pass
+
+    stub = IFoo(Foo())
+    assert stub.foo() == 10
+
+    with pytest.raises(AttributeError):
+        stub.bar()
 
 
 def testIsImplementationWithSubclasses():
@@ -430,12 +451,10 @@ def testClassImplementMethod():
 
     m = My()
     m.m1 = MyWrongMethod()
-    r = _IsImplementationFullChecking(m, _InterfM1)
-    assert r == False
+    assert not _IsImplementationFullChecking(m, _InterfM1)
 
     m.m1 = MyRightMethod()
-    r = _IsImplementationFullChecking(m, _InterfM1)
-    assert r == True
+    assert _IsImplementationFullChecking(m, _InterfM1)
 
     del m.m1
     assert IsImplementation(m, _InterfM1) == True

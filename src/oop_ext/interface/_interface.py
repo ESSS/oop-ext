@@ -566,7 +566,6 @@ def _IsMethod(member, include_functions):
             2) Functions (if include_functions is True)
             3) instances of Method (should it be implementors of "IMethod"?)
 
-        USER: cache mechanism for coilib50.basic.process
     """
     if include_functions and inspect.isfunction(member):
         return True
@@ -661,10 +660,12 @@ def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True)
         inspect.Signature.from_callable(lambda cls, *args, **kwargs: None),
     }
 
+    class_ = _GetClassForInterfaceChecking(class_or_instance)
+
     for name in interface_methods:
         try:
-            cls_method = getattr(class_or_instance, name)
-            if not _IsMethod(cls_method, True):
+            cls_or_obj_method = getattr(class_or_instance, name)
+            if not _IsMethod(cls_or_obj_method, True):
                 raise AttributeError
 
         except AttributeError:
@@ -672,6 +673,10 @@ def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True)
             raise BadImplementationError(msg % (name, classname, interface.__name__))
         else:
             interface_method = interface_methods[name]
+
+            # get the signature from the class because inspect.signature for bound methods
+            # doesn't include "self"
+            cls_method = getattr(class_, name)
 
             impl_sig = GetSignature(cls_method)
 
