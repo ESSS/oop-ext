@@ -1,3 +1,13 @@
+0.3.1 (2019-08-16)
+------------------
+
+* Fix mismatching signatures when creating "interface stubs" for instances:
+
+  .. code-block:: python
+
+      foo = IFoo(Foo())
+
+
 0.3.0 (2019-08-08)
 ------------------
 
