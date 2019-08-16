@@ -697,30 +697,6 @@ def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True)
 
 
 # ===================================================================================================
-# PROFILING FOR ASSERT IMPLEMENTS
-
-# NOTE: There was code here for profiling AssertImplements in revisions prior to 2013-03-19.
-#       That code can be useful for seeing where exactly it is being slow.
-# ===================================================================================================
-
-
-class _IfGuard:
-    """
-    Guard that raises an error if an attempt to convert it to a boolean value is made.
-    """
-
-    def __bool__(self):
-        raise RuntimeError(
-            "Invalid attempt to test interface.ImplementsInterface(). Did you mean interface.IsImplementation()?"
-        )
-
-
-__IF_GUARD = _IfGuard()
-
-DEBUG = False
-
-
-# ===================================================================================================
 # ImplementsInterface
 # ===================================================================================================
 def ImplementsInterface(*interfaces, **kwargs):
