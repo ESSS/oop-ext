@@ -2,9 +2,6 @@
 from ._fast_callback import Callback
 
 
-# ===================================================================================================
-# SingleCallCallback
-# ===================================================================================================
 class SingleCallCallback:
     """
     Callback-like implementation used for a callback to which __call__ is called only once (and

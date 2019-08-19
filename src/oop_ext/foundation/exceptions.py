@@ -1,8 +1,3 @@
-
-
-# ===================================================================================================
-# ExceptionToUnicode
-# ===================================================================================================
 def ExceptionToUnicode(exception):
     """
     Python 3 exception handling already deals with string error messages. Here we

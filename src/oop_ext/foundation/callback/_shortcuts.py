@@ -8,9 +8,6 @@ from ._callback_wrapper import _CallbackWrapper
 from ._fast_callback import Callback, GetClassForUnboundMethod
 
 
-# ===================================================================================================
-# _CreateBeforeOrAfter
-# ===================================================================================================
 def _CreateBeforeOrAfter(method, callback, sender_as_parameter, before=True):
 
     wrapper = WrapForCallback(method)
@@ -38,9 +35,6 @@ def _CreateBeforeOrAfter(method, callback, sender_as_parameter, before=True):
     return wrapper
 
 
-# ===================================================================================================
-# Before
-# ===================================================================================================
 def Before(method, callback, sender_as_parameter=False):
     """
         Registers the given callback to be executed before the given method is called, with the
@@ -57,9 +51,6 @@ def Before(method, callback, sender_as_parameter=False):
     return _CreateBeforeOrAfter(method, callback, sender_as_parameter)
 
 
-# ===================================================================================================
-# After
-# ===================================================================================================
 def After(method, callback, sender_as_parameter=False):
     """
         Registers the given callbacks to be execute after the given method is called, with the same
@@ -76,9 +67,6 @@ def After(method, callback, sender_as_parameter=False):
     return _CreateBeforeOrAfter(method, callback, sender_as_parameter, before=False)
 
 
-# ===================================================================================================
-# Remove
-# ===================================================================================================
 def Remove(method, callback):
     """
         Removes the given callback from a method previously connected using after or before.
@@ -90,9 +78,6 @@ def Remove(method, callback):
     return False
 
 
-# ===================================================================================================
-# Implementation Details
-# ===================================================================================================
 class _MethodWrapper(
     Method
 ):  # It needs to be a subclass of Method for interface checks.
@@ -168,9 +153,6 @@ class _MethodWrapper(
         return result
 
 
-# ===================================================================================================
-# _GetWrapped
-# ===================================================================================================
 def _GetWrapped(method):
     """
         Returns true if the given method is already wrapped.
@@ -183,9 +165,6 @@ def _GetWrapped(method):
         return None
 
 
-# ===================================================================================================
-# WrapForCallback
-# ===================================================================================================
 def WrapForCallback(method):
     """Generates a wrapper for the given method, or returns the method itself
     if it is already a wrapper.

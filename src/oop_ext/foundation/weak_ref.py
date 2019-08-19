@@ -1,4 +1,3 @@
-
 import inspect
 import weakref
 from types import LambdaType, MethodType
@@ -6,9 +5,6 @@ from types import LambdaType, MethodType
 from oop_ext.foundation.decorators import Implements
 
 
-# ===================================================================================================
-# WeakList
-# ===================================================================================================
 class WeakList:
     """
     The weak list is a list that will only keep weak-references to objects passed to it.
@@ -99,9 +95,6 @@ class WeakList:
         return "\n".join(str(x) for x in self)
 
 
-# ===================================================================================================
-# WeakMethodRef
-# ===================================================================================================
 class WeakMethodRef:
     """
         Weak reference to bound-methods. This allows the client to hold a bound method
@@ -186,9 +179,6 @@ class WeakMethodRef:
             return "<WeakMethodRef to %s>" % func_name
 
 
-# ===================================================================================================
-# WeakMethodProxy
-# ===================================================================================================
 class WeakMethodProxy(WeakMethodRef):
     """
         Like ref, but calling it will cause the referent method to be called with the same
@@ -214,9 +204,6 @@ class WeakMethodProxy(WeakMethodRef):
             return False
 
 
-# ===================================================================================================
-# WeakSet
-# ===================================================================================================
 class WeakSet:
     """
     Just like `weakref.WeakSet`, but supports adding methods (the standard `weakref.WeakSet` can't
@@ -291,9 +278,6 @@ class WeakSet:
         return "\n".join(str(x) for x in self)
 
 
-# ===================================================================================================
-# IsWeakProxy
-# ===================================================================================================
 def IsWeakProxy(obj):
     """
     Returns whether the given object is a weak-proxy
@@ -301,9 +285,6 @@ def IsWeakProxy(obj):
     return isinstance(obj, (weakref.ProxyType, WeakMethodProxy))
 
 
-# ===================================================================================================
-# IsWeakRef
-# ===================================================================================================
 def IsWeakRef(obj):
     """
         Returns wheter ths given object is a weak-reference.
@@ -313,9 +294,6 @@ def IsWeakRef(obj):
     )
 
 
-# ===================================================================================================
-# IsWeakObj
-# ===================================================================================================
 def IsWeakObj(obj):
     """
     Returns whether the given object is a weak object. Either a weak-proxy or a weak-reference.
@@ -326,9 +304,6 @@ def IsWeakObj(obj):
     return IsWeakProxy(obj) or IsWeakRef(obj)
 
 
-# ===================================================================================================
-# GetRealObj
-# ===================================================================================================
 def GetRealObj(obj):
     """
     Returns the real-object from a weakref, or the object itself otherwise.
@@ -340,9 +315,6 @@ def GetRealObj(obj):
     return obj
 
 
-# ===================================================================================================
-# GetWeakProxy
-# ===================================================================================================
 def GetWeakProxy(obj):
     """
     :param obj: This is the object we want to get as a proxy
@@ -371,9 +343,6 @@ def GetWeakProxy(obj):
 _EMPTY_LAMBDA = lambda: None
 
 
-# ===================================================================================================
-# GetWeakRef
-# ===================================================================================================
 def GetWeakRef(obj):
     """
     :type obj: this is the object we want to get as a weak ref
@@ -397,9 +366,6 @@ def GetWeakRef(obj):
     return obj
 
 
-# ===================================================================================================
-# IsSame
-# ===================================================================================================
 def IsSame(o1, o2):
     """
         This checks for the identity even if one of the parameters is a weak reference

@@ -5,9 +5,6 @@ from oop_ext.foundation.odict import odict
 from ._fast_callback import Callback
 
 
-# ===================================================================================================
-# PriorityCallback
-# ===================================================================================================
 class PriorityCallback(Callback):
     """
     Class that's able to give a priority to the added callbacks when they're registered.

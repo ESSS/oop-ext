@@ -43,23 +43,14 @@ from oop_ext.foundation.is_frozen import IsDevelopment
 from oop_ext.foundation.types_ import Method
 
 
-# ===================================================================================================
-# InterfaceError
-# ===================================================================================================
 class InterfaceError(RuntimeError):
     pass
 
 
-# ===================================================================================================
-# BadImplementationError
-# ===================================================================================================
 class BadImplementationError(InterfaceError):
     pass
 
 
-# ===================================================================================================
-# InterfaceImplementationMetaClass
-# ===================================================================================================
 class InterfaceImplementationMetaClass(type):
     def __new__(cls, name, bases, dct):
         C = type.__new__(cls, name, bases, dct)
@@ -70,9 +61,6 @@ class InterfaceImplementationMetaClass(type):
         return C
 
 
-# ===================================================================================================
-# InterfaceImplementorStub
-# ===================================================================================================
 class InterfaceImplementorStub:
     """
         A helper for acting as a stub for some object (in this way, we're only able to access
@@ -135,9 +123,6 @@ class InterfaceImplementorStub:
         return self.__wrapped.__call__(*args, **kwargs)
 
 
-# ===================================================================================================
-# Interface
-# ===================================================================================================
 class Interface:
     """Base class for interfaces.
 
@@ -177,9 +162,6 @@ class Interface:
                 return InterfaceImplementorStub(class_, cls)
 
 
-# ===================================================================================================
-# _GetClassForInterfaceChecking
-# ===================================================================================================
 def _GetClassForInterfaceChecking(class_or_instance):
     if _IsClass(class_or_instance):
         return class_or_instance  # is class
@@ -195,9 +177,6 @@ def _IsClass(obj):
     return isinstance(obj, type)
 
 
-# ===================================================================================================
-# IsImplementation
-# ===================================================================================================
 def IsImplementation(class_or_instance, interface):
     """
     :type class_or_instance: type or classobj or object
@@ -224,9 +203,6 @@ def IsImplementation(class_or_instance, interface):
     return is_implementation
 
 
-# ===================================================================================================
-# IsImplementationOfAny
-# ===================================================================================================
 def IsImplementationOfAny(class_or_instance, interfaces):
     """
     Check if the class or instance implements any of the given interfaces
@@ -246,9 +222,6 @@ def IsImplementationOfAny(class_or_instance, interfaces):
     return False
 
 
-# ===================================================================================================
-# AssertImplements
-# ===================================================================================================
 def AssertImplements(class_or_instance, interface):
     """
     If given a class, will try to match the class against a given interface. If given an object
@@ -281,9 +254,6 @@ def AssertImplements(class_or_instance, interface):
     assert is_implementation, reason
 
 
-# ===================================================================================================
-# __ResultsCache
-# ===================================================================================================
 class __ResultsCache:
     def __init__(self):
         self._cache = {}
@@ -303,9 +273,6 @@ __ImplementsCache = __ResultsCache()
 __ImplementedInterfacesCache = __ResultsCache()
 
 
-# ===================================================================================================
-# _CheckIfClassImplements
-# ===================================================================================================
 def _CheckIfClassImplements(class_, interface):
     """
     :type class_: type or classobj
@@ -359,9 +326,6 @@ def _CheckIfClassImplements(class_, interface):
     return result
 
 
-# ===================================================================================================
-# _IsImplementationFullChecking
-# ===================================================================================================
 def _IsImplementationFullChecking(class_or_instance, interface):
     """
     Used internally by Attribute.
@@ -386,9 +350,6 @@ def _IsImplementationFullChecking(class_or_instance, interface):
         return True
 
 
-# ===================================================================================================
-# Attribute
-# ===================================================================================================
 class Attribute:
     """
     """
@@ -448,9 +409,6 @@ class Attribute:
         return (False, None)
 
 
-# ===================================================================================================
-# ReadOnlyAttribute
-# ===================================================================================================
 class ReadOnlyAttribute(Attribute):
     """
     This is an attribute that should be treated as read-only (note that usually this means that
@@ -458,9 +416,6 @@ class ReadOnlyAttribute(Attribute):
     """
 
 
-# ===================================================================================================
-# CacheInterfaceAttrs
-# ===================================================================================================
 class CacheInterfaceAttrs:
     """
     Cache for holding the attrs for a given interface (separated by attrs and methods).
@@ -556,9 +511,6 @@ class CacheInterfaceAttrs:
 cache_interface_attrs = CacheInterfaceAttrs()
 
 
-# ===================================================================================================
-# _IsMethod
-# ===================================================================================================
 def _IsMethod(member, include_functions):
     """
         Consider method the following:
@@ -576,17 +528,11 @@ def _IsMethod(member, include_functions):
     return False
 
 
-# ===================================================================================================
-# AssertImplementsFullChecking
-# ===================================================================================================
 @Deprecated(AssertImplements)
 def AssertImplementsFullChecking(class_or_instance, interface, check_attr=True):
     return AssertImplements(class_or_instance, interface)
 
 
-# ===================================================================================================
-# _AssertImplementsFullChecking
-# ===================================================================================================
 def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True):
     """
     Used internally.
@@ -696,33 +642,6 @@ def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True)
                 raise BadImplementationError(msg)
 
 
-# ===================================================================================================
-# PROFILING FOR ASSERT IMPLEMENTS
-
-# NOTE: There was code here for profiling AssertImplements in revisions prior to 2013-03-19.
-#       That code can be useful for seeing where exactly it is being slow.
-# ===================================================================================================
-
-
-class _IfGuard:
-    """
-    Guard that raises an error if an attempt to convert it to a boolean value is made.
-    """
-
-    def __bool__(self):
-        raise RuntimeError(
-            "Invalid attempt to test interface.ImplementsInterface(). Did you mean interface.IsImplementation()?"
-        )
-
-
-__IF_GUARD = _IfGuard()
-
-DEBUG = False
-
-
-# ===================================================================================================
-# ImplementsInterface
-# ===================================================================================================
 def ImplementsInterface(*interfaces, **kwargs):
     """
     Make sure a class implements the given interfaces. Must be used in as class decorator:
@@ -822,9 +741,6 @@ def ImplementsInterface(*interfaces, **kwargs):
     return Check()
 
 
-# ===================================================================================================
-# DeclareClassImplements
-# ===================================================================================================
 def DeclareClassImplements(class_, *interfaces):
     """
     This is a way to tell, from outside of the class, that a given :arg class_: implements the
@@ -872,9 +788,6 @@ def DeclareClassImplements(class_, *interfaces):
         raise
 
 
-# ===================================================================================================
-# _GetMROForOldStyleClass
-# ===================================================================================================
 def _GetMROForOldStyleClass(class_):
     """
     :type class_: classobj
@@ -897,9 +810,6 @@ def _GetMROForOldStyleClass(class_):
     return mro
 
 
-# ===================================================================================================
-# _GetClassImplementedInterfaces
-# ===================================================================================================
 def _GetClassImplementedInterfaces(class_):
     cache = __ImplementedInterfacesCache
     result = cache.GetResult(class_)
@@ -926,9 +836,6 @@ def _GetClassImplementedInterfaces(class_):
     return result
 
 
-# ===================================================================================================
-# GetImplementedInterfaces
-# ===================================================================================================
 def GetImplementedInterfaces(class_or_object):
     """
    :rtype: frozenset([interfaces])
@@ -941,9 +848,6 @@ def GetImplementedInterfaces(class_or_object):
     return _GetClassImplementedInterfaces(class_)
 
 
-# ===================================================================================================
-# _IsInterfaceDeclared
-# ===================================================================================================
 def _IsInterfaceDeclared(class_, interface):
     """
         :type interface: Interface or iterable(Interface)
@@ -990,17 +894,6 @@ def _IsInterfaceDeclared(class_, interface):
         return bool(set(interface).intersection(declared_and_subclasses))
 
 
-# ===================================================================================================
-# PROFILING FOR IsInterfaceDeclared
-
-# NOTE: There was code here for profiling IsInterfaceDeclared in revisions prior to 2013-03-19.
-#       That code can be useful for seeing where exactly it is being called.
-# ===================================================================================================
-
-
-# ===================================================================================================
-# AssertDeclaresInterface
-# ===================================================================================================
 @Deprecated(AssertImplements)
 def AssertDeclaresInterface(class_or_instance, interface):
     return AssertImplements(class_or_instance, interface)

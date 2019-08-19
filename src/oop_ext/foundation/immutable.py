@@ -1,4 +1,3 @@
-
 """
     Defines types and functions to generate immutable structures.
 
@@ -9,9 +8,6 @@ _IMMUTABLE_TYPES = {float, str, bytes, bool, type(None)}
 _IMMUTABLE_TYPES.update({int})
 
 
-# ===================================================================================================
-# RegisterAsImmutable
-# ===================================================================================================
 def RegisterAsImmutable(immutable_type):
     """
     Registers the given class as being immutable. This makes it be immutable for this module and
@@ -28,9 +24,6 @@ def RegisterAsImmutable(immutable_type):
     copy._copy_dispatch[immutable_type] = copy._copy_immutable
 
 
-# ===================================================================================================
-# AsImmutable
-# ===================================================================================================
 def AsImmutable(value, return_str_if_not_expected=True):
     """
     Returns the given instance as a immutable object:
@@ -92,9 +85,6 @@ def AsImmutable(value, return_str_if_not_expected=True):
         raise RuntimeError("Cannot make %s immutable (not supported)." % value)
 
 
-# ===================================================================================================
-# ImmutableDict
-# ===================================================================================================
 class ImmutableDict(dict):
     """A hashable dict."""
 
@@ -158,9 +148,6 @@ class ImmutableDict(dict):
         return (ImmutableDict, (list(self.items()),))
 
 
-# ===================================================================================================
-# IdentityHashableRef
-# ===================================================================================================
 class IdentityHashableRef:
     """
     Represents a immutable reference to an object.
