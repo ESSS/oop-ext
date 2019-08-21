@@ -1,4 +1,4 @@
-
+import re
 import textwrap
 
 import pytest
@@ -18,6 +18,7 @@ from oop_ext.interface import (
     IsImplementation,
     ReadOnlyAttribute,
 )
+from oop_ext import interface
 
 
 class _InterfM1(Interface):
@@ -795,7 +796,6 @@ def test_interface_subclass_mocked(mocker, check_before, autospec):
     :type check_before: bool
     :type autospec: bool
     """
-    from oop_ext import interface
 
     class II(interface.Interface):
         def foo(self, a, b, c):
@@ -818,21 +818,16 @@ def test_interface_subclass_mocked(mocker, check_before, autospec):
 
 
 def testErrorOnInterfaceDeclaration():
-    def Check():
+
+    with pytest.raises(AssertionError):
+
         class Foo:
             pass
 
-        from oop_ext import interface
-
         interface.ImplementsInterface(_InterfM1)(Foo)
-
-    with pytest.raises(AssertionError):
-        Check()
 
 
 def testKeywordOnlyArguments():
-    from oop_ext import interface
-
     class IFoo(interface.Interface):
         def foo(self, x, *, active, enabled=True):
             pass
@@ -847,4 +842,28 @@ def testKeywordOnlyArguments():
         @interface.ImplementsInterface(IFoo)
         class BadFoo:
             def foo(self, x, *, active=False, enabled=True):
+                pass
+
+
+def testHashableArgumentsInterface():
+
+    expected = "Method IFoo.foo contains unhashable arguments:\n" "(self, x=[])"
+    with pytest.raises(TypeError, match=re.escape(expected)):
+
+        class IFoo(interface.Interface):
+            def foo(self, x=[]):
+                pass
+
+
+def testHashableArgumentsImplementation():
+    class IFoo(interface.Interface):
+        def foo(self, x=()):
+            pass
+
+    expected = "Implementation Foo.foo contains unhashable arguments:\n" "(self, x=[])"
+    with pytest.raises(TypeError, match=re.escape(expected)):
+
+        @interface.ImplementsInterface(IFoo)
+        class Foo:
+            def foo(self, x=[]):
                 pass

@@ -130,7 +130,7 @@ class Interface:
     """
 
     # : instance to check if we are receiving an argument during __new__
-    _SENTINEL = []
+    _SENTINEL = object()
 
     def __new__(cls, class_=_SENTINEL):
         # if no class is given, raise InterfaceError('trying to instantiate interface')
@@ -160,6 +160,20 @@ class Interface:
                 # We're doing something as Interface(InterfaceImpl()) -- instancing
                 _AssertImplementsFullChecking(class_, cls, check_attr=True)
                 return InterfaceImplementorStub(class_, cls)
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+
+        for name in dir(cls):
+            obj = getattr(cls, name)
+            if _IsMethod(obj):
+                sig = inspect.signature(obj)
+                try:
+                    hash(sig)
+                except TypeError:
+                    raise TypeError(
+                        f"Method {cls.__name__}.{name} contains unhashable arguments:\n{sig}"
+                    ) from None
 
 
 def _GetClassForInterfaceChecking(class_or_instance):
@@ -531,6 +545,10 @@ def AssertImplementsFullChecking(class_or_instance, interface, check_attr=True):
     return AssertImplements(class_or_instance, interface)
 
 
+# set of methods that might be declared in interfaces but should be not be required by implementations
+_INTERFACE_METHODS_TO_IGNORE = {"__init_subclass__"}
+
+
 def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True):
     """
     Used internally.
@@ -607,6 +625,8 @@ def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True)
     class_ = _GetClassForInterfaceChecking(class_or_instance)
 
     for name in interface_methods:
+        if name in _INTERFACE_METHODS_TO_IGNORE:
+            continue
         try:
             cls_or_obj_method = getattr(class_or_instance, name)
             if not _IsMethod(cls_or_obj_method):
@@ -623,6 +643,13 @@ def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True)
             cls_method = getattr(class_, name)
 
             impl_sig = GetSignature(cls_method)
+
+            try:
+                hash(impl_sig)
+            except TypeError:
+                raise TypeError(
+                    f"Implementation {class_.__name__}.{name} contains unhashable arguments:\n{impl_sig}"
+                )
 
             if impl_sig in acceptable_impl_signatures:
                 continue
