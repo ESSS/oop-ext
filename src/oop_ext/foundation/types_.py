@@ -113,10 +113,6 @@ class Null:
         "Null objects are always false"
         return False
 
-    def __nonzero__(self):
-        # Py 2 compatibility
-        return self.__bool__()
-
     # iter
 
     def __iter__(self):
@@ -127,13 +123,13 @@ class Null:
         "Stop the iteration right now"
         raise StopIteration()
 
-    def next(self):
-        # Py 2 compatibility
-        return self.__next__()
-
     def __eq__(self, o):
         "It is just equal to another Null object."
         return self.__class__ == o.__class__
+
+    def __hash__(self):
+        """Null is hashable"""
+        return 0
 
 
 NULL = Null()  # Create a default instance to be used.

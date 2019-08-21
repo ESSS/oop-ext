@@ -4,6 +4,8 @@
 * Interface and implementation methods can no longer contain mutable defaults, as this is considered
   a bad practice in general.
 
+* ``Null`` instances are now hashable.
+
 
 0.3.1 (2019-08-16)
 ------------------
