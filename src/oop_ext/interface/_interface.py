@@ -480,7 +480,7 @@ class CacheInterfaceAttrs:
             if type(val) in self._ATTRIBUTE_CLASSES:
                 interface_attrs[attr] = val
 
-            if _IsMethod(val, include_functions=True):
+            if _IsMethod(val):
                 interface_methods[attr] = val
 
         return interface_methods, interface_attrs
@@ -511,21 +511,19 @@ class CacheInterfaceAttrs:
 cache_interface_attrs = CacheInterfaceAttrs()
 
 
-def _IsMethod(member, include_functions):
+def _IsMethod(member):
     """
         Consider method the following:
             1) Methods
-            2) Functions (if include_functions is True)
+            2) Functions
             3) instances of Method (should it be implementors of "IMethod"?)
 
     """
-    if include_functions and inspect.isfunction(member):
-        return True
-    elif inspect.ismethod(member):
-        return True
-    elif isinstance(member, Method):
-        return True
-    return False
+    return (
+        inspect.isfunction(member)
+        or inspect.ismethod(member)
+        or isinstance(member, Method)
+    )
 
 
 @Deprecated(AssertImplements)
@@ -611,7 +609,7 @@ def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True)
     for name in interface_methods:
         try:
             cls_or_obj_method = getattr(class_or_instance, name)
-            if not _IsMethod(cls_or_obj_method, True):
+            if not _IsMethod(cls_or_obj_method):
                 raise AttributeError
 
         except AttributeError:
