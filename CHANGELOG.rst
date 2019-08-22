@@ -1,4 +1,4 @@
-0.3.2 (2019-08-21)
+0.3.2 (2019-08-22)
 ------------------
 
 * Interface and implementation methods can no longer contain mutable defaults, as this is considered
