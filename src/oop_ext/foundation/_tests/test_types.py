@@ -53,6 +53,8 @@ def testNull():
     assert n != 1
     assert n == dummy
 
+    assert hash(Null()) == hash(Null())
+
 
 def testNullCopy():
     n = Null()

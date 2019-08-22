@@ -130,7 +130,7 @@ class Interface:
     """
 
     # : instance to check if we are receiving an argument during __new__
-    _SENTINEL = []
+    _SENTINEL = object()
 
     def __new__(cls, class_=_SENTINEL):
         # if no class is given, raise InterfaceError('trying to instantiate interface')
@@ -160,6 +160,20 @@ class Interface:
                 # We're doing something as Interface(InterfaceImpl()) -- instancing
                 _AssertImplementsFullChecking(class_, cls, check_attr=True)
                 return InterfaceImplementorStub(class_, cls)
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+
+        for name in dir(cls):
+            obj = getattr(cls, name)
+            if _IsMethod(obj):
+                sig = inspect.signature(obj)
+                try:
+                    hash(sig)
+                except TypeError:
+                    raise TypeError(
+                        f"Method {cls.__name__}.{name} contains unhashable arguments:\n{sig}"
+                    ) from None
 
 
 def _GetClassForInterfaceChecking(class_or_instance):
@@ -480,7 +494,7 @@ class CacheInterfaceAttrs:
             if type(val) in self._ATTRIBUTE_CLASSES:
                 interface_attrs[attr] = val
 
-            if _IsMethod(val, include_functions=True):
+            if _IsMethod(val):
                 interface_methods[attr] = val
 
         return interface_methods, interface_attrs
@@ -511,26 +525,28 @@ class CacheInterfaceAttrs:
 cache_interface_attrs = CacheInterfaceAttrs()
 
 
-def _IsMethod(member, include_functions):
+def _IsMethod(member):
     """
         Consider method the following:
             1) Methods
-            2) Functions (if include_functions is True)
+            2) Functions
             3) instances of Method (should it be implementors of "IMethod"?)
 
     """
-    if include_functions and inspect.isfunction(member):
-        return True
-    elif inspect.ismethod(member):
-        return True
-    elif isinstance(member, Method):
-        return True
-    return False
+    return (
+        inspect.isfunction(member)
+        or inspect.ismethod(member)
+        or isinstance(member, Method)
+    )
 
 
 @Deprecated(AssertImplements)
 def AssertImplementsFullChecking(class_or_instance, interface, check_attr=True):
     return AssertImplements(class_or_instance, interface)
+
+
+# set of methods that might be declared in interfaces but should be not be required by implementations
+_INTERFACE_METHODS_TO_IGNORE = {"__init_subclass__"}
 
 
 def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True):
@@ -609,9 +625,11 @@ def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True)
     class_ = _GetClassForInterfaceChecking(class_or_instance)
 
     for name in interface_methods:
+        if name in _INTERFACE_METHODS_TO_IGNORE:
+            continue
         try:
             cls_or_obj_method = getattr(class_or_instance, name)
-            if not _IsMethod(cls_or_obj_method, True):
+            if not _IsMethod(cls_or_obj_method):
                 raise AttributeError
 
         except AttributeError:
@@ -625,6 +643,13 @@ def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True)
             cls_method = getattr(class_, name)
 
             impl_sig = GetSignature(cls_method)
+
+            try:
+                hash(impl_sig)
+            except TypeError:
+                raise TypeError(
+                    f"Implementation {class_.__name__}.{name} contains unhashable arguments:\n{impl_sig}"
+                )
 
             if impl_sig in acceptable_impl_signatures:
                 continue
