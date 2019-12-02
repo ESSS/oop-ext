@@ -1,3 +1,8 @@
+0.4.0 (2019-12-03)
+==================
+
+* Implementations no longer need to explicitly declare that they declare an interface with ``@ImplementsInterface``: the check is done implicitly (and cached) by `AssertImplements` and equivalent functions.
+
 0.3.2 (2019-08-22)
 ------------------
 

@@ -70,7 +70,8 @@ def testBasics():
     assert IsImplementation(I(C()), I) == True  # OK
 
     assert IsImplementation(C, I) == True  # OK
-    assert IsImplementation(C2, I) == False  # Does not declare
+    # C2 shouldn't need to declare `@ImplementsInterface(I)`
+    assert IsImplementation(C2, I) == True
     assert not IsImplementation(D, I) == True  # nope
 
     assert I(C) is C
@@ -564,15 +565,15 @@ def testAssertImplementsDoesNotDirObject():
 
 def testImplementorWithAny():
     """
-    You must explicitly declare that you implement an Interface.
+    You don't need to explicitly declare that you implement an Interface.
+    This is just a smoke test
     """
 
     class M3:
         def m3(self, *args, **kwargs):
             ""
 
-    with pytest.raises(AssertionError):
-        AssertImplements(M3(), _InterfM3)
+    AssertImplements(M3(), _InterfM3)
 
 
 def testInterfaceCheckRequiresInterface():
@@ -678,21 +679,16 @@ def testDeclareClassImplements():
     with pytest.raises(AssertionError):
         DeclareClassImplements(C0, I1)
 
-    assert IsImplementation(C1, I1) == False
-    with pytest.raises(AssertionError):
-        AssertImplements(C1, I1)
-
-    assert IsImplementation(C12B, I1) == False  # C1 still does not implements I1
+    assert IsImplementation(C1, I1) == True
 
     DeclareClassImplements(C1, I1)
 
     assert IsImplementation(C1, I1) == True
     AssertImplements(C1, I1)
 
-    # C1 is parent of C12B, and, above, it was declared that C1 implements I1, so C12B should
-    # automatically implement I1. But this is not automatic, so you must also declare for it!
-
-    assert IsImplementation(C12B, I1) == False  # not automatic
+    # C1 is parent of C12B, and, above, it was declared that C1 implements I1,
+    # so C12B should automatically implement I1.
+    assert IsImplementation(C12B, I1) == True  # automatic
     assert (
         IsImplementation(C12B, I2) == True
     )  # inheritance for Implements still works automatically

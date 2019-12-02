@@ -317,23 +317,13 @@ def _CheckIfClassImplements(class_, interface):
     from oop_ext.foundation.types_ import Null
 
     if not issubclass(class_, Null):
-        if _IsInterfaceDeclared(class_, interface):
-            # It is required to explicitly declare that the class implements the interface.
-
-            # Since this will only run *once*, a full check is also done here to ensure it is really
-            # implementing.
-            try:
-                _AssertImplementsFullChecking(class_, interface, check_attr=False)
-            except BadImplementationError as e:
-                is_implementation = False
-                from oop_ext.foundation.exceptions import ExceptionToUnicode
-
-                reason = ExceptionToUnicode(e)
-        else:
+        try:
+            _AssertImplementsFullChecking(class_, interface, check_attr=False)
+        except BadImplementationError as e:
             is_implementation = False
-            reason = "The class {} does not declare that it implements the interface {}.".format(
-                class_, interface
-            )
+            from oop_ext.foundation.exceptions import ExceptionToUnicode
+
+            reason = ExceptionToUnicode(e)
 
     result = (is_implementation, reason)
     cache.SetResult((class_, interface), result)
