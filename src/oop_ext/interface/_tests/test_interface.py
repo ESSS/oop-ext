@@ -17,6 +17,7 @@ from oop_ext.interface import (
     InterfaceImplementorStub,
     IsImplementation,
     ReadOnlyAttribute,
+    IsImplementationOfAny,
 )
 from oop_ext import interface
 
@@ -863,3 +864,14 @@ def testHashableArgumentsImplementation():
         class Foo:
             def foo(self, x=[]):
                 pass
+
+
+def testIsImplementationOfAny():
+    class A:
+        def m3(self, arg1, arg2):
+            ""
+
+    a_obj = A()
+    AssertImplements(a_obj, _InterfM3)
+    assert IsImplementationOfAny(A, [_InterfM1, _InterfM2, _InterfM3, _InterfM4])
+    assert not IsImplementationOfAny(A, [_InterfM1, _InterfM2, _InterfM4])

@@ -863,52 +863,6 @@ def GetImplementedInterfaces(class_or_object):
     return _GetClassImplementedInterfaces(class_)
 
 
-def _IsInterfaceDeclared(class_, interface):
-    """
-        :type interface: Interface or iterable(Interface)
-        :param interface:
-            The target interface(s). If multitple interfaces are passed the method will return True
-            if the given class or instance implements any of the given interfaces.
-
-        :rtype: True if the object declares the interface passed and False otherwise. Note that
-        to declare an interface, the class MUST have declared
-
-            >>> ImplementsInterface(Class)
-    """
-    if class_ is None:
-        return False
-
-    is_collection = False
-    if isinstance(interface, (set, list, tuple)):
-        is_collection = True
-        for i in interface:
-            if not issubclass(i, Interface):
-                raise InterfaceError(
-                    "To check against an interface, an interface is required (received: %s -- mro:%s)"
-                    % (interface, interface.__mro__)
-                )
-    elif not issubclass(interface, Interface):
-        raise InterfaceError(
-            "To check against an interface, an interface is required (received: %s -- mro:%s)"
-            % (interface, interface.__mro__)
-        )
-
-    declared_interfaces = GetImplementedInterfaces(class_)
-
-    # This set will include all interfaces (and its subclasses) declared for the given objec
-    declared_and_subclasses = set()
-    for implemented in declared_interfaces:
-        declared_and_subclasses.update(implemented.__mro__)
-
-    # Discarding object (it will always be returned in the mro collection)
-    declared_and_subclasses.discard(object)
-
-    if not is_collection:
-        return interface in declared_and_subclasses
-    else:
-        return bool(set(interface).intersection(declared_and_subclasses))
-
-
 @Deprecated(AssertImplements)
 def AssertDeclaresInterface(class_or_instance, interface):
     return AssertImplements(class_or_instance, interface)
