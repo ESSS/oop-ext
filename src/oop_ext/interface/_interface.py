@@ -317,23 +317,13 @@ def _CheckIfClassImplements(class_, interface):
     from oop_ext.foundation.types_ import Null
 
     if not issubclass(class_, Null):
-        if _IsInterfaceDeclared(class_, interface):
-            # It is required to explicitly declare that the class implements the interface.
-
-            # Since this will only run *once*, a full check is also done here to ensure it is really
-            # implementing.
-            try:
-                _AssertImplementsFullChecking(class_, interface, check_attr=False)
-            except BadImplementationError as e:
-                is_implementation = False
-                from oop_ext.foundation.exceptions import ExceptionToUnicode
-
-                reason = ExceptionToUnicode(e)
-        else:
+        try:
+            _AssertImplementsFullChecking(class_, interface, check_attr=False)
+        except BadImplementationError as e:
             is_implementation = False
-            reason = "The class {} does not declare that it implements the interface {}.".format(
-                class_, interface
-            )
+            from oop_ext.foundation.exceptions import ExceptionToUnicode
+
+            reason = ExceptionToUnicode(e)
 
     result = (is_implementation, reason)
     cache.SetResult((class_, interface), result)
@@ -871,52 +861,6 @@ def GetImplementedInterfaces(class_or_object):
     # we have to build the cache attribute given the name of the class, otherwise setting in a base
     # class before a subclass may give errors.
     return _GetClassImplementedInterfaces(class_)
-
-
-def _IsInterfaceDeclared(class_, interface):
-    """
-        :type interface: Interface or iterable(Interface)
-        :param interface:
-            The target interface(s). If multitple interfaces are passed the method will return True
-            if the given class or instance implements any of the given interfaces.
-
-        :rtype: True if the object declares the interface passed and False otherwise. Note that
-        to declare an interface, the class MUST have declared
-
-            >>> ImplementsInterface(Class)
-    """
-    if class_ is None:
-        return False
-
-    is_collection = False
-    if isinstance(interface, (set, list, tuple)):
-        is_collection = True
-        for i in interface:
-            if not issubclass(i, Interface):
-                raise InterfaceError(
-                    "To check against an interface, an interface is required (received: %s -- mro:%s)"
-                    % (interface, interface.__mro__)
-                )
-    elif not issubclass(interface, Interface):
-        raise InterfaceError(
-            "To check against an interface, an interface is required (received: %s -- mro:%s)"
-            % (interface, interface.__mro__)
-        )
-
-    declared_interfaces = GetImplementedInterfaces(class_)
-
-    # This set will include all interfaces (and its subclasses) declared for the given objec
-    declared_and_subclasses = set()
-    for implemented in declared_interfaces:
-        declared_and_subclasses.update(implemented.__mro__)
-
-    # Discarding object (it will always be returned in the mro collection)
-    declared_and_subclasses.discard(object)
-
-    if not is_collection:
-        return interface in declared_and_subclasses
-    else:
-        return bool(set(interface).intersection(declared_and_subclasses))
 
 
 @Deprecated(AssertImplements)
