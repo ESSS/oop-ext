@@ -73,6 +73,7 @@ def testBasics():
     assert IsImplementation(C, I) == True  # OK
     # C2 shouldn't need to declare `@ImplementsInterface(I)`
     assert IsImplementation(C2, I) == True
+    assert IsImplementation(C2, I, requires_declaration=True) == False
     assert not IsImplementation(D, I) == True  # nope
 
     assert I(C) is C
@@ -587,6 +588,12 @@ def testInterfaceCheckRequiresInterface():
 
     with pytest.raises(InterfaceError):
         IsImplementation(M3(), M3)
+
+    assert IsImplementation(M3(), _InterfM3, requires_declaration=False)
+    assert not IsImplementation(M3(), _InterfM3, requires_declaration=True)
+
+    with pytest.raises(AssertionError):
+        AssertImplements(M3(), _InterfM3, requires_declaration=True)
 
 
 def testReadOnlyAttribute():
