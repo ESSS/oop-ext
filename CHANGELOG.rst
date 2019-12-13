@@ -1,5 +1,10 @@
-0.4.0 (2019-12-03)
+0.5.0 (2019-12-12)
 ==================
+
+* Add optional argument ``requires_declaration`` so users can decide whether or not ``@ImplementsInterface`` declarations are necessary.
+
+0.4.0 (2019-12-03)
+------------------
 
 * Implementations no longer need to explicitly declare that they declare an interface with ``@ImplementsInterface``: the check is done implicitly (and cached) by `AssertImplements` and equivalent functions.
 
