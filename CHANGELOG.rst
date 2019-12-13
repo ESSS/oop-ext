@@ -1,4 +1,4 @@
-0.4.1 (2019-12-12)
+0.5.0 (2019-12-12)
 ==================
 
 * Add optional argument ``requires_declaration`` so users can decide whether or not ``@ImplementsInterface`` declarations are necessary.

@@ -199,7 +199,9 @@ def IsImplementation(class_or_instance, interface, *, requires_declaration=False
 
     :type requires_declaration: bool
         If `True`, the Interface must have been explicitly declared through :py:func:`ImplementsInterface`
-        for `class_or_interface` to be considered an implementation of `interface`
+        for `class_or_interface` to be considered an implementation of `interface`. Alternatively, it's
+        possible to use :py:func:`DeclareClassImplements` from outside the class in order to tell that
+        interfaces are implemented.
 
     :rtype: bool
 
@@ -233,7 +235,9 @@ def IsImplementationOfAny(class_or_instance, interfaces, *, requires_declaration
 
     :type requires_declaration: bool
         If `True`, the Interface must have been explicitly declared through :py:func:`ImplementsInterface`
-        for `class_or_interface` to be considered an implementation of `interface`
+        for `class_or_interface` to be considered an implementation of `interface`. Alternatively, it's
+        possible to use :py:func:`DeclareClassImplements` from outside the class in order to tell that
+        interfaces are implemented.
 
     :rtype: bool
 
@@ -259,7 +263,9 @@ def AssertImplements(class_or_instance, interface, *, requires_declaration=False
 
     :type requires_declaration: bool
         If `True`, the Interface must have been explicitly declared through :py:func:`ImplementsInterface`
-        for `class_or_interface` to be considered an implementation of `interface`
+        for `class_or_interface` to be considered an implementation of `interface`. Alternatively, it's
+        possible to use :py:func:`DeclareClassImplements` from outside the class in order to tell that
+        interfaces are implemented.
 
     :raises BadImplementationError:
         If the object's class does not implement the given :arg interface:.
@@ -312,8 +318,7 @@ def _CheckIfClassImplements(class_, interface, *, requires_declaration=False):
     :type interface: Interface
 
     :type requires_declaration: bool
-        If `True`, the Interface must have been explicitly declared through :py:func:`ImplementsInterface`
-        for `class_or_interface` to be considered an implementation of `interface`
+        See :py:func:`IsImplementation`
 
     :rtype: (bool, str) or (bool, None)
     :returns:
@@ -351,8 +356,9 @@ def _CheckIfClassImplements(class_, interface, *, requires_declaration=False):
         and not _IsInterfaceDeclared(class_, interface)
     ):
         is_implementation = False
-        reason = "The class or object '{}' does not declare that it implements interface '{}'.".format(
-            class_, interface
+        reason = (
+            "The class or object '{}' does not declare that it implements interface '{}' "
+            "and 'requires_declaration' is True.".format(class_, interface)
         )
 
     result = (is_implementation, reason)
@@ -386,27 +392,17 @@ def _IsImplementationFullChecking(class_or_instance, interface):
 
 def _IsInterfaceDeclared(class_, interface):
     """
-    :type interface: Interface or iterable(Interface)
+    :type interface: Interface
     :param interface:
-        The target interface(s). If multitple interfaces are passed the method will return True
-        if the given class or instance implements any of the given interfaces.
-    :rtype: True if the object declares the interface passed and False otherwise. Note that
-    to declare an interface, the class MUST have declared
-        >>> ImplementsInterface(Class)
+        The target interface.
+    :rtype:
+        True if the object declares the interface passed and False otherwise. Note that
+    to declare an interface, the class MUST have declared it with :py:func:`ImplementsInterface`
     """
     if class_ is None:
         return False
 
-    is_collection = False
-    if isinstance(interface, (set, list, tuple)):
-        is_collection = True
-        for i in interface:
-            if not issubclass(i, Interface):
-                raise InterfaceError(
-                    "To check against an interface, an interface is required (received: %s -- mro:%s)"
-                    % (interface, interface.__mro__)
-                )
-    elif not issubclass(interface, Interface):
+    if not issubclass(interface, Interface):
         raise InterfaceError(
             "To check against an interface, an interface is required (received: %s -- mro:%s)"
             % (interface, interface.__mro__)
@@ -414,7 +410,7 @@ def _IsInterfaceDeclared(class_, interface):
 
     declared_interfaces = GetImplementedInterfaces(class_)
 
-    # This set will include all interfaces (and its subclasses) declared for the given objec
+    # This set will include all interfaces (and its subclasses) declared for the given object
     declared_and_subclasses = set()
     for implemented in declared_interfaces:
         declared_and_subclasses.update(implemented.__mro__)
@@ -422,10 +418,7 @@ def _IsInterfaceDeclared(class_, interface):
     # Discarding object (it will always be returned in the mro collection)
     declared_and_subclasses.discard(object)
 
-    if not is_collection:
-        return interface in declared_and_subclasses
-    else:
-        return bool(set(interface).intersection(declared_and_subclasses))
+    return interface in declared_and_subclasses
 
 
 class Attribute:
