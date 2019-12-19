@@ -1,5 +1,10 @@
-0.5.0 (2019-12-12)
+0.5.1 (2019-12-20)
 ==================
+
+* Fixes an issue (#20) where mocked `classmethods` weren't considered a valid method during internal checks.
+
+0.5.0 (2019-12-12)
+------------------
 
 * Add optional argument ``requires_declaration`` so users can decide whether or not ``@ImplementsInterface`` declarations are necessary.
 
