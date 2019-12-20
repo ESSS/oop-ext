@@ -590,10 +590,13 @@ def _IsMethod(member):
             3) instances of Method (should it be implementors of "IMethod"?)
 
     """
+    from unittest import mock
+
     return (
         inspect.isfunction(member)
         or inspect.ismethod(member)
         or isinstance(member, Method)
+        or isinstance(member, mock.MagicMock)
     )
 
 

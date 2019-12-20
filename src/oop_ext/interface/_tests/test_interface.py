@@ -814,11 +814,13 @@ def test_interface_subclass_mocked(mocker, check_before, autospec):
         pass
 
     if check_before:
-        interface.IsImplementation(Bar, II)
+        interface.IsImplementation(Bar, II, requires_declaration=False)
+        interface.IsImplementation(Bar, II, requires_declaration=True)
 
     mocker.patch.object(Foo, "foo", autospec=autospec)
 
-    assert interface.IsImplementation(Bar, II) == (autospec or check_before)
+    assert interface.IsImplementation(Bar, II, requires_declaration=False)
+    assert interface.IsImplementation(Bar, II, requires_declaration=True)
 
 
 def testErrorOnInterfaceDeclaration():
@@ -882,3 +884,23 @@ def testIsImplementationOfAny():
     AssertImplements(a_obj, _InterfM3)
     assert IsImplementationOfAny(A, [_InterfM1, _InterfM2, _InterfM3, _InterfM4])
     assert not IsImplementationOfAny(A, [_InterfM1, _InterfM2, _InterfM4])
+
+
+def testClassMethodBug(mocker):
+    """
+    Issue #20
+    """
+
+    class IFoo(Interface):
+        @classmethod
+        def foo(cls):
+            ""
+
+    @ImplementsInterface(IFoo)
+    class FooImplementation:
+        @classmethod
+        def foo(cls):
+            ""
+
+    mocker.spy(FooImplementation, "foo")
+    AssertImplements(FooImplementation, IFoo, requires_declaration=True)
