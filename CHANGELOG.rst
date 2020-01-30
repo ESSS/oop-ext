@@ -1,5 +1,10 @@
-0.5.1 (2019-12-20)
+0.6.0 (2020-01-31)
 ==================
+
+* Change back the default value of ``requires_declaration`` to ``True`` and fix an error (#22) where the cache wasn 't properly cleared.
+
+0.5.1 (2019-12-20)
+------------------
 
 * Fixes an issue (#20) where mocked `classmethods` weren't considered a valid method during internal checks.
 
