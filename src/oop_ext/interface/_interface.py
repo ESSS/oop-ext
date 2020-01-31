@@ -191,7 +191,7 @@ def _IsClass(obj):
     return isinstance(obj, type)
 
 
-def IsImplementation(class_or_instance, interface, *, requires_declaration=False):
+def IsImplementation(class_or_instance, interface, *, requires_declaration=True):
     """
     :type class_or_instance: type or classobj or object
 
@@ -199,9 +199,11 @@ def IsImplementation(class_or_instance, interface, *, requires_declaration=False
 
     :type requires_declaration: bool
         If `True`, the Interface must have been explicitly declared through :py:func:`ImplementsInterface`
-        for `class_or_interface` to be considered an implementation of `interface`. Alternatively, it's
-        possible to use :py:func:`DeclareClassImplements` from outside the class in order to tell that
-        interfaces are implemented.
+        for `class_or_interface` to be considered an implementation of `interface`. Otherwise it'd only
+        check if `class_or_interface` has all methods defined on `interface`.
+        Note that `class_or_instance` attributes are never evaluated.
+        Alternatively, it's possible to use :py:func:`DeclareClassImplements` from outside the class in
+        order to tell which interfaces are implemented.
 
     :rtype: bool
 
@@ -225,7 +227,7 @@ def IsImplementation(class_or_instance, interface, *, requires_declaration=False
     return is_implementation
 
 
-def IsImplementationOfAny(class_or_instance, interfaces, *, requires_declaration=False):
+def IsImplementationOfAny(class_or_instance, interfaces, *, requires_declaration=True):
     """
     Check if the class or instance implements any of the given interfaces
 
@@ -252,7 +254,7 @@ def IsImplementationOfAny(class_or_instance, interfaces, *, requires_declaration
     return False
 
 
-def AssertImplements(class_or_instance, interface, *, requires_declaration=False):
+def AssertImplements(class_or_instance, interface, *, requires_declaration=True):
     """
     If given a class, will try to match the class against a given interface. If given an object
     (instance), will try to match the class of the given object.
@@ -309,7 +311,7 @@ __ImplementsCache = __ResultsCache()
 __ImplementedInterfacesCache = __ResultsCache()
 
 
-def _CheckIfClassImplements(class_, interface, *, requires_declaration=False):
+def _CheckIfClassImplements(class_, interface, *, requires_declaration=True):
     """
     :type class_: type or classobj
     :param class_:
@@ -863,10 +865,11 @@ def DeclareClassImplements(class_, *interfaces):
     try:
         for interface in interfaces:
             # Forget any previous checks
-            __ImplementsCache.ForgetResult((class_, interface))
+            __ImplementsCache.ForgetResult((class_, interface, False))
+            __ImplementsCache.ForgetResult((class_, interface, True))
             __ImplementedInterfacesCache.ForgetResult(class_)
 
-            AssertImplements(class_, interface)
+            AssertImplements(class_, interface, requires_declaration=False)
     except:
         # Roll back...
         class_.__implements__ = old_implements

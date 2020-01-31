@@ -72,7 +72,7 @@ def testBasics():
 
     assert IsImplementation(C, I) == True  # OK
     # C2 shouldn't need to declare `@ImplementsInterface(I)`
-    assert IsImplementation(C2, I) == True
+    assert IsImplementation(C2, I, requires_declaration=False) == True
     assert IsImplementation(C2, I, requires_declaration=True) == False
     assert not IsImplementation(D, I) == True  # nope
 
@@ -87,7 +87,9 @@ def testBasics():
     # Now declare that C2 implements I
     DeclareClassImplements(C2, I)
 
-    assert IsImplementation(C2, I) == True  # Does not declare
+    assert (
+        IsImplementation(C2, I, requires_declaration=True) == True
+    )  # Even if it doesn't declare
 
 
 def testMissingMethod():
@@ -514,12 +516,16 @@ def testAdaptableInterface():
 
 
 def testNull():
-    AssertImplements(Null(), _InterfM2)  # Not raises BadImplementationError
+    AssertImplements(
+        Null(), _InterfM2, requires_declaration=False
+    )  # Not raises BadImplementationError
 
     class ExtendedNull(Null):
         ""
 
-    AssertImplements(ExtendedNull(), _InterfM2)  # Not raises BadImplementationError
+    AssertImplements(
+        ExtendedNull(), _InterfM2, requires_declaration=False
+    )  # Not raises BadImplementationError
 
 
 def testSetItem():
@@ -575,7 +581,7 @@ def testImplementorWithAny():
         def m3(self, *args, **kwargs):
             ""
 
-    AssertImplements(M3(), _InterfM3)
+    AssertImplements(M3(), _InterfM3, requires_declaration=False)
 
 
 def testInterfaceCheckRequiresInterface():
@@ -687,7 +693,7 @@ def testDeclareClassImplements():
     with pytest.raises(AssertionError):
         DeclareClassImplements(C0, I1)
 
-    assert IsImplementation(C1, I1) == True
+    assert IsImplementation(C1, I1, requires_declaration=False) == True
 
     DeclareClassImplements(C1, I1)
 
@@ -881,9 +887,13 @@ def testIsImplementationOfAny():
             ""
 
     a_obj = A()
-    AssertImplements(a_obj, _InterfM3)
-    assert IsImplementationOfAny(A, [_InterfM1, _InterfM2, _InterfM3, _InterfM4])
-    assert not IsImplementationOfAny(A, [_InterfM1, _InterfM2, _InterfM4])
+    AssertImplements(a_obj, _InterfM3, requires_declaration=False)
+    assert IsImplementationOfAny(
+        A, [_InterfM1, _InterfM2, _InterfM3, _InterfM4], requires_declaration=False
+    )
+    assert not IsImplementationOfAny(
+        A, [_InterfM1, _InterfM2, _InterfM4], requires_declaration=False
+    )
 
 
 def testClassMethodBug(mocker):
