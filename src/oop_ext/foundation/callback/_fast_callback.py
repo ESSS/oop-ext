@@ -275,10 +275,12 @@ class Callback:
             using `Callbacks` instead.
         """
         if IsDevelopment() and hasattr(func, "im_class"):
-            # TODO: Python 3 - This can be removed after deprecating Python 2
-            if not inspect.isclass(getattr(func, "im_class")):
-                msg = "%r object has inconsistent internal attributes and is not compatible with " "Callback.\nim_class = %r\n(If using a MagicMock, remember to pass spec=lambda:None)."
-                raise RuntimeError(msg % (func, getattr(func, "im_class")))
+            msg = (
+                "%r object has inconsistent internal attributes and is not compatible with Callback.\n"
+                "im_class = %r\n"
+                "(If using a MagicMock, remember to pass spec=lambda:None)."
+            )
+            raise RuntimeError(msg % (func, getattr(func, "im_class")))
         if extra_args is not self._EXTRA_ARGS_CONSTANT:
             extra_args = tuple(extra_args)
 
