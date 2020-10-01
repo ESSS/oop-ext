@@ -23,71 +23,73 @@ class Callback:
     Object that provides a way for others to connect in it and later call it to call
     those connected.
 
-    .. note:: This implementation is improved in that it works directly accessing functions based
-    on a key in an ordered dict, so, Register, Unregister and Contains are much faster than the
-    old callback.
+    .. note::
+        This implementation is improved in that it works directly accessing functions based
+        on a key in an ordered dict, so, Register, Unregister and Contains are much faster than the
+        old callback.
 
-    .. note:: it only stores weakrefs to objects connected
+    .. note:: it only stores weakrefs to objects connected.
 
     .. note::
         After an internal refactoring, ``__slots__`` has been added, so, it cannot have
         weakrefs to it (but as it stores weakrefs internally, that shouldn't be a problem).
         If weakrefs are really needed, ``__weakref__`` should be added to the slots.
 
-    Determining kind of callable (Python 3)
-    ---------------------------------------
+    **Determining kind of callable (Python 3)**
 
     Many parts of callback implementation rely on identifying the kind of callable: is it a
     free function? is it a function bound to an object?
 
     Below there is a table to help understand how different objects are classified:
 
-                        |has__self__|has__call__|has__call__self__|isbuiltin|isfunction|ismethod
-    --------------------|-----------|-----------|-----------------|---------|----------|--------
-    free function       |False      |True       |True             |False    |True      |False
-    bound method        |True       |True       |True             |False    |False     |True
-    class method        |True       |True       |True             |False    |False     |True
-    bound class method  |True       |True       |True             |False    |False     |True
-    function object     |False      |True       |True             |False    |False     |False
-    builtin function    |True       |True       |True             |True     |False     |False
-    object              |True       |True       |True             |True     |False     |False
-    custom object       |False      |False      |False            |False    |False     |False
-    string              |False      |False      |False            |False    |False     |False
+    .. code-block::
+
+                            |has__self__|has__call__|has__call__self__|isbuiltin|isfunction|ismethod
+        --------------------|-----------|-----------|-----------------|---------|----------|--------
+        free function       |False      |True       |True             |False    |True      |False
+        bound method        |True       |True       |True             |False    |False     |True
+        class method        |True       |True       |True             |False    |False     |True
+        bound class method  |True       |True       |True             |False    |False     |True
+        function object     |False      |True       |True             |False    |False     |False
+        builtin function    |True       |True       |True             |True     |False     |False
+        object              |True       |True       |True             |True     |False     |False
+        custom object       |False      |False      |False            |False    |False     |False
+        string              |False      |False      |False            |False    |False     |False
 
     where rows are:
 
-    ```python
-    def free_fn(foo):
-        # `free function`
-        pass
+    .. code-block:: python
 
-    class Foo:
-
-        def bound_fn(self, foo):
+        def free_fn(foo):
+            # `free function`
             pass
 
-    class Bar:
+        class Foo:
 
-        @classmethod
-        def class_fn(cls, foo):
-            pass
+            def bound_fn(self, foo):
+                pass
 
-    class ObjectFn:
+        class Bar:
 
-        def __call__(self, foo):
-            pass
+            @classmethod
+            def class_fn(cls, foo):
+                pass
 
-    foo = Foo()  # foo is `custom object`, foo.bound_fn is `bound method`
-    bar = Bar()  # Bar.class_fn is `class method`, bar.class_fn is `bound class method`
+        class ObjectFn:
 
-    object_fn = ObjectFn()  # `function object`
+            def __call__(self, foo):
+                pass
 
-    obj = object()  # `object`
-    string = 'foo'  # `string`
-    builtin_fn = string.split  # `builtin function`
-    ```
+        foo = Foo()  # foo is `custom object`, foo.bound_fn is `bound method`
+        bar = Bar()  # Bar.class_fn is `class method`, bar.class_fn is `bound class method`
 
-    and where columns are:
+        object_fn = ObjectFn()  # `function object`
+
+        obj = object()  # `object`
+        string = 'foo'  # `string`
+        builtin_fn = string.split  # `builtin function`
+
+    And where columns are:
 
     * isbuiltin: inspect.isbuiltin
     * isfunction: inspect.isfunction

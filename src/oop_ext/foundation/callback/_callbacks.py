@@ -8,8 +8,26 @@ class Callbacks:
     """
     Holds created callbacks, making it easy to disconnect later.
 
-    Note: keeps a strong reference to the callback and the sender, thus, they won't be garbage-
-    collected while still connected in this case.
+    This class provides two methods of operation:
+
+    * :meth:`Before` and :meth:`After`:
+
+        This provides connection support for arbitrary functions
+        and methods, similar to mocking them.
+
+    * :meth:`Register`:
+
+        Registers a function into a :class:`Callback`, making the callback
+        call the registered function when it gets itself called.
+
+    In both modes, :meth:`RemoveAll` can be used to unregister all callbacks.
+
+    The class can also be used in context-manager form, in which case all callbacks
+    are unregistered when the context-manager ends.
+
+    .. note::
+        This class keeps a strong reference to the callback and the sender, thus
+        they won't be garbage-collected while still connected.
     """
 
     def __init__(self) -> None:
@@ -17,12 +35,31 @@ class Callbacks:
         self._contexts: List[_UnregisterContext] = []
 
     def Before(self, sender, *callbacks, **kwargs):
+        """
+        Registers a callback to be executed before an arbitrary function.
+
+        Example::
+
+            class C:
+                def foo(self, x): ...
+
+            def callback(x): ...
+
+
+            Before(C.foo, callback)
+
+        The call above will result in ``callback`` to be called for *every instance* of ``C``.
+        """
         sender = Before(sender, *callbacks, **kwargs)
         for callback in callbacks:
             self._function_callbacks.append((sender, callback))
         return sender
 
     def After(self, sender, *callbacks, **kwargs):
+        """
+        Same as :meth:`Before`, but will call the callback after the ``sender`` function has
+        been called.
+        """
         sender = After(sender, *callbacks, **kwargs)
         for callback in callbacks:
             self._function_callbacks.append((sender, callback))
@@ -54,6 +91,6 @@ class Callbacks:
         Registers the given function into the given callback.
 
         This will automatically unregister the function from the given callback when
-        RemoveAll() is called or the context manager ends in the context manager form.
+        :meth:`Callbacks.RemoveAll` is called or the context manager ends in the context manager form.
         """
         self._contexts.append(callback.Register(func))
