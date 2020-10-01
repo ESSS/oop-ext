@@ -1,7 +1,16 @@
+1.0.0 (2020-10-01)
+------------------
+
+* ``Callbacks`` can be used as context manager, which provides a ``Register(callback, function)``,
+  which automatically unregisters all functions when the context manager ends.
+
+* ``Callback.Register(function)`` now returns an object with a ``Unregister()`` method, which
+  can be used to undo the register call.
+
 0.6.0 (2020-01-31)
 ==================
 
-* Change back the default value of ``requires_declaration`` to ``True`` and fix an error (#22) where the cache wasn 't properly cleared.
+* Change back the default value of ``requires_declaration`` to ``True`` and fix an error (#22) where the cache wasn't properly cleared.
 
 0.5.1 (2019-12-20)
 ------------------

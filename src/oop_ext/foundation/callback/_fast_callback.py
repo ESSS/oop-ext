@@ -4,6 +4,9 @@ import inspect
 import logging
 import types
 import weakref
+from typing import Callable, Any, Tuple, Hashable
+
+import attr
 
 from oop_ext.foundation.compat import GetClassForUnboundMethod
 from oop_ext.foundation.is_frozen import IsDevelopment
@@ -26,9 +29,10 @@ class Callback:
 
     .. note:: it only stores weakrefs to objects connected
 
-    .. note:: __slots__ added, so, it cannot have weakrefs to it (but as it stores weakrefs
-        internally, that shouldn't be a problem). If weakrefs are really needed,
-        __weakref__ should be added to the slots.
+    .. note::
+        After an internal refactoring, ``__slots__`` has been added, so, it cannot have
+        weakrefs to it (but as it stores weakrefs internally, that shouldn't be a problem).
+        If weakrefs are really needed, ``__weakref__`` should be added to the slots.
 
     Determining kind of callable (Python 3)
     ---------------------------------------
@@ -104,7 +108,7 @@ class Callback:
     DEBUG_NEW_WEAKREFS = False
 
     def __init__(self):
-        # _callbacks is no longer lazily created: This makes the creation a bit slower, but
+        # callbacks is no longer lazily created: This makes the creation a bit slower, but
         # everything else is faster (as having to check for hasattr each time is slow).
         self._callbacks = odict()
 
@@ -248,15 +252,25 @@ class Callback:
 
     _EXTRA_ARGS_CONSTANT = tuple()
 
-    def Register(self, func, extra_args=_EXTRA_ARGS_CONSTANT):
+    def Register(
+        self, func: Callable[..., Any], extra_args: Tuple[object] = _EXTRA_ARGS_CONSTANT
+    ) -> "_UnregisterContext":
         """
         Registers a function in the callback.
 
-        :param object func:
+        :param func:
             Method or function that will be called later.
 
-        :param list(object) extra_args:
-            A list with the objects to be used
+        :param extra_args:
+            Arguments that will be passed automatically to the passed function
+            when the callback is called.
+
+        :return:
+            A context which can be used to unregister this call.
+
+            The context object provides this low level functionality, if you are registering
+            many callbacks at once and plan to unregister them all at the same time, consider
+            using `Callbacks` instead.
         """
         if IsDevelopment() and hasattr(func, "im_class"):
             # TODO: Python 3 - This can be removed after deprecating Python 2
@@ -270,6 +284,7 @@ class Callback:
         callbacks = self._callbacks
         callbacks.pop(key, None)  # Remove if it exists
         callbacks[key] = (self._GetInfo(func), extra_args)
+        return _UnregisterContext(self, key)
 
     def Contains(self, func, extra_args=_EXTRA_ARGS_CONSTANT):
         """
@@ -338,7 +353,10 @@ class Callback:
             The function to be unregistered.
         """
         key = self._GetKey(func, extra_args)
+        self._UnregisterByKey(key)
 
+    def _UnregisterByKey(self, key: Hashable):
+        """Unregisters a function registered with Register() by providing the internal key."""
         try:
             # As there can only be 1 instance with the same id alive, it should be OK just
             # deleting it directly (because if there was a dead reference pointing to it it will
@@ -368,3 +386,20 @@ def _IsCallableObject(func):
         and func.__class__ != _CallbackWrapper
         and not getattr(func, "__CALLBACK_KEEP_STRONG_REFERENCE__", False)
     )
+
+
+@attr.s(auto_attribs=True)
+class _UnregisterContext:
+    """
+    Returned by Register(), supports easy removal of the callback later.
+
+    Useful if many related callbacks are registered, so the contexts can be stored and used to
+    unregister all the callbacks at once.
+    """
+
+    _callback: Callback
+    _key: Hashable
+
+    def Unregister(self):
+        """Unregister the callback which returned this context"""
+        self._callback._UnregisterByKey(self._key)
