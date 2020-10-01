@@ -1,5 +1,6 @@
 
 import weakref
+from functools import partial
 
 import pytest
 
@@ -486,21 +487,52 @@ class Test:
         del self.a
         assert a() is None
 
-    def testCallbacks(self):
-        self.called = 0
+    def testCallbacksBeforeAfter(self):
+        """
+        Callbacks.Before and After should call the registered function before/after another
+        function.
+        """
+        events = []
 
-        def bar(*args):
-            self.called += 1
+        def bar(arg, when):
+            assert arg == 42
+            events.append(when)
 
         callbacks = Callbacks()
-        callbacks.Before(self.a.foo, bar)
-        callbacks.After(self.a.foo, bar)
+        callbacks.Before(self.a.foo, partial(bar, when="before_bar"))
+        callbacks.After(self.a.foo, partial(bar, when="after_bar"))
 
-        self.a.foo(1)
-        assert 2 == self.called
+        self.a.foo(42)
+        assert events == ["before_bar", "after_bar"]
         callbacks.RemoveAll()
-        self.a.foo(1)
-        assert 2 == self.called
+        self.a.foo(42)
+        assert events == ["before_bar", "after_bar"]
+
+    def testCallbacksRegister(self):
+        """
+        Callbacks().Register() when used as a context manager unregisters the callbacks
+        automatically when the context ends.
+        """
+        c1 = Callback()
+        c2 = Callback()
+
+        events = []
+
+        def bar(when):
+            events.append(when)
+
+        with Callbacks() as callbacks:
+            callbacks.Register(c1, bar)
+            callbacks.Register(c2, bar)
+
+            c1(when="c1-first")
+            c2(when="c2-first")
+            assert events == ["c1-first", "c2-first"]
+
+        c1(when="c1-second")
+        c2(when="c2-second")
+
+        assert events == ["c1-first", "c2-first"]
 
     def testAfterRemove(self):
 
@@ -587,7 +619,7 @@ class Test:
         assert 4 == self._b_value
         assert w() is None
 
-    def testRemoveCallback(self):
+    def testRemoveCallbackPlain(self):
         class C:
             def __init__(self, name):
                 self.name = name
@@ -622,6 +654,32 @@ class Test:
 
         # self.assertNotRaises(RuntimeError, c.Unregister, instance2.OnCallback)
         c.Unregister(instance2.OnCallback)
+
+    def testRemoveCallbackContext(self):
+        """Callback.Register() returns a context that can be used to unregister that call."""
+        events = []
+
+        def bar(when):
+            events.append(when)
+
+        contexts = []
+        c1 = Callback()
+        contexts.append(c1.Register(bar))
+
+        c2 = Callback()
+        contexts.append(c2.Register(bar))
+
+        c1("c1-first")
+        c2("c2-first")
+
+        assert events == ["c1-first", "c2-first"]
+
+        for context in contexts:
+            context.Unregister()
+
+        c1("c1-second")
+        c2("c2-second")
+        assert events == ["c1-first", "c2-first"]
 
     def testRegisterTwice(self):
         self.called = 0

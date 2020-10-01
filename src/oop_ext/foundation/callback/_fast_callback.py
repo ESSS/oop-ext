@@ -4,6 +4,9 @@ import inspect
 import logging
 import types
 import weakref
+from typing import Callable, Any, Tuple, Hashable
+
+import attr
 
 from oop_ext.foundation.compat import GetClassForUnboundMethod
 from oop_ext.foundation.is_frozen import IsDevelopment
@@ -20,70 +23,73 @@ class Callback:
     Object that provides a way for others to connect in it and later call it to call
     those connected.
 
-    .. note:: This implementation is improved in that it works directly accessing functions based
-    on a key in an ordered dict, so, Register, Unregister and Contains are much faster than the
-    old callback.
+    .. note::
+        This implementation is improved in that it works directly accessing functions based
+        on a key in an ordered dict, so, Register, Unregister and Contains are much faster than the
+        old callback.
 
-    .. note:: it only stores weakrefs to objects connected
+    .. note:: it only stores weakrefs to objects connected.
 
-    .. note:: __slots__ added, so, it cannot have weakrefs to it (but as it stores weakrefs
-        internally, that shouldn't be a problem). If weakrefs are really needed,
-        __weakref__ should be added to the slots.
+    .. note::
+        After an internal refactoring, ``__slots__`` has been added, so, it cannot have
+        weakrefs to it (but as it stores weakrefs internally, that shouldn't be a problem).
+        If weakrefs are really needed, ``__weakref__`` should be added to the slots.
 
-    Determining kind of callable (Python 3)
-    ---------------------------------------
+    **Determining kind of callable (Python 3)**
 
     Many parts of callback implementation rely on identifying the kind of callable: is it a
     free function? is it a function bound to an object?
 
     Below there is a table to help understand how different objects are classified:
 
-                        |has__self__|has__call__|has__call__self__|isbuiltin|isfunction|ismethod
-    --------------------|-----------|-----------|-----------------|---------|----------|--------
-    free function       |False      |True       |True             |False    |True      |False
-    bound method        |True       |True       |True             |False    |False     |True
-    class method        |True       |True       |True             |False    |False     |True
-    bound class method  |True       |True       |True             |False    |False     |True
-    function object     |False      |True       |True             |False    |False     |False
-    builtin function    |True       |True       |True             |True     |False     |False
-    object              |True       |True       |True             |True     |False     |False
-    custom object       |False      |False      |False            |False    |False     |False
-    string              |False      |False      |False            |False    |False     |False
+    .. code-block::
+
+                            |has__self__|has__call__|has__call__self__|isbuiltin|isfunction|ismethod
+        --------------------|-----------|-----------|-----------------|---------|----------|--------
+        free function       |False      |True       |True             |False    |True      |False
+        bound method        |True       |True       |True             |False    |False     |True
+        class method        |True       |True       |True             |False    |False     |True
+        bound class method  |True       |True       |True             |False    |False     |True
+        function object     |False      |True       |True             |False    |False     |False
+        builtin function    |True       |True       |True             |True     |False     |False
+        object              |True       |True       |True             |True     |False     |False
+        custom object       |False      |False      |False            |False    |False     |False
+        string              |False      |False      |False            |False    |False     |False
 
     where rows are:
 
-    ```python
-    def free_fn(foo):
-        # `free function`
-        pass
+    .. code-block:: python
 
-    class Foo:
-
-        def bound_fn(self, foo):
+        def free_fn(foo):
+            # `free function`
             pass
 
-    class Bar:
+        class Foo:
 
-        @classmethod
-        def class_fn(cls, foo):
-            pass
+            def bound_fn(self, foo):
+                pass
 
-    class ObjectFn:
+        class Bar:
 
-        def __call__(self, foo):
-            pass
+            @classmethod
+            def class_fn(cls, foo):
+                pass
 
-    foo = Foo()  # foo is `custom object`, foo.bound_fn is `bound method`
-    bar = Bar()  # Bar.class_fn is `class method`, bar.class_fn is `bound class method`
+        class ObjectFn:
 
-    object_fn = ObjectFn()  # `function object`
+            def __call__(self, foo):
+                pass
 
-    obj = object()  # `object`
-    string = 'foo'  # `string`
-    builtin_fn = string.split  # `builtin function`
-    ```
+        foo = Foo()  # foo is `custom object`, foo.bound_fn is `bound method`
+        bar = Bar()  # Bar.class_fn is `class method`, bar.class_fn is `bound class method`
 
-    and where columns are:
+        object_fn = ObjectFn()  # `function object`
+
+        obj = object()  # `object`
+        string = 'foo'  # `string`
+        builtin_fn = string.split  # `builtin function`
+
+    And where columns are:
 
     * isbuiltin: inspect.isbuiltin
     * isfunction: inspect.isfunction
@@ -104,7 +110,7 @@ class Callback:
     DEBUG_NEW_WEAKREFS = False
 
     def __init__(self):
-        # _callbacks is no longer lazily created: This makes the creation a bit slower, but
+        # callbacks is no longer lazily created: This makes the creation a bit slower, but
         # everything else is faster (as having to check for hasattr each time is slow).
         self._callbacks = odict()
 
@@ -248,21 +254,33 @@ class Callback:
 
     _EXTRA_ARGS_CONSTANT = tuple()
 
-    def Register(self, func, extra_args=_EXTRA_ARGS_CONSTANT):
+    def Register(
+        self, func: Callable[..., Any], extra_args: Tuple[object] = _EXTRA_ARGS_CONSTANT
+    ) -> "_UnregisterContext":
         """
         Registers a function in the callback.
 
-        :param object func:
+        :param func:
             Method or function that will be called later.
 
-        :param list(object) extra_args:
-            A list with the objects to be used
+        :param extra_args:
+            Arguments that will be passed automatically to the passed function
+            when the callback is called.
+
+        :return:
+            A context which can be used to unregister this call.
+
+            The context object provides this low level functionality, if you are registering
+            many callbacks at once and plan to unregister them all at the same time, consider
+            using `Callbacks` instead.
         """
         if IsDevelopment() and hasattr(func, "im_class"):
-            # TODO: Python 3 - This can be removed after deprecating Python 2
-            if not inspect.isclass(getattr(func, "im_class")):
-                msg = "%r object has inconsistent internal attributes and is not compatible with " "Callback.\nim_class = %r\n(If using a MagicMock, remember to pass spec=lambda:None)."
-                raise RuntimeError(msg % (func, getattr(func, "im_class")))
+            msg = (
+                "%r object has inconsistent internal attributes and is not compatible with Callback.\n"
+                "im_class = %r\n"
+                "(If using a MagicMock, remember to pass spec=lambda:None)."
+            )
+            raise RuntimeError(msg % (func, getattr(func, "im_class")))
         if extra_args is not self._EXTRA_ARGS_CONSTANT:
             extra_args = tuple(extra_args)
 
@@ -270,6 +288,7 @@ class Callback:
         callbacks = self._callbacks
         callbacks.pop(key, None)  # Remove if it exists
         callbacks[key] = (self._GetInfo(func), extra_args)
+        return _UnregisterContext(self, key)
 
     def Contains(self, func, extra_args=_EXTRA_ARGS_CONSTANT):
         """
@@ -338,7 +357,10 @@ class Callback:
             The function to be unregistered.
         """
         key = self._GetKey(func, extra_args)
+        self._UnregisterByKey(key)
 
+    def _UnregisterByKey(self, key: Hashable):
+        """Unregisters a function registered with Register() by providing the internal key."""
         try:
             # As there can only be 1 instance with the same id alive, it should be OK just
             # deleting it directly (because if there was a dead reference pointing to it it will
@@ -368,3 +390,20 @@ def _IsCallableObject(func):
         and func.__class__ != _CallbackWrapper
         and not getattr(func, "__CALLBACK_KEEP_STRONG_REFERENCE__", False)
     )
+
+
+@attr.s(auto_attribs=True)
+class _UnregisterContext:
+    """
+    Returned by Register(), supports easy removal of the callback later.
+
+    Useful if many related callbacks are registered, so the contexts can be stored and used to
+    unregister all the callbacks at once.
+    """
+
+    _callback: Callback
+    _key: Hashable
+
+    def Unregister(self):
+        """Unregister the callback which returned this context"""
+        self._callback._UnregisterByKey(self._key)

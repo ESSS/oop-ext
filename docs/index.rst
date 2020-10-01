@@ -7,7 +7,6 @@ Welcome to Oop_ext documentation!
 
    readme
    installation
-   usage
    api
    contributing
    changelog
