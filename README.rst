@@ -9,7 +9,7 @@ OOP Extensions
 .. image:: https://img.shields.io/pypi/pyversions/oop-ext.svg
     :target: https://pypi.org/project/oop-ext
 
-.. image:: https://img.shields.io/travis/ESSS/oop-ext.svg
+.. image:: https://travis-ci.com/ESSS/oop-ext.svg?branch=master&status=passed
     :target: https://travis-ci.com/ESSS/oop-ext
 
 .. image:: https://ci.appveyor.com/api/projects/status/github/ESSS/oop-ext?branch=master
@@ -18,8 +18,8 @@ OOP Extensions
 .. image:: https://codecov.io/gh/ESSS/oop-ext/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/ESSS/oop-ext
 
-.. image:: https://img.shields.io/readthedocs/pip.svg
-    :target: https://oop-ext.readthedocs.io/en/latest/
+.. image:: https://img.shields.io/readthedocs/oop-extensions.svg
+    :target: https://oop-extensions.readthedocs.io/en/latest/
 
 What is OOP Extensions ?
 ================================================================================
