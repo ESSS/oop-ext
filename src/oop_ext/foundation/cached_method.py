@@ -1,4 +1,3 @@
-
 from .immutable import AsImmutable
 from .odict import odict
 from .types_ import Method
@@ -72,7 +71,7 @@ class AbstractCachedMethod(Method):
 
 class CachedMethod(AbstractCachedMethod):
     """
-        Stores ALL the different results and never delete them.
+    Stores ALL the different results and never delete them.
     """
 
     def __init__(self, cached_method=None):

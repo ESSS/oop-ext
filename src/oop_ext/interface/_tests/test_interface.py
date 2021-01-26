@@ -293,7 +293,7 @@ def testNoCheck():
 
 def testCallbackAndInterfaces():
     """
-        Tests if the interface "AssertImplements" works with "callbacked" methods.
+    Tests if the interface "AssertImplements" works with "callbacked" methods.
     """
 
     @ImplementsInterface(_InterfM1)

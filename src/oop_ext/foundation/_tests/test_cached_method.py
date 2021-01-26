@@ -1,4 +1,3 @@
-
 import pytest
 
 from oop_ext.foundation.cached_method import (

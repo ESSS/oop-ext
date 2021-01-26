@@ -1,4 +1,3 @@
-
 from ._adaptable_interface import IAdaptable
 from ._interface import (
     AssertDeclaresInterface,

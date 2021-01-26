@@ -37,7 +37,7 @@ def testImmutable():
         assert AsImmutable(value) is value
 
     AssertIsSame(True)
-    AssertIsSame(1.)
+    AssertIsSame(1.0)
     AssertIsSame(1)
     AssertIsSame("a")  # native string
     AssertIsSame(b"b")  # native bytes

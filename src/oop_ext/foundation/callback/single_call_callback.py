@@ -1,4 +1,3 @@
-
 from ._fast_callback import Callback
 
 

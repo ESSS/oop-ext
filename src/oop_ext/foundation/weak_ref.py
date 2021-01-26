@@ -97,13 +97,13 @@ class WeakList:
 
 class WeakMethodRef:
     """
-        Weak reference to bound-methods. This allows the client to hold a bound method
-        while allowing GC to work.
+    Weak reference to bound-methods. This allows the client to hold a bound method
+    while allowing GC to work.
 
-        Based on recipe from Python Cookbook, page 191. Differs by only working on
-        boundmethods and returning a true boundmethod in the __call__() function.
+    Based on recipe from Python Cookbook, page 191. Differs by only working on
+    boundmethods and returning a true boundmethod in the __call__() function.
 
-        Keeps a reference to an object but doesn't prevent that object from being garbage collected.
+    Keeps a reference to an object but doesn't prevent that object from being garbage collected.
     """
 
     __slots__ = ["_obj", "_func", "_class", "_hash", "__weakref__"]
@@ -127,11 +127,11 @@ class WeakMethodRef:
 
     def __call__(self):
         """
-            Return a new bound-method like the original, or the original function if refers just to
-            a function or unbound method.
+        Return a new bound-method like the original, or the original function if refers just to
+        a function or unbound method.
 
-            @return:
-                None if the original object doesn't exist anymore.
+        @return:
+            None if the original object doesn't exist anymore.
         """
         if self.is_dead():
             return None
@@ -181,8 +181,8 @@ class WeakMethodRef:
 
 class WeakMethodProxy(WeakMethodRef):
     """
-        Like ref, but calling it will cause the referent method to be called with the same
-        arguments. If the referent's object no longer lives, ReferenceError is raised.
+    Like ref, but calling it will cause the referent method to be called with the same
+    arguments. If the referent's object no longer lives, ReferenceError is raised.
     """
 
     def GetWrappedFunction(self):
@@ -287,7 +287,7 @@ def IsWeakProxy(obj):
 
 def IsWeakRef(obj):
     """
-        Returns wheter ths given object is a weak-reference.
+    Returns wheter ths given object is a weak-reference.
     """
     return isinstance(obj, (weakref.ReferenceType, WeakMethodRef)) and not isinstance(
         obj, WeakMethodProxy
@@ -368,16 +368,16 @@ def GetWeakRef(obj):
 
 def IsSame(o1, o2):
     """
-        This checks for the identity even if one of the parameters is a weak reference
+    This checks for the identity even if one of the parameters is a weak reference
 
-        :param  o1:
-            first object to compare
+    :param  o1:
+        first object to compare
 
-        :param  o2:
-            second object to compare
+    :param  o2:
+        second object to compare
 
-        @raise
-            RuntimeError if both of the passed parameters are weak references
+    @raise
+        RuntimeError if both of the passed parameters are weak references
     """
     # get rid of weak refs (we only need special treatment for proxys)
     if IsWeakRef(o1):
