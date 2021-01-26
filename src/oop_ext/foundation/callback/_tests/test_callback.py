@@ -30,7 +30,7 @@ class Stub:
         pass
 
 
-@pytest.yield_fixture(autouse=True)
+@pytest.fixture(autouse=True)
 def restore_test_classes():
     """
     It can't reliably bind callbacks to methods in local temporary classes from Python 3 onward,

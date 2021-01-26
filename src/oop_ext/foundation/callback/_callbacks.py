@@ -81,10 +81,9 @@ class Callbacks:
         """Context manager support: when the context ends, unregister all callbacks."""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         """Context manager support: when the context ends, unregister all callbacks."""
         self.RemoveAll()
-        return False
 
     def Register(self, callback: Callback, func: Callable[..., Any]) -> None:
         """
