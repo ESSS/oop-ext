@@ -251,10 +251,12 @@ class Callback:
         """
         return to_call
 
-    _EXTRA_ARGS_CONSTANT = tuple()
+    _EXTRA_ARGS_CONSTANT: Tuple[object, ...] = tuple()
 
     def Register(
-        self, func: Callable[..., Any], extra_args: Tuple[object] = _EXTRA_ARGS_CONSTANT
+        self,
+        func: Callable[..., Any],
+        extra_args: Tuple[object, ...] = _EXTRA_ARGS_CONSTANT,
     ) -> "_UnregisterContext":
         """
         Registers a function in the callback.

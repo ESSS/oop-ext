@@ -1,4 +1,5 @@
 import threading
+from typing import Type, Set
 
 
 class SingletonError(RuntimeError):
@@ -39,7 +40,7 @@ class Singleton:
     __singleton_stack_start_index = 0
     __lock = threading.RLock()
 
-    _singleton_classes = set()
+    _singleton_classes: Set[Type["Singleton"]] = set()
 
     @staticmethod
     def ResetDefaultSingletonInstances():
