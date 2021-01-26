@@ -1,4 +1,3 @@
-
 from oop_ext.foundation.is_frozen import (
     IsDevelopment,
     IsFrozen,

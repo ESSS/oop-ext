@@ -1,4 +1,3 @@
-
 import pytest
 
 from oop_ext.foundation.callback.single_call_callback import SingleCallCallback

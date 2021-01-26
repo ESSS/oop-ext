@@ -122,8 +122,8 @@ class ImmutableDict(dict):
 
     def AsMutable(self):
         """
-            :rtype: this dict as a new dict that can be changed (without altering the state
-            of this immutable dict).
+        :rtype: this dict as a new dict that can be changed (without altering the state
+        of this immutable dict).
         """
         return dict(self.items())
 

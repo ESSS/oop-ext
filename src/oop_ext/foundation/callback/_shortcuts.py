@@ -1,4 +1,3 @@
-
 import weakref
 
 from oop_ext.foundation.types_ import Method
@@ -37,40 +36,40 @@ def _CreateBeforeOrAfter(method, callback, sender_as_parameter, before=True):
 
 def Before(method, callback, sender_as_parameter=False):
     """
-        Registers the given callback to be executed before the given method is called, with the
-        same arguments.
+    Registers the given callback to be executed before the given method is called, with the
+    same arguments.
 
-        The method can be eiher an unbound method or a bound method. If it is an unbound method,
-        *all* instances of the class will generate callbacks when method is called. If it is a bound
-        method, only the method of the instance will generate callbacks.
+    The method can be eiher an unbound method or a bound method. If it is an unbound method,
+    *all* instances of the class will generate callbacks when method is called. If it is a bound
+    method, only the method of the instance will generate callbacks.
 
-        Remarks:
-            The function has changed its signature to accept an extra parameter (sender_as_parameter).
-            Using "*args" as before made impossible to add new parameters to the function.
+    Remarks:
+        The function has changed its signature to accept an extra parameter (sender_as_parameter).
+        Using "*args" as before made impossible to add new parameters to the function.
     """
     return _CreateBeforeOrAfter(method, callback, sender_as_parameter)
 
 
 def After(method, callback, sender_as_parameter=False):
     """
-        Registers the given callbacks to be execute after the given method is called, with the same
-        arguments.
+    Registers the given callbacks to be execute after the given method is called, with the same
+    arguments.
 
-        The method can be eiher an unbound method or a bound method. If it is an unbound method,
-        *all* instances of the class will generate callbacks when method is called. If it is a bound
-        method, only the method of the instance will generate callbacks.
+    The method can be eiher an unbound method or a bound method. If it is an unbound method,
+    *all* instances of the class will generate callbacks when method is called. If it is a bound
+    method, only the method of the instance will generate callbacks.
 
-        Remarks:
-            This function has changed its signature to accept an extra parameter (sender_as_parameter).
-            Using "*args" as before made impossible to add new parameters to the function.
+    Remarks:
+        This function has changed its signature to accept an extra parameter (sender_as_parameter).
+        Using "*args" as before made impossible to add new parameters to the function.
     """
     return _CreateBeforeOrAfter(method, callback, sender_as_parameter, before=False)
 
 
 def Remove(method, callback):
     """
-        Removes the given callback from a method previously connected using after or before.
-        Return true if the callback was removed, false otherwise.
+    Removes the given callback from a method previously connected using after or before.
+    Return true if the callback was removed, false otherwise.
     """
     wrapped = _GetWrapped(method)
     if wrapped:
@@ -117,7 +116,7 @@ class _MethodWrapper(
 
     def AppendBefore(self, callback, extra_args=None):
         """
-            Append the given callbacks in the list of callback to be executed BEFORE the method.
+        Append the given callbacks in the list of callback to be executed BEFORE the method.
         """
         if extra_args is None:
             extra_args = []
@@ -128,7 +127,7 @@ class _MethodWrapper(
 
     def AppendAfter(self, callback, extra_args=None):
         """
-            Append the given callbacks in the list of callback to be executed AFTER the method.
+        Append the given callbacks in the list of callback to be executed AFTER the method.
         """
         if extra_args is None:
             extra_args = []
@@ -139,7 +138,7 @@ class _MethodWrapper(
 
     def Remove(self, callback):
         """
-            Remove the given callback from both the BEFORE and AFTER callbacks lists.
+        Remove the given callback from both the BEFORE and AFTER callbacks lists.
         """
         result = False
 
@@ -155,7 +154,7 @@ class _MethodWrapper(
 
 def _GetWrapped(method):
     """
-        Returns true if the given method is already wrapped.
+    Returns true if the given method is already wrapped.
     """
     if isinstance(method, _MethodWrapper):
         return method

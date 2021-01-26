@@ -1,4 +1,3 @@
-
 from oop_ext.foundation.types_ import Method
 
 

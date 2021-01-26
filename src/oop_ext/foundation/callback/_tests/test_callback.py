@@ -1,4 +1,3 @@
-
 import weakref
 from functools import partial
 
@@ -273,7 +272,7 @@ class Test:
 
     def test_extra_args(self):
         """
-            Tests the extra-args parameter in Register method.
+        Tests the extra-args parameter in Register method.
         """
         self.zulu_calls = []
 

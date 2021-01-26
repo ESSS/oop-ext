@@ -63,23 +63,24 @@ class InterfaceImplementationMetaClass(type):
 
 class InterfaceImplementorStub:
     """
-        A helper for acting as a stub for some object (in this way, we're only able to access
-        attributes declared directly in the interface.
+    A helper for acting as a stub for some object (in this way, we're only able to access
+    attributes declared directly in the interface.
 
-        It forwards the calls to the actual implementor (the wrapped object)
+    It forwards the calls to the actual implementor (the wrapped object)
     """
 
     def __init__(self, wrapped, implemented_interface):
         self.__wrapped = wrapped
         self.__implemented_interface = implemented_interface
 
-        self.__interface_methods, self.__attrs = cache_interface_attrs.GetInterfaceMethodsAndAttrs(
-            implemented_interface
-        )
+        (
+            self.__interface_methods,
+            self.__attrs,
+        ) = cache_interface_attrs.GetInterfaceMethodsAndAttrs(implemented_interface)
 
     def GetWrappedFromImplementorStub(self):
         """
-            Really big and awkward name because we don't want name-clashes
+        Really big and awkward name because we don't want name-clashes
         """
         return self.__wrapped
 
@@ -424,8 +425,7 @@ def _IsInterfaceDeclared(class_, interface):
 
 
 class Attribute:
-    """
-    """
+    """"""
 
     _do_not_check_instance = object()
 
@@ -527,9 +527,9 @@ class CacheInterfaceAttrs:
 
     def __GetInterfaceMethodsAndAttrs(self, interface):
         """
-            :type interface: the interface from where the methods and attributes should be gotten.
-            :param interface:
-            :rtype: the interface methods and attributes available in a given interface.
+        :type interface: the interface from where the methods and attributes should be gotten.
+        :param interface:
+        :rtype: the interface methods and attributes available in a given interface.
         """
         all_attrs = dir(interface)
 
@@ -560,13 +560,13 @@ class CacheInterfaceAttrs:
 
     def GetInterfaceMethodsAndAttrs(self, interface):
         """
-            We have to make the creation of the ImmutableParamsCacheManager lazy because
-            otherwise we'd enter a cyclic import.
+        We have to make the creation of the ImmutableParamsCacheManager lazy because
+        otherwise we'd enter a cyclic import.
 
-            :type interface: the interface from where the methods and attributes should be gotten
-            :param interface:
-                (used as the cache-key)
-            :rtype: @see: CacheInterfaceAttrs.__GetInterfaceMethodsAndAttrs
+        :type interface: the interface from where the methods and attributes should be gotten
+        :param interface:
+            (used as the cache-key)
+        :rtype: @see: CacheInterfaceAttrs.__GetInterfaceMethodsAndAttrs
         """
         try:
             cache = self.cache
@@ -586,10 +586,10 @@ cache_interface_attrs = CacheInterfaceAttrs()
 
 def _IsMethod(member):
     """
-        Consider method the following:
-            1) Methods
-            2) Functions
-            3) instances of Method (should it be implementors of "IMethod"?)
+    Consider method the following:
+        1) Methods
+        2) Functions
+        3) instances of Method (should it be implementors of "IMethod"?)
 
     """
     from unittest import mock
@@ -648,9 +648,10 @@ def _AssertImplementsFullChecking(class_or_instance, interface, check_attr=True)
             class_or_instance.GetWrappedFromImplementorStub(), interface, check_attr
         )
 
-    interface_methods, interface_attrs = cache_interface_attrs.GetInterfaceMethodsAndAttrs(
-        interface
-    )
+    (
+        interface_methods,
+        interface_attrs,
+    ) = cache_interface_attrs.GetInterfaceMethodsAndAttrs(interface)
     if check_attr:
         for attr_name, val in interface_attrs.items():
             if hasattr(class_or_instance, attr_name):
@@ -765,8 +766,10 @@ def ImplementsInterface(*interfaces, **kwargs):
                 # without using it as a decorator.
                 if not called[0]:
                     if not DEBUG:
-                        created_at_line = "\nSet DEBUG == True in: {} to see location.".format(
-                            __file__
+                        created_at_line = (
+                            "\nSet DEBUG == True in: {} to see location.".format(
+                                __file__
+                            )
                         )
                     else:
                         # This may be slow, so, just do it if DEBUG is enabled.
@@ -926,8 +929,8 @@ def _GetClassImplementedInterfaces(class_):
 
 def GetImplementedInterfaces(class_or_object):
     """
-   :rtype: frozenset([interfaces])
-       The interfaces implemented by the object or class passed.
+    :rtype: frozenset([interfaces])
+        The interfaces implemented by the object or class passed.
     """
     class_ = _GetClassForInterfaceChecking(class_or_object)
 

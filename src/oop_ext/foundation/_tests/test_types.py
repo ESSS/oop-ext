@@ -1,4 +1,3 @@
-
 import copy
 
 from oop_ext.foundation.types_ import Null
