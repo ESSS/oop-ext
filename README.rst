@@ -2,18 +2,14 @@
 OOP Extensions
 ======================================================================
 
-
 .. image:: https://img.shields.io/pypi/v/oop-ext.svg
     :target: https://pypi.python.org/pypi/oop-ext
 
 .. image:: https://img.shields.io/pypi/pyversions/oop-ext.svg
     :target: https://pypi.org/project/oop-ext
 
-.. image:: https://travis-ci.com/ESSS/oop-ext.svg?branch=master&status=passed
-    :target: https://travis-ci.com/ESSS/oop-ext
-
-.. image:: https://ci.appveyor.com/api/projects/status/github/ESSS/oop-ext?branch=master
-    :target: https://ci.appveyor.com/project/ESSS/oop-ext/?branch=master&svg=true
+.. image:: https://github.com/ESSS/oop-ext/workflows/build/badge.svg
+    :target: https://github.com/ESSS/oop-ext/actions
 
 .. image:: https://codecov.io/gh/ESSS/oop-ext/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/ESSS/oop-ext
