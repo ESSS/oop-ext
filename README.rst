@@ -16,9 +16,9 @@ OOP Extensions
 
 .. image:: https://img.shields.io/readthedocs/oop-extensions.svg
     :target: https://oop-extensions.readthedocs.io/en/latest/
-    
+
 .. image:: https://results.pre-commit.ci/badge/github/ESSS/oop-ext/master.svg
-    :target: https://results.pre-commit.ci/latest/github/ESSS/oop-ext/master    
+    :target: https://results.pre-commit.ci/latest/github/ESSS/oop-ext/master
 
 What is OOP Extensions ?
 ================================================================================
