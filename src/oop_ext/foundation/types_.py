@@ -1,6 +1,10 @@
 """
 Extensions to python native types.
 """
+from typing import TYPE_CHECKING, Any, NoReturn, Iterator
+
+if TYPE_CHECKING:
+    from typing_extensions import Literal
 
 
 class Method:
@@ -65,17 +69,16 @@ class Null:
 
     # object constructing
 
-    def __init__(self, *_args, **_kwargs):
+    def __init__(self, *_args: object, **_kwargs: object) -> None:
         "Ignore parameters."
         # Setting the name of what's gotten (so that __name__ is properly preserved).
         self.__dict__["_Null__name__"] = "Null"
-        return None
 
-    def __call__(self, *_args, **_kwargs):
+    def __call__(self, *_args: object, **_kwargs: object) -> "Null":
         "Ignore method calls."
         return self
 
-    def __getattr__(self, mname):
+    def __getattr__(self, mname: str) -> Any:
         "Ignore attribute requests."
         if mname == "__getnewargs__":
             raise AttributeError(
@@ -87,47 +90,46 @@ class Null:
 
         return self
 
-    def __setattr__(self, _name, _value):
+    def __setattr__(self, _name: str, _value: object) -> Any:
         "Ignore attribute setting."
         return self
 
-    def __delattr__(self, _name):
+    def __delattr__(self, _name: str) -> None:
         "Ignore deleting attributes."
+
+    def __enter__(self) -> Any:
         return self
 
-    def __enter__(self):
-        return self
+    def __exit__(self, *args: object, **kwargs: object) -> None:
+        pass
 
-    def __exit__(self, *args, **kwargs):
-        return self
-
-    def __repr__(self):
+    def __repr__(self) -> str:
         "Return a string representation."
         return "<Null>"
 
-    def __str__(self):
+    def __str__(self) -> str:
         "Convert to a string and return it."
         return "Null"
 
-    def __bool__(self):
+    def __bool__(self) -> "Literal[False]":
         "Null objects are always false"
         return False
 
     # iter
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Any]:
         "I will stop it in the first iteration"
         return self
 
-    def __next__(self):
+    def __next__(self) -> NoReturn:
         "Stop the iteration right now"
         raise StopIteration()
 
-    def __eq__(self, o):
+    def __eq__(self, o) -> Any:
         "It is just equal to another Null object."
         return self.__class__ == o.__class__
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Null is hashable"""
         return 0
 
