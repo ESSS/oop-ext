@@ -1,10 +1,7 @@
+# mypy: disallow-untyped-defs
 """
 A compatibility module for quirks when porting from py2->py3.
 """
-
-
-def __str__(self):
-    return self.__unicode__().encode("utf-8")
 
 
 def GetClassForUnboundMethod(method):
