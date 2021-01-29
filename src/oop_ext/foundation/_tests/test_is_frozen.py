@@ -6,7 +6,7 @@ from oop_ext.foundation.is_frozen import (
 )
 
 
-def testIsFrozenIsDevelopment():
+def testIsFrozenIsDevelopment() -> None:
     # Note: this test is checking if we're always running tests while not in frozen mode,
     # still, we have to do a try..finally to make sure we restore things to the proper state.
     was_frozen = IsFrozen()

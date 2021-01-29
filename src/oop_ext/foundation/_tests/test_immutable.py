@@ -5,7 +5,7 @@ import pytest
 from oop_ext.foundation.immutable import AsImmutable, IdentityHashableRef, ImmutableDict
 
 
-def testImmutable():
+def testImmutable() -> None:
     class MyClass:
         pass
 
@@ -67,7 +67,7 @@ def testImmutable():
     assert AsImmutable(MySet()) == frozenset()
 
 
-def testImmutableDict():
+def testImmutableDict() -> None:
     d = ImmutableDict(alpha=1, bravo=2)
 
     with pytest.raises(NotImplementedError):
@@ -89,7 +89,7 @@ def testImmutableDict():
         d.update({"charlie": 3})
 
 
-def testIdentityHashableRef():
+def testIdentityHashableRef() -> None:
     a = {1: 2}
     b = {1: 2}
 
