@@ -1,4 +1,5 @@
 import warnings
+from typing import Tuple, Any, List
 
 import pytest
 
@@ -6,7 +7,7 @@ from oop_ext.foundation import is_frozen
 from oop_ext.foundation.decorators import Abstract, Deprecated, Implements, Override
 
 
-def testImplements():
+def testImplementsFail() -> None:
     with pytest.raises(AssertionError):
 
         class IFoo:
@@ -18,6 +19,8 @@ def testImplements():
             def DoNotDoIt(self):
                 ""
 
+
+def testImplementsOK() -> None:
     class IFoo:
         def Foo(self):
             """
@@ -35,7 +38,7 @@ def testImplements():
     assert Impl().Foo() == "Impl"
 
 
-def testOverride():
+def testOverride() -> None:
     def TestOK():
         class A:
             def Method(self):
@@ -80,7 +83,7 @@ def testOverride():
         TestNoMatch()
 
 
-def testDeprecated(monkeypatch):
+def testDeprecated(monkeypatch) -> None:
     def MyWarn(*args, **kwargs):
         warn_params.append((args, kwargs))
 
@@ -89,7 +92,7 @@ def testDeprecated(monkeypatch):
     was_development = is_frozen.SetIsDevelopment(True)
     try:
         # Emit messages when in development
-        warn_params = []
+        warn_params: List[Tuple[Any, Any]] = []
 
         # ... deprecation with alternative
         @Deprecated("OtherMethod")
@@ -126,7 +129,7 @@ def testDeprecated(monkeypatch):
         is_frozen.SetIsDevelopment(was_development)
 
 
-def testAbstract():
+def testAbstract() -> None:
     class Alpha:
         @Abstract
         def Method(self):

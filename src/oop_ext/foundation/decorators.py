@@ -1,12 +1,14 @@
+# mypy: disallow-untyped-defs
 """
 Collection of decorator with ONLY standard library dependencies.
 """
 import warnings
+from typing import Callable, TypeVar, Optional, NoReturn
 
 from oop_ext.foundation.is_frozen import IsDevelopment
 
 
-def Override(method):
+def Override(method: Callable) -> Callable:
     """
     Decorator that marks that a method overrides a method in the superclass.
 
@@ -33,7 +35,7 @@ def Override(method):
             pass
     """
 
-    def Wrapper(func):
+    def Wrapper(func: Callable) -> Callable:
         if func.__name__ != method.__name__:
             msg = "Wrong @Override: %r expected, but overwriting %r."
             msg = msg % (func.__name__, method.__name__)
@@ -47,7 +49,7 @@ def Override(method):
     return Wrapper
 
 
-def Implements(method):
+def Implements(method: Callable) -> Callable:
     """
     Decorator that marks that a method implements a method in some interface.
 
@@ -78,7 +80,7 @@ def Implements(method):
             pass
     """
 
-    def Wrapper(func):
+    def Wrapper(func: Callable) -> Callable:
         if func.__name__ != method.__name__:
             msg = "Wrong @Implements: %r expected, but overwriting %r."
             msg = msg % (func.__name__, method.__name__)
@@ -92,35 +94,36 @@ def Implements(method):
     return Wrapper
 
 
-def Deprecated(name=None):
+def Deprecated(what: Optional[object] = None) -> Callable:
     """
     Decorator that marks a method as deprecated.
 
-    :param str name:
-        The name of the method that substitutes this one, if any.
+    :param what:
+        Method that replaces the deprecated method, if any. Here it is common to pass
+        either a function or the name of the method.
     """
     if not IsDevelopment():
         # Optimization: we don't want deprecated to add overhead in release mode.
 
-        def DeprecatedDecorator(func):
+        def DeprecatedDecorator(func: Callable) -> Callable:
             return func
 
     else:
 
-        def DeprecatedDecorator(func):
+        def DeprecatedDecorator(func: Callable) -> Callable:
             """
             The actual deprecated decorator, configured with the name parameter.
             """
 
-            def DeprecatedWrapper(*args, **kwargs):
+            def DeprecatedWrapper(*args: object, **kwargs: object) -> object:
                 """
                 This method wrapper gives a deprecated message before calling the original
                 implementation.
                 """
-                if name is not None:
+                if what is not None:
                     msg = "DEPRECATED: '%s' is deprecated, use '%s' instead" % (
                         func.__name__,
-                        name,
+                        what,
                     )
                 else:
                     msg = "DEPRECATED: '%s' is deprecated" % func.__name__
@@ -134,7 +137,7 @@ def Deprecated(name=None):
     return DeprecatedDecorator
 
 
-def Abstract(func):
+def Abstract(func: Callable) -> Callable:
     '''
     Decorator to make methods 'abstract', which are meant to be overwritten in subclasses. If some
     subclass doesn't override the method, it will raise NotImplementedError when called. Note that
@@ -160,7 +163,7 @@ def Abstract(func):
 
     '''
 
-    def AbstractWrapper(self, *args, **kwargs):
+    def AbstractWrapper(self: object, *args: object, **kwargs: object) -> NoReturn:
         """
         This wrapper method replaces the implementation of the (abstract) method, providing a
         friendly message to the user.
