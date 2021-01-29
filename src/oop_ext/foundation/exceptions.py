@@ -1,4 +1,8 @@
-def ExceptionToUnicode(exception):
+# mypy: disallow-untyped-defs
+from typing import Optional
+
+
+def ExceptionToUnicode(exception: Exception) -> str:
     """
     Python 3 exception handling already deals with string error messages. Here we
     will only append the original exception message to the returned message (this is automatically done in Python 2
@@ -6,7 +10,8 @@ def ExceptionToUnicode(exception):
     as a separated attribute
     """
     messages = []
-    while exception:
-        messages.append(str(exception))
-        exception = exception.__cause__ or exception.__context__
+    exc: Optional[BaseException] = exception
+    while exc:
+        messages.append(str(exc))
+        exc = exc.__cause__ or exc.__context__
     return "\n".join(messages)
