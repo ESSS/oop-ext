@@ -1,8 +1,16 @@
+# mypy: disallow-untyped-defs
 import collections
+from typing import Any, Iterable, Hashable, Union
 
 
-class _OrderedDict(collections.OrderedDict):
-    def insert(self, index, key, value, dict_setitem=dict.__setitem__):
+class odict(collections.OrderedDict):
+    def insert(
+        self,
+        index: int,
+        key: Hashable,
+        value: Any,
+        dict_setitem: Any = dict.__setitem__,
+    ) -> None:
         """
         Convenience method to have same interface as `ruamel.ordereddict`, which as traditionally
         used on Python 2.
@@ -14,6 +22,7 @@ class _OrderedDict(collections.OrderedDict):
         #
         # Note that `move_to_end` is a O(1) operation that just swaps endpoints of underlying
         # double linked list maintained by C-extension ordered dict.
+        moved: Iterable[Any]
         if (len(self) - index) <= (len(self) // 2):
             moved = [k for i, k in enumerate(self.keys()) if i >= index and k != key]
             last = True
@@ -21,11 +30,12 @@ class _OrderedDict(collections.OrderedDict):
             moved = reversed(
                 [k for i, k in enumerate(self.keys()) if i < index or k == key]
             )
+
             last = False
         for k in moved:
             self.move_to_end(k, last=last)
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: Union[Hashable, slice]) -> None:
         if isinstance(key, slice):
             # Properly deal with slices (based on order).
             keys = list(self.keys())
@@ -34,6 +44,3 @@ class _OrderedDict(collections.OrderedDict):
 
         else:
             collections.OrderedDict.__delitem__(self, key)
-
-
-odict = _OrderedDict

@@ -1,7 +1,8 @@
+# mypy: disallow-untyped-defs
 """
 Extensions to python native types.
 """
-from typing import TYPE_CHECKING, Any, NoReturn, Iterator
+from typing import TYPE_CHECKING, Any, NoReturn, Iterator, TypeVar
 
 if TYPE_CHECKING:
     from typing_extensions import Literal
@@ -12,6 +13,9 @@ class Method:
     This class is an 'organization' class, so that subclasses are considered as methods
     (and its __call__ method is checked for the parameters)
     """
+
+
+T = TypeVar("T")
 
 
 class Null:
@@ -97,7 +101,7 @@ class Null:
     def __delattr__(self, _name: str) -> None:
         "Ignore deleting attributes."
 
-    def __enter__(self) -> Any:
+    def __enter__(self: T) -> T:
         return self
 
     def __exit__(self, *args: object, **kwargs: object) -> None:
@@ -117,15 +121,15 @@ class Null:
 
     # iter
 
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self: T) -> Iterator[T]:
         "I will stop it in the first iteration"
-        return self
+        return iter([self])
 
     def __next__(self) -> NoReturn:
         "Stop the iteration right now"
         raise StopIteration()
 
-    def __eq__(self, o) -> Any:
+    def __eq__(self, o: Any) -> Any:
         "It is just equal to another Null object."
         return self.__class__ == o.__class__
 

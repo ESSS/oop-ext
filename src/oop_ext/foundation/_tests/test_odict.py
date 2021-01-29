@@ -1,7 +1,7 @@
 from oop_ext.foundation.odict import odict
 
 
-def testInsert():
+def testInsert() -> None:
     d = odict()
     d[1] = "alpha"
     d[3] = "charlie"
@@ -24,7 +24,7 @@ def testInsert():
     ]
 
 
-def testDelWithSlices():
+def testDelWithSlices() -> None:
     d = odict()
     d[1] = 1
     d[2] = 2
