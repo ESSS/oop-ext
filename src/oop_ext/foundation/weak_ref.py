@@ -1,11 +1,31 @@
+# mypy: disallow-untyped-defs
 import inspect
 import weakref
+from weakref import ReferenceType
 from types import LambdaType, MethodType
+from typing import (
+    Iterable,
+    Optional,
+    TypeVar,
+    Generic,
+    Iterator,
+    List,
+    Union,
+    Any,
+    Set,
+    cast,
+    overload,
+    Callable,
+)
 
 from oop_ext.foundation.decorators import Implements
 
 
-class WeakList:
+T = TypeVar("T")
+SomeWeakRef = Union[ReferenceType, "WeakMethodRef"]
+
+
+class WeakList(Generic[T]):
     """
     The weak list is a list that will only keep weak-references to objects passed to it.
 
@@ -18,32 +38,33 @@ class WeakList:
         https://github.com/apieum/weakreflist
     """
 
-    def __init__(self, initlist=None):
-        self.data = []
+    def __init__(self, initlist: Optional[Iterable[T]] = None):
+        self.data: List[SomeWeakRef] = []
 
         if initlist is not None:
             for x in initlist:
                 self.append(x)
 
     @Implements(list.append)
-    def append(self, item):
+    def append(self, item: T) -> None:
         self.data.append(GetWeakRef(item))
 
     @Implements(list.extend)
-    def extend(self, lst):
+    def extend(self, lst: Iterable[T]) -> None:
         for o in lst:
             self.append(o)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[T]:
         # iterate in a copy
         for ref in self.data[:]:
+            assert callable(ref), f"ref is not callable: {repr(ref)}"
             d = ref()
             if d is None:
                 self.data.remove(ref)
             else:
                 yield d
 
-    def remove(self, item):
+    def remove(self, item: T) -> None:
         """
         Remove first occurrence of a value.
 
@@ -55,6 +76,7 @@ class WeakList:
         """
         # iterate in a copy
         for ref in self.data[:]:
+            assert callable(ref), f"ref is not callable: {repr(ref)}"
             d = ref()
 
             if d is None:
@@ -64,34 +86,45 @@ class WeakList:
                 self.data.remove(ref)
                 break
 
-    def __len__(self):
+    def __len__(self) -> int:
         i = 0
         for _k in self:  # we make an iteration to remove dead references...
             i += 1
         return i
 
-    def __delitem__(self, i):
+    def __delitem__(self, i: Union[int, slice]) -> None:
         self.data.__delitem__(i)
 
-    def __getitem__(self, i):
+    @overload
+    def __getitem__(self, i: int) -> Optional[T]:
+        ...
+
+    @overload
+    def __getitem__(self, i: slice) -> "WeakList":
+        ...
+
+    def __getitem__(self, i: Union[int, slice]) -> Union[Optional[T], "WeakList"]:
         if isinstance(i, slice):
             slice_ = []
             for ref in self.data[i.start : i.stop : i.step]:
+                assert callable(ref), f"ref is not callable: {repr(ref)}"
                 d = ref()
                 if d is not None:
                     slice_.append(d)
 
             return WeakList(slice_)
         else:
-            return self.data[i]()
+            ref = self.data[i]
+            assert callable(ref), f"ref is not callable: {repr(ref)}"
+            return ref()
 
-    def __setitem__(self, i, item):
+    def __setitem__(self, i: int, item: T) -> None:
         """
         Set a weakref of item on the ith position
         """
         self.data[i] = GetWeakRef(item)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "\n".join(str(x) for x in self)
 
 
@@ -108,7 +141,8 @@ class WeakMethodRef:
 
     __slots__ = ["_obj", "_func", "_class", "_hash", "__weakref__"]
 
-    def __init__(self, method):
+    def __init__(self, method: Any):
+        self._obj: Optional[weakref.ReferenceType]
         try:
             if method.__self__ is not None:
                 # bound method
@@ -125,7 +159,7 @@ class WeakMethodRef:
             self._func = method
             self._class = None
 
-    def __call__(self):
+    def __call__(self) -> Any:
         """
         Return a new bound-method like the original, or the original function if refers just to
         a function or unbound method.
@@ -142,22 +176,24 @@ class WeakMethodRef:
             # we don't have an instance: return just the function
             return self._func
 
-    def is_dead(self):
+    def is_dead(self) -> bool:
         """Returns True if the referenced callable was a bound method and
         the instance no longer exists. Otherwise, return False.
         """
         return self._obj is not None and self._obj() is None
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         try:
-            return type(self) is type(other) and self() == other()
+            return (
+                type(self) is type(other) and self() == other()  # type:ignore[operator]
+            )
         except:
             return False
 
-    def __ne__(self, other):
+    def __ne__(self, other: object) -> bool:
         return not self == other
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         if not hasattr(self, "_hash"):
             # The hash should be immutable (must be calculated once and never changed -- otherwise
             # we won't be able to get it when the object dies)
@@ -165,7 +201,7 @@ class WeakMethodRef:
 
         return self._hash
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         func_name = getattr(self._func, "__name__", str(self._func))
         if self._obj is not None:
             obj = self._obj()
@@ -185,26 +221,26 @@ class WeakMethodProxy(WeakMethodRef):
     arguments. If the referent's object no longer lives, ReferenceError is raised.
     """
 
-    def GetWrappedFunction(self):
+    def GetWrappedFunction(self) -> Optional[Callable]:
         return WeakMethodRef.__call__(self)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args: object, **kwargs: object) -> Any:
         func = WeakMethodRef.__call__(self)
         if func is None:
             raise ReferenceError("Object is dead. Was of class: {}".format(self._class))
         else:
             return func(*args, **kwargs)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         try:
             func1 = WeakMethodRef.__call__(self)
-            func2 = WeakMethodRef.__call__(other)
+            func2 = WeakMethodRef.__call__(other)  # type:ignore[arg-type]
             return type(self) == type(other) and func1 == func2
         except:
             return False
 
 
-class WeakSet:
+class WeakSet(Generic[T]):
     """
     Just like `weakref.WeakSet`, but supports adding methods (the standard `weakref.WeakSet` can't
     add methods, this feature comes from `oop_ext.foundation.weak_ref.GetWeakRef`, see `testWeakSet2`).
@@ -215,25 +251,26 @@ class WeakSet:
     ..see:: weakref.WeakSet
     """
 
-    def __init__(self):
-        self.data = set()
+    def __init__(self) -> None:
+        self.data: Set[SomeWeakRef] = set()
 
-    def add(self, item):
+    def add(self, item: T) -> None:
         self.data.add(GetWeakRef(item))
 
-    def clear(self):
+    def clear(self) -> None:
         self.data.clear()
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[T]:
         # iterate in a copy
         for ref in self.data.copy():
+            assert callable(ref), f"ref is not callable: {repr(ref)}"
             d = ref()
             if d is None:
                 self.data.remove(ref)
             else:
                 yield d
 
-    def remove(self, item):
+    def remove(self, item: T) -> None:
         """
         Remove an item from the available data.
 
@@ -242,50 +279,55 @@ class WeakSet:
         """
         self.data.remove(GetWeakRef(item))
 
-    def union(self, another_set):
-        result = WeakSet()
+    def union(self, another_set: Iterable[T]) -> "WeakSet":
+        result = WeakSet[T]()
         result.data = self.data.copy()
         for i in another_set:
             result.add(i)
         return result
 
-    def __sub__(self, another_set):
-        result = WeakSet()
+    def copy(self) -> "WeakSet[T]":
+        result = WeakSet[T]()
+        result.data = self.data.copy()
+        return result
+
+    def __sub__(self, another_set: Iterable[T]) -> "WeakSet":
+        result = WeakSet[T]()
         result.data = self.data.copy()
         for i in another_set:
             result.discard(i)
         return result
 
-    def __rsub__(self, another_set):
+    def __rsub__(self, another_set: Any) -> Any:
         result = another_set.copy()
         for i in self:
             result.discard(i)
         return result
 
-    def discard(self, item):
+    def discard(self, item: T) -> None:
         try:
             self.remove(item)
         except KeyError:
             pass
 
-    def __len__(self):
+    def __len__(self) -> int:
         i = 0
         for _k in self:  # we make an iteration to remove dead references...
             i += 1
         return i
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "\n".join(str(x) for x in self)
 
 
-def IsWeakProxy(obj):
+def IsWeakProxy(obj: object) -> bool:
     """
     Returns whether the given object is a weak-proxy
     """
     return isinstance(obj, (weakref.ProxyType, WeakMethodProxy))
 
 
-def IsWeakRef(obj):
+def IsWeakRef(obj: object) -> bool:
     """
     Returns wheter ths given object is a weak-reference.
     """
@@ -294,7 +336,7 @@ def IsWeakRef(obj):
     )
 
 
-def IsWeakObj(obj):
+def IsWeakObj(obj: object) -> bool:
     """
     Returns whether the given object is a weak object. Either a weak-proxy or a weak-reference.
 
@@ -304,7 +346,7 @@ def IsWeakObj(obj):
     return IsWeakProxy(obj) or IsWeakRef(obj)
 
 
-def GetRealObj(obj):
+def GetRealObj(obj: Any) -> Any:
     """
     Returns the real-object from a weakref, or the object itself otherwise.
     """
@@ -315,7 +357,7 @@ def GetRealObj(obj):
     return obj
 
 
-def GetWeakProxy(obj):
+def GetWeakProxy(obj: Any) -> Any:
     """
     :param obj: This is the object we want to get as a proxy
     :return:
@@ -340,10 +382,10 @@ def GetWeakProxy(obj):
 
 
 # Keep the same lambda for weak-refs (to be reused among all places that use GetWeakRef(None)
-_EMPTY_LAMBDA = lambda: None
+_NONE_REF = WeakMethodRef(None)
 
 
-def GetWeakRef(obj):
+def GetWeakRef(obj: T) -> SomeWeakRef:
     """
     :type obj: this is the object we want to get as a weak ref
     :param obj:
@@ -351,7 +393,7 @@ def GetWeakRef(obj):
                                    object is returned itself)
     """
     if obj is None:
-        return _EMPTY_LAMBDA
+        return _NONE_REF
 
     if IsWeakProxy(obj):
         raise RuntimeError("Unable to get weak ref for proxy.")
@@ -363,10 +405,10 @@ def GetWeakRef(obj):
             return WeakMethodRef(obj)
 
         return weakref.ref(obj)
-    return obj
+    return cast(ReferenceType, obj)
 
 
-def IsSame(o1, o2):
+def IsSame(o1: Any, o2: Any) -> bool:
     """
     This checks for the identity even if one of the parameters is a weak reference
 
@@ -408,7 +450,7 @@ def IsSame(o1, o2):
         weak = o2
         original = o1
 
-    weaks = weakref.getweakrefs(original)
+    weaks = cast(List, weakref.getweakrefs(original))
     for w in weaks:
         if w is weak:  # check the weak object identity
             return True

@@ -1,5 +1,6 @@
 import sys
 import weakref
+from typing import Any
 
 import pytest
 
@@ -39,7 +40,7 @@ class Obj:
         return self.name
 
 
-def testStub():
+def testStub() -> None:
     a = _Stub()
     b = _Stub()
     assert not a != a
@@ -49,7 +50,7 @@ def testStub():
     a.Method()
 
 
-def testIsSame():
+def testIsSame() -> None:
     s1 = _Stub()
     s2 = _Stub()
 
@@ -76,14 +77,16 @@ def testIsSame():
         IsSame(p1, p2)
 
 
-def testGetWeakRef():
+def testGetWeakRef() -> None:
     b = GetWeakRef(None)
+    assert callable(b)
     assert b() is None
 
 
-def testGeneral():
+def testGeneral() -> None:
     b = _Stub()
     r = GetWeakRef(b.Method)
+    assert callable(r)
     assert (
         r() is not None
     )  # should not be a regular weak ref here (but a weak method ref)
@@ -92,6 +95,7 @@ def testGeneral():
     assert not IsWeakProxy(r)
 
     r = GetWeakProxy(b.Method)
+    assert callable(r)
     r()
     assert IsWeakProxy(r)
     assert not IsWeakRef(r)
@@ -102,13 +106,13 @@ def testGeneral():
     assert r == r2
     assert hash(r) == hash(r2)
 
-    r = GetWeakRef(b.Method)
-    r2 = GetWeakRef(b.Method)
-    assert r == r2
-    assert hash(r) == hash(r2)
+    r_m1 = GetWeakRef(b.Method)
+    r_m2 = GetWeakRef(b.Method)
+    assert r_m1 == r_m2
+    assert hash(r_m1) == hash(r_m2)
 
 
-def testGetRealObj():
+def testGetRealObj() -> None:
     b = _Stub()
     r = GetWeakRef(b)
     assert GetRealObj(r) is b
@@ -117,15 +121,15 @@ def testGetRealObj():
     assert GetRealObj(r) is None
 
 
-def testGetWeakProxyFromWeakRef():
+def testGetWeakProxyFromWeakRef() -> None:
     b = _Stub()
     r = GetWeakRef(b)
     proxy = GetWeakProxy(r)
     assert IsWeakProxy(proxy)
 
 
-def testWeakSet():
-    weak_set = WeakSet()
+def testWeakSet() -> None:
+    weak_set = WeakSet[Any]()
     s1 = _Stub()
     s2 = _Stub()
 
@@ -156,7 +160,7 @@ def testWeakSet():
     # >>> Testing with FUNCTION
 
     # Adding twice, having one
-    def function():
+    def function() -> None:
         pass
 
     weak_set.add(function)
@@ -164,8 +168,8 @@ def testWeakSet():
     CustomAssertEqual(len(weak_set), 1)
 
 
-def testRemove():
-    weak_set = WeakSet()
+def testRemove() -> None:
+    weak_set = WeakSet[_Stub]()
 
     s1 = _Stub()
 
@@ -181,8 +185,8 @@ def testRemove():
     CustomAssertEqual(len(weak_set), 0)
 
 
-def testWeakSet2():
-    weak_set = WeakSet()
+def testWeakSet2() -> None:
+    weak_set = WeakSet[Any]()
 
     # >>> Removing with DEL
     s1 = _Stub()
@@ -199,8 +203,8 @@ def testWeakSet2():
     CustomAssertEqual(len(weak_set), 0)
 
 
-def testWeakSetUnionWithWeakSet():
-    ws1, ws2 = WeakSet(), WeakSet()
+def testWeakSetUnionWithWeakSet() -> None:
+    ws1, ws2 = WeakSet[Obj](), WeakSet[Obj]()
     a, b, c = Obj("a"), Obj("b"), Obj("c")
 
     ws1.add(a)
@@ -216,8 +220,8 @@ def testWeakSetUnionWithWeakSet():
     assert set(ws3) == set(ws2.union(ws1)) == {a, b}
 
 
-def testWeakSetUnionWithSet():
-    ws = WeakSet()
+def testWeakSetUnionWithSet() -> None:
+    ws = WeakSet[Obj]()
     a, b, c = Obj("a"), Obj("b"), Obj("c")
 
     ws.add(a)
@@ -232,8 +236,8 @@ def testWeakSetUnionWithSet():
     assert set(ws3) == set(s.union(set(ws))) == {a, c}
 
 
-def testWeakSetSubWithWeakSet():
-    ws1, ws2 = WeakSet(), WeakSet()
+def testWeakSetSubWithWeakSet() -> None:
+    ws1, ws2 = WeakSet[Obj](), WeakSet[Obj]()
     a, b, c = Obj("a"), Obj("b"), Obj("c")
 
     ws1.add(a)
@@ -249,8 +253,8 @@ def testWeakSetSubWithWeakSet():
     assert set(ws2 - ws1) == set()
 
 
-def testWeakSetSubWithSet():
-    ws = WeakSet()
+def testWeakSetSubWithSet() -> None:
+    ws = WeakSet[Obj]()
     s = set()
     a, b, c = Obj("a"), Obj("b"), Obj("c")
 
@@ -268,8 +272,8 @@ def testWeakSetSubWithSet():
     assert s - ws == {c}
 
 
-def testWithError():
-    weak_set = WeakSet()
+def testWithError() -> None:
+    weak_set = WeakSet[Any]()
 
     # Not WITH, everything ok
     s1 = _Stub()
@@ -290,10 +294,10 @@ def testWithError():
     CustomAssertEqual(len(weak_set), 0)
 
 
-def testFunction():
-    weak_set = WeakSet()
+def testFunction() -> None:
+    weak_set = WeakSet[Any]()
 
-    def function():
+    def function() -> None:
         "Never called"
 
     # Adding twice, having one.
@@ -318,6 +322,8 @@ def CustomAssertEqual(a, b):
 
 def SetupTestAttributes():
     class C:
+        x: int
+
         def f(self, y=0):
             return self.x + y
 
@@ -332,14 +338,14 @@ def SetupTestAttributes():
     return (C, c, d)
 
 
-def testCustomAssertEqual():
+def testCustomAssertEqual() -> None:
     with pytest.raises(AssertionError) as excinfo:
         CustomAssertEqual(1, 2)
 
     assert str(excinfo.value) == "1 != 2\nassert False"
 
 
-def testRefcount():
+def testRefcount() -> None:
     _, c, _ = SetupTestAttributes()
 
     CustomAssertEqual(
@@ -360,7 +366,7 @@ def testRefcount():
     CustomAssertEqual(sys.getrefcount(c), 2)
 
 
-def testDies():
+def testDies() -> None:
     _, c, _ = SetupTestAttributes()
 
     rf = WeakMethodRef(c.f)
@@ -377,7 +383,7 @@ def testDies():
         pf()
 
 
-def testWorksWithFunctions():
+def testWorksWithFunctions() -> None:
     SetupTestAttributes()
 
     def foo(y):
@@ -392,7 +398,7 @@ def testWorksWithFunctions():
     assert not pf.is_dead()
 
 
-def testWorksWithUnboundMethods():
+def testWorksWithUnboundMethods() -> None:
     C, c, _ = SetupTestAttributes()
 
     meth = C.f
@@ -405,7 +411,7 @@ def testWorksWithUnboundMethods():
     assert not pf.is_dead()
 
 
-def testEq():
+def testEq() -> None:
     _, c, d = SetupTestAttributes()
 
     rf1 = WeakMethodRef(c.f)
@@ -419,7 +425,7 @@ def testEq():
     assert rf1 == rf2
 
 
-def testProxyEq():
+def testProxyEq() -> None:
     _, c, d = SetupTestAttributes()
 
     pf1 = WeakMethodProxy(c.f)
@@ -433,7 +439,7 @@ def testProxyEq():
     assert pf2.is_dead()
 
 
-def testHash():
+def testHash() -> None:
     _, c, _ = SetupTestAttributes()
 
     r = WeakMethodRef(c.f)
@@ -446,21 +452,21 @@ def testHash():
     assert hash(r) == h
 
 
-def testRepr():
+def testRepr() -> None:
     _, c, _ = SetupTestAttributes()
 
     r = WeakMethodRef(c.f)
     assert str(r)[:33] == "<WeakMethodRef to C.f for object "
 
-    def Foo():
+    def Foo() -> None:
         "Never called"
 
     r = WeakMethodRef(Foo)
     assert str(r) == "<WeakMethodRef to Foo>"
 
 
-def testWeakRefToWeakMethodRef():
-    def Foo():
+def testWeakRefToWeakMethodRef() -> None:
+    def Foo() -> None:
         "Never called"
 
     r = WeakMethodRef(Foo)
@@ -468,8 +474,8 @@ def testWeakRefToWeakMethodRef():
     assert m_ref() is r
 
 
-def testWeakList():
-    weak_list = WeakList()
+def testWeakList() -> None:
+    weak_list = WeakList[_Stub]()
     s1 = _Stub()
     s2 = _Stub()
 
@@ -503,7 +509,7 @@ def testWeakList():
 
     assert 0 == len(weak_list[:])
 
-    def m1():
+    def m1() -> None:
         "Never called"
 
     weak_list.append(m1)
@@ -514,9 +520,10 @@ def testWeakList():
     s = _Stub()
     weak_list.append(s.Method)
     assert 1 == len(weak_list[:])
-    s = weakref.ref(s)
+    ref_s = weakref.ref(s)
+    del s
     assert 0 == len(weak_list[:])
-    assert s() is None
+    assert ref_s() is None
 
     s0 = _Stub()
     s1 = _Stub()
@@ -524,8 +531,8 @@ def testWeakList():
     assert len(weak_list) == 2
 
 
-def testSetItem():
-    weak_list = WeakList()
+def testSetItem() -> None:
+    weak_list = WeakList[_Stub]()
     s1 = _Stub()
     s2 = _Stub()
     weak_list.append(s1)
