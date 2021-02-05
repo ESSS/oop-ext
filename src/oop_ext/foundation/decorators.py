@@ -3,12 +3,16 @@
 Collection of decorator with ONLY standard library dependencies.
 """
 import warnings
-from typing import Callable, TypeVar, Optional, NoReturn
+from typing import Callable, Optional, NoReturn, TypeVar, Any, TYPE_CHECKING, cast
 
 from oop_ext.foundation.is_frozen import IsDevelopment
 
 
-def Override(method: Callable) -> Callable:
+F = TypeVar("F", bound=Callable[..., Any])
+G = TypeVar("G", bound=Callable[..., Any])
+
+
+def Override(method: G) -> Callable[[F], F]:
     """
     Decorator that marks that a method overrides a method in the superclass.
 
@@ -35,7 +39,7 @@ def Override(method: Callable) -> Callable:
             pass
     """
 
-    def Wrapper(func: Callable) -> Callable:
+    def Wrapper(func: F) -> F:
         if func.__name__ != method.__name__:
             msg = "Wrong @Override: %r expected, but overwriting %r."
             msg = msg % (func.__name__, method.__name__)
@@ -49,7 +53,7 @@ def Override(method: Callable) -> Callable:
     return Wrapper
 
 
-def Implements(method: Callable) -> Callable:
+def Implements(method: G) -> Callable[[F], F]:
     """
     Decorator that marks that a method implements a method in some interface.
 
@@ -91,10 +95,10 @@ def Implements(method: Callable) -> Callable:
 
         return func
 
-    return Wrapper
+    return cast(Callable[[F], F], Wrapper)
 
 
-def Deprecated(what: Optional[object] = None) -> Callable:
+def Deprecated(what: Optional[object] = None) -> Callable[[F], F]:
     """
     Decorator that marks a method as deprecated.
 
@@ -134,10 +138,10 @@ def Deprecated(what: Optional[object] = None) -> Callable:
             DeprecatedWrapper.__doc__ = func.__doc__
             return DeprecatedWrapper
 
-    return DeprecatedDecorator
+    return cast(Callable[[F], F], DeprecatedDecorator)
 
 
-def Abstract(func: Callable) -> Callable:
+def Abstract(func: F) -> F:
     '''
     Decorator to make methods 'abstract', which are meant to be overwritten in subclasses. If some
     subclass doesn't override the method, it will raise NotImplementedError when called. Note that
@@ -179,4 +183,4 @@ def Abstract(func: Callable) -> Callable:
     # # pylint: disable-msg=W0622
     AbstractWrapper.__name__ = func.__name__
     AbstractWrapper.__doc__ = func.__doc__
-    return AbstractWrapper
+    return cast(F, AbstractWrapper)
