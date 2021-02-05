@@ -1,14 +1,15 @@
+# mypy: disallow-untyped-defs
 """
     Defines types and functions to generate immutable structures.
 
     USER: The cache-manager uses this module to generate a valid KEY for its cache dictionary.
 """
+from typing import Type, Any, Dict, Tuple, Callable, TypeVar, Generic, NoReturn
 
-_IMMUTABLE_TYPES = {float, str, bytes, bool, type(None)}
-_IMMUTABLE_TYPES.update({int})
+_IMMUTABLE_TYPES = {float, int, str, bytes, bool, type(None)}
 
 
-def RegisterAsImmutable(immutable_type):
+def RegisterAsImmutable(immutable_type: Type[object]) -> None:
     """
     Registers the given class as being immutable. This makes it be immutable for this module and
     also registers a faster copy in the copy module (to return the same instance being copied).
@@ -21,10 +22,12 @@ def RegisterAsImmutable(immutable_type):
     # Fix it for the copy too!
     import copy
 
-    copy._copy_dispatch[immutable_type] = copy._copy_immutable
+    copy._copy_dispatch[  # type:ignore[attr-defined]
+        immutable_type
+    ] = copy._copy_immutable  # type:ignore[attr-defined]
 
 
-def AsImmutable(value, return_str_if_not_expected=True):
+def AsImmutable(value: Any, return_str_if_not_expected: bool = True) -> Any:
     """
     Returns the given instance as a immutable object:
         - Converts lists to tuples
@@ -88,31 +91,28 @@ def AsImmutable(value, return_str_if_not_expected=True):
 class ImmutableDict(dict):
     """A hashable dict."""
 
-    def __init__(self, *args, **kwds):
-        dict.__init__(self, *args, **kwds)
-
-    def __deepcopy__(self, memo):
+    def __deepcopy__(self, memo: Any) -> "ImmutableDict":
         return self  # it's immutable, so, there's no real need to make any copy
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: object, value: object) -> NoReturn:
         raise NotImplementedError("dict is immutable")
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: object) -> NoReturn:
         raise NotImplementedError("dict is immutable")
 
-    def clear(self):
+    def clear(self) -> NoReturn:
         raise NotImplementedError("dict is immutable")
 
-    def setdefault(self, k, default=None):
+    def setdefault(self, k: Any, default: Any = None) -> NoReturn:
         raise NotImplementedError("dict is immutable")
 
-    def popitem(self):
+    def popitem(self) -> NoReturn:
         raise NotImplementedError("dict is immutable")
 
-    def update(self, other):
+    def update(self, *args: object) -> NoReturn:  # type:ignore[override]
         raise NotImplementedError("dict is immutable")
 
-    def __hash__(self):
+    def __hash__(self) -> int:  # type:ignore[override]
         if not hasattr(self, "_hash"):
             # must be sorted (could give different results for dicts that should be the same
             # if it's not).
@@ -120,14 +120,14 @@ class ImmutableDict(dict):
 
         return self._hash
 
-    def AsMutable(self):
+    def AsMutable(self) -> Dict:
         """
         :rtype: this dict as a new dict that can be changed (without altering the state
         of this immutable dict).
         """
         return dict(self.items())
 
-    def __reduce__(self):
+    def __reduce__(self) -> Tuple[Callable, Tuple[object]]:
         """
         Making ImmutableDict work with newer versions of pickle protocol.
 
@@ -148,7 +148,10 @@ class ImmutableDict(dict):
         return (ImmutableDict, (list(self.items()),))
 
 
-class IdentityHashableRef:
+T = TypeVar("T")
+
+
+class IdentityHashableRef(Generic[T]):
     """
     Represents a immutable reference to an object.
 
@@ -177,19 +180,19 @@ class IdentityHashableRef:
 
     _SENTINEL = object()
 
-    def __init__(self, original):
+    def __init__(self, original: T):
         self._original = original
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         return self._original is getattr(other, "_original", self._SENTINEL)
 
-    def __ne__(self, other):
+    def __ne__(self, other: object) -> bool:
         return self._original is not getattr(other, "_original", self._SENTINEL)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return id(self._original)
 
-    def __call__(self):
+    def __call__(self) -> T:
         return self._original
 
 

@@ -4,74 +4,75 @@ from oop_ext.foundation.cached_method import (
     AttributeBasedCachedMethod,
     CachedMethod,
     LastResultCachedMethod,
+    AbstractCachedMethod,
 )
 
 
-def testCacheMethod(_cached_obj):
-    cache = MyMethod = CachedMethod(_cached_obj.CachedMethod)
+def testCacheMethod(cached_obj: "MyTestObj") -> None:
+    cache = MyMethod = CachedMethod(cached_obj.MyMethod)
 
     MyMethod(1)
-    _cached_obj.CheckCounts(cache, method=1, miss=1)
+    cached_obj.CheckCounts(cache, method=1, miss=1)
 
     MyMethod(1)
-    _cached_obj.CheckCounts(cache, hit=1)
+    cached_obj.CheckCounts(cache, hit=1)
 
     MyMethod(2)
-    _cached_obj.CheckCounts(cache, method=1, miss=1)
+    cached_obj.CheckCounts(cache, method=1, miss=1)
 
     MyMethod(2)
-    _cached_obj.CheckCounts(cache, hit=1)
+    cached_obj.CheckCounts(cache, hit=1)
 
     # ALL results are stored, so these calls are HITs
     MyMethod(1)
-    _cached_obj.CheckCounts(cache, hit=1)
+    cached_obj.CheckCounts(cache, hit=1)
 
     MyMethod(2)
-    _cached_obj.CheckCounts(cache, hit=1)
+    cached_obj.CheckCounts(cache, hit=1)
 
 
-def testCacheMethodEnabled(_cached_obj):
-    cache = MyMethod = CachedMethod(_cached_obj.CachedMethod)
-
-    MyMethod(1)
-    _cached_obj.CheckCounts(cache, method=1, miss=1)
+def testCacheMethodEnabled(cached_obj: "MyTestObj") -> None:
+    cache = MyMethod = CachedMethod(cached_obj.MyMethod)
 
     MyMethod(1)
-    _cached_obj.CheckCounts(cache, hit=1)
+    cached_obj.CheckCounts(cache, method=1, miss=1)
+
+    MyMethod(1)
+    cached_obj.CheckCounts(cache, hit=1)
 
     MyMethod.enabled = False
 
     MyMethod(1)
-    _cached_obj.CheckCounts(cache, method=1, miss=1)
+    cached_obj.CheckCounts(cache, method=1, miss=1)
 
     MyMethod.enabled = True
 
     MyMethod(1)
-    _cached_obj.CheckCounts(cache, hit=1)
+    cached_obj.CheckCounts(cache, hit=1)
 
 
-def testCacheMethodLastResultCachedMethod(_cached_obj):
-    cache = MyMethod = LastResultCachedMethod(_cached_obj.CachedMethod)
-
-    MyMethod(1)
-    _cached_obj.CheckCounts(cache, method=1, miss=1)
+def testCacheMethodLastResultCachedMethod(cached_obj: "MyTestObj") -> None:
+    cache = MyMethod = LastResultCachedMethod(cached_obj.MyMethod)
 
     MyMethod(1)
-    _cached_obj.CheckCounts(cache, hit=1)
+    cached_obj.CheckCounts(cache, method=1, miss=1)
+
+    MyMethod(1)
+    cached_obj.CheckCounts(cache, hit=1)
 
     MyMethod(2)
-    _cached_obj.CheckCounts(cache, method=1, miss=1)
+    cached_obj.CheckCounts(cache, method=1, miss=1)
 
     MyMethod(2)
-    _cached_obj.CheckCounts(cache, hit=1)
+    cached_obj.CheckCounts(cache, hit=1)
 
     # Only the LAST result is stored, so this call is a MISS.
     MyMethod(1)
-    _cached_obj.CheckCounts(cache, method=1, miss=1)
+    cached_obj.CheckCounts(cache, method=1, miss=1)
 
 
-def testCacheMethodObjectInKey(_cached_obj):
-    cache = MyMethod = CachedMethod(_cached_obj.CachedMethod)
+def testCacheMethodObjectInKey(cached_obj: "MyTestObj") -> None:
+    cache = MyMethod = CachedMethod(cached_obj.MyMethod)
 
     class MyObject:
         def __init__(self):
@@ -84,19 +85,19 @@ def testCacheMethodObjectInKey(_cached_obj):
     alpha = MyObject()
 
     MyMethod(alpha)
-    _cached_obj.CheckCounts(cache, method=1, miss=1)
+    cached_obj.CheckCounts(cache, method=1, miss=1)
 
     MyMethod(alpha)
-    _cached_obj.CheckCounts(cache, hit=1)
+    cached_obj.CheckCounts(cache, hit=1)
 
     alpha.name = "bravo"
     alpha.id = 2
 
     MyMethod(alpha)
-    _cached_obj.CheckCounts(cache, method=1, miss=1)
+    cached_obj.CheckCounts(cache, method=1, miss=1)
 
 
-def testCacheMethodAttributeBasedCachedMethod():
+def testCacheMethodAttributeBasedCachedMethod() -> None:
     class TestObject:
         def __init__(self):
             self.name = "alpha"
@@ -108,54 +109,56 @@ def testCacheMethodAttributeBasedCachedMethod():
             return "%s %d" % (par, self.id)
 
     alpha = TestObject()
-    alpha.Foo = AttributeBasedCachedMethod(alpha.Foo, "id", cache_size=3)
-    alpha.Foo("test1")
-    alpha.Foo("test1")
+    alpha.Foo = AttributeBasedCachedMethod(  # type:ignore[assignment]
+        alpha.Foo, "id", cache_size=3
+    )
+    alpha.Foo("test1")  # type:ignore[misc]
+    alpha.Foo("test1")  # type:ignore[misc]
 
     assert alpha.n_calls == 1
 
-    alpha.Foo("test2")
+    alpha.Foo("test2")  # type:ignore[misc]
     assert alpha.n_calls == 2
-    assert len(alpha.Foo._results) == 2
+    assert len(alpha.Foo._results) == 2  # type:ignore[attr-defined]
 
     alpha.id = 3
-    alpha.Foo("test2")
+    alpha.Foo("test2")  # type:ignore[misc]
     assert alpha.n_calls == 3
 
-    assert len(alpha.Foo._results) == 3
+    assert len(alpha.Foo._results) == 3  # type:ignore[attr-defined]
 
-    alpha.Foo("test3")
+    alpha.Foo("test3")  # type:ignore[misc]
     assert alpha.n_calls == 4
-    assert len(alpha.Foo._results) == 3
+    assert len(alpha.Foo._results) == 3  # type:ignore[attr-defined]
 
 
 @pytest.fixture
-def _cached_obj():
+def cached_obj():
     """
     A test_object common to many cached_method tests.
     """
+    return MyTestObj()
 
-    class TestObj:
-        def __init__(self):
-            self.method_count = 0
 
-        def CachedMethod(self, *args, **kwargs):
-            self.method_count += 1
-            return self.method_count
+class MyTestObj:
+    def __init__(self):
+        self.method_count = 0
 
-        def CheckCounts(self, cache, method=0, miss=0, hit=0):
+    def MyMethod(self, *args, **kwargs) -> int:
+        self.method_count += 1
+        return self.method_count
 
-            if not hasattr(cache, "check_counts"):
-                cache.check_counts = dict(method=0, miss=0, hit=0, call=0)
+    def CheckCounts(self, cache, method=0, miss=0, hit=0):
 
-            cache.check_counts["method"] += method
-            cache.check_counts["miss"] += miss
-            cache.check_counts["hit"] += hit
-            cache.check_counts["call"] += miss + hit
+        if not hasattr(cache, "check_counts"):
+            cache.check_counts = dict(method=0, miss=0, hit=0, call=0)
 
-            assert self.method_count == cache.check_counts["method"]
-            assert cache.miss_count == cache.check_counts["miss"]
-            assert cache.hit_count == cache.check_counts["hit"]
-            assert cache.call_count == cache.check_counts["call"]
+        cache.check_counts["method"] += method
+        cache.check_counts["miss"] += miss
+        cache.check_counts["hit"] += hit
+        cache.check_counts["call"] += miss + hit
 
-    return TestObj()
+        assert self.method_count == cache.check_counts["method"]
+        assert cache.miss_count == cache.check_counts["miss"]
+        assert cache.hit_count == cache.check_counts["hit"]
+        assert cache.call_count == cache.check_counts["call"]

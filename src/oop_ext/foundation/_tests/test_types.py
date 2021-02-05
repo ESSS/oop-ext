@@ -3,7 +3,7 @@ import copy
 from oop_ext.foundation.types_ import Null
 
 
-def testNull():
+def testNull() -> None:
     # constructing and calling
 
     dummy = Null()
@@ -26,10 +26,10 @@ def testNull():
     n.method1().attr1
 
     n.attr1 = "value"
-    n.attr1.attr2 = "value"
+    n.attr1.attr2 = "value"  # type:ignore[attr-defined]
 
     del n.attr1
-    del n.attr1.attr2.attr3
+    del n.attr1.attr2.attr3  # type:ignore[attr-defined]
 
     # Iteration
     for _ in n:
@@ -55,7 +55,7 @@ def testNull():
     assert hash(Null()) == hash(Null())
 
 
-def testNullCopy():
+def testNullCopy() -> None:
     n = Null()
     n1 = copy.copy(n)
     assert str(n) == str(n1)

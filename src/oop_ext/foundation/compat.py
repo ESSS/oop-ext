@@ -1,13 +1,11 @@
+# mypy: disallow-untyped-defs
 """
 A compatibility module for quirks when porting from py2->py3.
 """
+from typing import Any
 
 
-def __str__(self):
-    return self.__unicode__().encode("utf-8")
-
-
-def GetClassForUnboundMethod(method):
+def GetClassForUnboundMethod(method: Any) -> Any:
     """
     On Python 3 there are no unbound methods anymore. They are only regular functions.
 

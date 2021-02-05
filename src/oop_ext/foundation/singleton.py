@@ -1,5 +1,6 @@
+# mypy: disallow-untyped-defs
 import threading
-from typing import Type, Set
+from typing import Type, Set, TypeVar, Generic, List, Optional
 
 
 class SingletonError(RuntimeError):
@@ -26,7 +27,10 @@ class PushPopSingletonError(SingletonError):
     """
 
 
-class Singleton:
+T = TypeVar("T", bound="Singleton")
+
+
+class Singleton(Generic[T]):
     """
     Base class for singletons.
 
@@ -42,8 +46,10 @@ class Singleton:
 
     _singleton_classes: Set[Type["Singleton"]] = set()
 
+    __singleton_singleton_stack__: List[T]
+
     @staticmethod
-    def ResetDefaultSingletonInstances():
+    def ResetDefaultSingletonInstances() -> None:
         """
         This singleton class is intended to be used in tests with the push / pop protocol. However some singleton
         dependencies might be hidden away from the test creator (or even be introduced after the test creation) making
@@ -62,7 +68,7 @@ class Singleton:
                 instance.ResetInstance()
 
     @classmethod
-    def GetSingleton(cls):
+    def GetSingleton(cls: Type[T]) -> T:
         """
         :rtype: Singleton
         :returns:
@@ -89,7 +95,7 @@ class Singleton:
                 return stack[-1]
 
     @classmethod
-    def SetSingleton(cls, instance):
+    def SetSingleton(cls: Type[T], instance: Optional[T]) -> T:
         """
         Sets the current singleton.
 
@@ -132,7 +138,7 @@ class Singleton:
         return instance
 
     @classmethod
-    def _UsingDefaultSingleton(cls):
+    def _UsingDefaultSingleton(cls) -> bool:
         """
         Checks if the current singleton instance is the default instance.
 
@@ -147,7 +153,7 @@ class Singleton:
 
         return has_singleton and not has_pushed
 
-    def ResetInstance(self):
+    def ResetInstance(self) -> None:
         """
         Restore the instance original configuration. Singleton classes should not have a internal state to reset
         (as described in issue ETK-1235), so subclasses that implement this method are strong candidates to be refactored
@@ -158,7 +164,7 @@ class Singleton:
         pass
 
     @classmethod
-    def ClearSingleton(cls):
+    def ClearSingleton(cls) -> None:
         """
         Clears the current singleton
         """
@@ -179,7 +185,7 @@ class Singleton:
         cls.__singleton_stack_start_index = 0
 
     @classmethod
-    def HasSingleton(cls):
+    def HasSingleton(cls) -> bool:
         """
         Do we have any singleton set?
 
@@ -191,7 +197,7 @@ class Singleton:
         return len(stack) > 0
 
     @classmethod
-    def CreateDefaultSingleton(cls):
+    def CreateDefaultSingleton(cls: Type[T]) -> T:
         """
         Creates the default singleton instance, that will be used when no singleton has been installed.
         By default, tries to create the class without constructor.
@@ -205,7 +211,7 @@ class Singleton:
     # Push/Pop -------------------------------------------------------------------------------------
 
     @classmethod
-    def PushSingleton(cls, instance=None):
+    def PushSingleton(cls, instance: Optional[T] = None) -> T:
         """
         Pushes the given singleton to the top of the stack. The previous singleton will be restored
         when PopSingleton is called.
@@ -232,7 +238,7 @@ class Singleton:
         return instance
 
     @classmethod
-    def PopSingleton(cls):
+    def PopSingleton(cls: Type[T]) -> T:
         """
         Restores the singleton that was the current before the last PushSingleton.
 
@@ -256,7 +262,7 @@ class Singleton:
         return cls._ObtainStack().pop(-1)
 
     @classmethod
-    def _ObtainStack(cls):
+    def _ObtainStack(cls) -> List[T]:
         """
         Obtains the stack of singletons.
 
@@ -270,12 +276,12 @@ class Singleton:
             assert (
                 cls is not Singleton
             ), "This method can only be called from a Singleton subclass."
-            stack = []
+            stack: List[T] = []
             cls.__singleton_singleton_stack__ = stack
             return stack
 
     @classmethod
-    def GetStackCount(cls):
+    def GetStackCount(cls) -> int:
         """
         @return int:
             The number of elements added int the stack using PushSingleton.

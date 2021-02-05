@@ -15,7 +15,7 @@ def CheckCurrentSingleton(singleton_class, value):
     assert singleton.value == value
 
 
-def testSingleton():
+def testSingleton() -> None:
     class MySingleton(Singleton):
         def __init__(self, value):
             self.value = value
@@ -60,7 +60,7 @@ def testSingleton():
         MySingleton.PopSingleton()
 
 
-def testSetSingleton():
+def testSetSingleton() -> None:
     class MySingleton(Singleton):
         def __init__(self, value=None):
             self.value = value
@@ -81,7 +81,7 @@ def testSetSingleton():
         MySingleton.ClearSingleton()
 
 
-def testPushPop():
+def testPushPop() -> None:
     class MySingleton(Singleton):
         def __init__(self, value=None):
             self.value = value
@@ -106,7 +106,7 @@ def testPushPop():
         MySingleton.PopSingleton()
 
 
-def testSingletonOptimization():
+def testSingletonOptimization() -> None:
     class MySingleton(Singleton):
         pass
 
@@ -128,7 +128,7 @@ def testSingletonOptimization():
     assert not obj.called
 
 
-def testGetSingletonThreadSafe(mocker):
+def testGetSingletonThreadSafe(mocker) -> None:
     from threading import Event, Thread
 
     class MySingleton(Singleton):
