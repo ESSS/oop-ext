@@ -15,9 +15,6 @@ class Method:
     """
 
 
-T = TypeVar("T")
-
-
 class Null:
     """
     This is a sample implementation of the 'Null Object' design pattern.
@@ -101,7 +98,7 @@ class Null:
     def __delattr__(self, _name: str) -> None:
         "Ignore deleting attributes."
 
-    def __enter__(self: T) -> T:
+    def __enter__(self) -> "Null":
         return self
 
     def __exit__(self, *args: object, **kwargs: object) -> None:
@@ -121,7 +118,7 @@ class Null:
 
     # iter
 
-    def __iter__(self: T) -> Iterator[T]:
+    def __iter__(self) -> Iterator["Null"]:
         "I will stop it in the first iteration"
         return iter([self])
 
