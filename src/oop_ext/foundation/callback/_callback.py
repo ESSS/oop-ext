@@ -10,9 +10,8 @@ import attr
 from oop_ext.foundation.compat import GetClassForUnboundMethod
 from oop_ext.foundation.is_frozen import IsDevelopment
 from oop_ext.foundation.odict import odict
+from oop_ext.foundation.types_ import Method
 from oop_ext.foundation.weak_ref import WeakMethodProxy
-
-from ._callback_wrapper import _CallbackWrapper
 
 log = logging.getLogger(__name__)
 
@@ -408,3 +407,20 @@ class _UnregisterContext:
     def Unregister(self):
         """Unregister the callback which returned this context"""
         self._callback._UnregisterByKey(self._key)
+
+
+class _CallbackWrapper(Method):
+    def __init__(self, weak_method_callback):
+        self.weak_method_callback = weak_method_callback
+
+        # Maintaining the OriginalMethod() interface that clients expect.
+        self.OriginalMethod = weak_method_callback
+
+    def __call__(self, sender, *args, **kwargs):
+        c = self.weak_method_callback()
+        if c is None:
+            raise ReferenceError(
+                "This should never happen: The sender already died, so, "
+                "how can this method still be called?"
+            )
+        c(sender(), *args, **kwargs)

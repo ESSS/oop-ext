@@ -1,4 +1,4 @@
-from ._fast_callback import Callback
+from ._callback import Callback
 
 
 class SingleCallCallback:

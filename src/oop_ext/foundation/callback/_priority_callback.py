@@ -1,7 +1,7 @@
 from oop_ext.foundation.decorators import Override
 from oop_ext.foundation.odict import odict
 
-from ._fast_callback import Callback
+from ._callback import Callback
 
 
 class PriorityCallback(Callback):

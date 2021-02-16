@@ -807,7 +807,7 @@ class Test:
         assert len(c) == 0
 
         a = A()
-        from oop_ext.foundation.callback._callback_wrapper import _CallbackWrapper
+        from oop_ext.foundation.callback._callback import _CallbackWrapper
 
         c.Register(_CallbackWrapper(WeakMethodRef(a.SetA)))
         assert len(c) == 1

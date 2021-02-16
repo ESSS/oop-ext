@@ -1,6 +1,6 @@
 from typing import Callable, Any, List, Tuple
 
-from ._fast_callback import Callback, _UnregisterContext
+from ._callback import Callback, _UnregisterContext
 from ._shortcuts import After, Before, Remove
 
 

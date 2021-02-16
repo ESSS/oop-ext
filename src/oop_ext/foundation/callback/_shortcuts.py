@@ -3,8 +3,8 @@ import weakref
 from oop_ext.foundation.types_ import Method
 from oop_ext.foundation.weak_ref import WeakMethodRef
 
-from ._callback_wrapper import _CallbackWrapper
-from ._fast_callback import Callback, GetClassForUnboundMethod
+
+from ._callback import Callback, GetClassForUnboundMethod, _CallbackWrapper
 
 
 def _CreateBeforeOrAfter(method, callback, sender_as_parameter, before=True):
