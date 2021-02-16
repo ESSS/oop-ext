@@ -42,7 +42,7 @@ class _InterfM4(_InterfM3):
         ""
 
 
-def testBasics():
+def testBasics() -> None:
     class I(Interface):
         def foo(self, a, b=None):
             ""
@@ -76,8 +76,8 @@ def testBasics():
     assert IsImplementation(C2, I, requires_declaration=True) == False
     assert not IsImplementation(D, I) == True  # nope
 
-    assert I(C) is C
-    assert I(C2) is C2
+    assert I(C) is C  # type:ignore[comparison-overlap]
+    assert I(C2) is C2  # type:ignore[comparison-overlap]
     with pytest.raises(InterfaceError):
         I()
 
@@ -92,7 +92,7 @@ def testBasics():
     )  # Even if it doesn't declare
 
 
-def testMissingMethod():
+def testMissingMethod() -> None:
     class I(Interface):
         def foo(self, a, b=None):
             ""
@@ -155,7 +155,7 @@ def testMissingMethod():
     )
 
 
-def testSubclasses():
+def testSubclasses() -> None:
     class I(Interface):
         def foo(self, a, b=None):
             ""
@@ -169,7 +169,7 @@ def testSubclasses():
         ""
 
 
-def testSubclasses2():
+def testSubclasses2() -> None:
     class I(Interface):
         def foo(self):
             ""
@@ -196,7 +196,7 @@ def testSubclasses2():
     assert GetImplementedInterfaces(E) == {I2, I}
 
 
-def testNoName():
+def testNoName() -> None:
     class I(Interface):
         def MyMethod(self, foo):
             ""
@@ -209,7 +209,7 @@ def testNoName():
         AssertImplements(C(), I)
 
 
-def testAttributes():
+def testAttributes() -> None:
     class IZoo(Interface):
         zoo = Attribute(int)
 
@@ -235,13 +235,13 @@ def testAttributes():
         pass
 
     c1 = C()
-    c1.foo = 10
-    c1.bar = "hello"
-    c1.foobar = 20
+    c1.foo = 10  # type:ignore[attr-defined]
+    c1.bar = "hello"  # type:ignore[attr-defined]
+    c1.foobar = 20  # type:ignore[attr-defined]
 
     a_zoo = Zoo()
-    a_zoo.zoo = 99
-    c1.a_zoo = a_zoo
+    a_zoo.zoo = 99  # type:ignore[attr-defined]
+    c1.a_zoo = a_zoo  # type:ignore[attr-defined]
 
     c2 = C()
 
@@ -261,19 +261,19 @@ def testAttributes():
 
     # must not be true if including an object that doesn't implement IZoo interface expected for
     # a_zoo attribute
-    c1.a_zoo = "wrong"
+    c1.a_zoo = "wrong"  # type:ignore[attr-defined]
     assert not _IsImplementationFullChecking(c1, I) == True  # failed, invalid attr type
-    c1.a_zoo = a_zoo
+    c1.a_zoo = a_zoo  # type:ignore[attr-defined]
 
     # test if we can set foobar to None
-    c1.foobar = None
+    c1.foobar = None  # type:ignore[attr-defined]
     assert IsImplementation(c1, I) == True  # OK
 
-    c1.foobar = "hello"
+    c1.foobar = "hello"  # type:ignore[attr-defined]
     assert not _IsImplementationFullChecking(c1, I) == True  # failed, invalid attr type
 
 
-def testPassNoneInAssertImplementsFullChecking():
+def testPassNoneInAssertImplementsFullChecking() -> None:
     with pytest.raises(AssertionError):
         AssertImplements(None, _InterfM1)
 
@@ -281,7 +281,7 @@ def testPassNoneInAssertImplementsFullChecking():
         AssertImplements(10, _InterfM1)
 
 
-def testNoCheck():
+def testNoCheck() -> None:
     @ImplementsInterface(_InterfM1, no_check=True)
     class NoCheck:
         pass
@@ -291,7 +291,7 @@ def testNoCheck():
         AssertImplements(no_check, _InterfM1)
 
 
-def testCallbackAndInterfaces():
+def testCallbackAndInterfaces() -> None:
     """
     Tests if the interface "AssertImplements" works with "callbacked" methods.
     """
@@ -315,7 +315,7 @@ def testCallbackAndInterfaces():
     AssertImplements(o, _InterfM1)  # Not raises BadImplementationError
 
 
-def testInterfaceStubFromClasses():
+def testInterfaceStubFromClasses() -> None:
     @ImplementsInterface(_InterfM1)
     class My:
         def m1(self):
@@ -336,7 +336,7 @@ def testInterfaceStubFromClasses():
     _InterfM1(m1)  # Not raise BadImplementationError
 
 
-def testStubsFromInstances():
+def testStubsFromInstances() -> None:
     """Check that creating interface stubs (``foo = IFoo(foo)``) work as expected"""
 
     class IFoo(Interface):
@@ -354,10 +354,10 @@ def testStubsFromInstances():
     assert stub.foo() == 10
 
     with pytest.raises(AttributeError):
-        stub.bar()
+        stub.bar()  # type:ignore[attr-defined]
 
 
-def testIsImplementationWithSubclasses():
+def testIsImplementationWithSubclasses() -> None:
     """
     Checks if the IsImplementation method works with subclasses interfaces.
 
@@ -404,13 +404,13 @@ def testIsImplementationWithSubclasses():
     assert IsImplementation(wrapped_intef_m4, _InterfM3) == True
 
 
-def testIsImplementationWithBuiltInObjects():
+def testIsImplementationWithBuiltInObjects() -> None:
 
     my_number = 10
     assert IsImplementation(my_number, _InterfM1) == False
 
 
-def testClassImplementMethod():
+def testClassImplementMethod() -> None:
     """
     Tests replacing a method that implements an interface with a class.
 
@@ -434,27 +434,27 @@ def testClassImplementMethod():
     # NOTE: It doesn't matter runtime modifications in the instance, what is really being tested
     #       is the *class* of the object (My) is what is really being tested.
     m = My()
-    m.m1 = MyWrongMethod()
+    m.m1 = MyWrongMethod()  # type:ignore[assignment]
     assert IsImplementation(m, _InterfM1) == True
 
-    m.m1 = MyRightMethod()
+    m.m1 = MyRightMethod()  # type:ignore[assignment]
     assert IsImplementation(m, _InterfM1) == True
 
     # NOTE: Testing behaviour of private methods here.
     from oop_ext.interface._interface import _IsImplementationFullChecking
 
     m = My()
-    m.m1 = MyWrongMethod()
+    m.m1 = MyWrongMethod()  # type:ignore[assignment]
     assert not _IsImplementationFullChecking(m, _InterfM1)
 
-    m.m1 = MyRightMethod()
+    m.m1 = MyRightMethod()  # type:ignore[assignment]
     assert _IsImplementationFullChecking(m, _InterfM1)
 
     del m.m1
     assert IsImplementation(m, _InterfM1) == True
 
 
-def testGetImplementedInterfaces():
+def testGetImplementedInterfaces() -> None:
     @ImplementsInterface(_InterfM1)
     class A:
         def m1(self):
@@ -475,7 +475,7 @@ def testGetImplementedInterfaces():
     assert set(GetImplementedInterfaces(C())) == {_InterfM4, _InterfM3}
 
 
-def testGetImplementedInterfaces2():
+def testGetImplementedInterfaces2() -> None:
     @ImplementsInterface(_InterfM1)
     class A:
         def m1(self):
@@ -493,7 +493,7 @@ def testGetImplementedInterfaces2():
     AssertImplements(B(), _InterfM2)
 
 
-def testAdaptableInterface():
+def testAdaptableInterface() -> None:
     @ImplementsInterface(IAdaptable)
     class A:
         def GetAdapter(self, interface_class):
@@ -515,7 +515,7 @@ def testAdaptableInterface():
     assert isinstance(b, InterfaceImplementorStub)
 
 
-def testNull():
+def testNull() -> None:
     AssertImplements(
         Null(), _InterfM2, requires_declaration=False
     )  # Not raises BadImplementationError
@@ -528,7 +528,7 @@ def testNull():
     )  # Not raises BadImplementationError
 
 
-def testSetItem():
+def testSetItem() -> None:
     class InterfSetItem(Interface):
         def __setitem__(self, item_id, subject):
             ""
@@ -549,7 +549,7 @@ def testSetItem():
     assert ("10", 1) == a["10"]
 
 
-def testAssertImplementsDoesNotDirObject():
+def testAssertImplementsDoesNotDirObject() -> None:
     """
     AssertImplements does not attempt to __getattr__ methods from an object, it only considers
     methods that are actually bound to the class.
@@ -571,7 +571,7 @@ def testAssertImplementsDoesNotDirObject():
         AssertImplements(m1, _InterfM1)
 
 
-def testImplementorWithAny():
+def testImplementorWithAny() -> None:
     """
     You don't need to explicitly declare that you implement an Interface.
     This is just a smoke test
@@ -584,16 +584,16 @@ def testImplementorWithAny():
     AssertImplements(M3(), _InterfM3, requires_declaration=False)
 
 
-def testInterfaceCheckRequiresInterface():
+def testInterfaceCheckRequiresInterface() -> None:
     class M3:
         def m3(self, *args, **kwargs):
             ""
 
     with pytest.raises(InterfaceError):
-        AssertImplements(M3(), M3)
+        AssertImplements(M3(), M3)  # type:ignore[arg-type]
 
     with pytest.raises(InterfaceError):
-        IsImplementation(M3(), M3)
+        IsImplementation(M3(), M3)  # type:ignore[arg-type]
 
     assert IsImplementation(M3(), _InterfM3, requires_declaration=False)
     assert not IsImplementation(M3(), _InterfM3, requires_declaration=True)
@@ -602,7 +602,7 @@ def testInterfaceCheckRequiresInterface():
         AssertImplements(M3(), _InterfM3, requires_declaration=True)
 
 
-def testReadOnlyAttribute():
+def testReadOnlyAttribute() -> None:
     class IZoo(Interface):
         zoo = ReadOnlyAttribute(int)
 
@@ -615,7 +615,7 @@ def testReadOnlyAttribute():
     AssertImplements(a_zoo, IZoo)
 
 
-def testReadOnlyAttributeMissingImplementation():
+def testReadOnlyAttributeMissingImplementation() -> None:
     """
     First implementation of changes in interfaces to support read-only attributes was not
     including read-only attributes when AssertImplements was called.
@@ -641,7 +641,7 @@ def testReadOnlyAttributeMissingImplementation():
         _AssertImplementsFullChecking(a_flawed_zoo, IZoo)
 
 
-def testImplementsTwice():
+def testImplementsTwice() -> None:
     class I1(Interface):
         def Method1(self):
             ""
@@ -662,7 +662,7 @@ def testImplementsTwice():
         Create()
 
 
-def testDeclareClassImplements():
+def testDeclareClassImplements() -> None:
     class I1(Interface):
         def M1(self):
             ""
@@ -725,7 +725,7 @@ def testDeclareClassImplements():
     AssertImplements(C12, I2)
 
 
-def testCallableInterfaceStub():
+def testCallableInterfaceStub() -> None:
     """
     Validates that is possible to create stubs for interfaces of callables (i.e. declaring
     __call__ method in interface).
@@ -759,12 +759,12 @@ def testCallableInterfaceStub():
             ""
 
     bar = Bar()
-    stub = IBar(bar)
+    stub2 = IBar(bar)
     with pytest.raises(AttributeError):
-        stub(stuff=None)
+        stub2(stuff=None)  # type:ignore[operator]
 
 
-def testImplementsInterfaceAsBoolError():
+def testImplementsInterfaceAsBoolError() -> None:
     """
     Test if the common erroneous use of interface.ImplementsInterface() instead of
     interface.IsImplementation() to test if an object implements an interface correctly
@@ -785,13 +785,13 @@ def testImplementsInterfaceAsBoolError():
     assert IsImplementation(obj, I1)
 
     with pytest.raises(RuntimeError):
-        if ImplementsInterface(obj, I1):
+        if ImplementsInterface(obj, I1):  # type:ignore[arg-type]
             pytest.fail('Managed to test "if ImplementsInterface(obj, I1):"')
 
 
 @pytest.mark.parametrize("check_before", [True, False])
 @pytest.mark.parametrize("autospec", [True, False])
-def test_interface_subclass_mocked(mocker, check_before, autospec):
+def test_interface_subclass_mocked(mocker, check_before, autospec) -> None:
     """
     Interfaces check implementation during class declaration. However a
     subclass doesn't have its implementation checked.
@@ -829,7 +829,7 @@ def test_interface_subclass_mocked(mocker, check_before, autospec):
     assert interface.IsImplementation(Bar, II, requires_declaration=True)
 
 
-def testErrorOnInterfaceDeclaration():
+def testErrorOnInterfaceDeclaration() -> None:
 
     with pytest.raises(AssertionError):
 
@@ -839,7 +839,7 @@ def testErrorOnInterfaceDeclaration():
         interface.ImplementsInterface(_InterfM1)(Foo)
 
 
-def testKeywordOnlyArguments():
+def testKeywordOnlyArguments() -> None:
     class IFoo(interface.Interface):
         def foo(self, x, *, active, enabled=True):
             pass
@@ -857,7 +857,7 @@ def testKeywordOnlyArguments():
                 pass
 
 
-def testHashableArgumentsInterface():
+def testHashableArgumentsInterface() -> None:
 
     expected = "Method IFoo.foo contains unhashable arguments:\n" "(self, x=[])"
     with pytest.raises(TypeError, match=re.escape(expected)):
@@ -867,7 +867,7 @@ def testHashableArgumentsInterface():
                 pass
 
 
-def testHashableArgumentsImplementation():
+def testHashableArgumentsImplementation() -> None:
     class IFoo(interface.Interface):
         def foo(self, x=()):
             pass
@@ -881,7 +881,7 @@ def testHashableArgumentsImplementation():
                 pass
 
 
-def testIsImplementationOfAny():
+def testIsImplementationOfAny() -> None:
     class A:
         def m3(self, arg1, arg2):
             ""
@@ -896,7 +896,7 @@ def testIsImplementationOfAny():
     )
 
 
-def testClassMethodBug(mocker):
+def testClassMethodBug(mocker) -> None:
     """
     Issue #20
     """

@@ -22,4 +22,7 @@ class IAdaptable(Interface):
         :param interface_class:
         :rtype: an object implementing the required interface or None if this object cannot
         adapt to that interface.
+
+        Note: explicitly not adding type hints here as this would break every implementation, as
+            Interface also checks type hints.
         """

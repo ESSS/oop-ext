@@ -1,3 +1,21 @@
+"""
+    Interfaces module.
+
+    A Interface describes a behaviour that some objects must implement.
+
+    To declare a interface, just subclass from Interface::
+
+        class IFoo(interface.Interface):
+            ...
+
+    To create a class that implements that interface, use interface.Implements:
+
+        class Foo(object):
+            interface.Implements(IFoo)
+
+    If Foo doesn't implement some method from IFoo, an exception is raised at class creation time.
+"""
+
 from ._adaptable_interface import IAdaptable
 from ._interface import (
     AssertDeclaresInterface,
@@ -18,23 +36,6 @@ from ._interface import (
     ReadOnlyAttribute,
 )
 
-"""
-    Interfaces module.
-
-    A Interface describes a behaviour that some objects must implement.
-
-    To declare a interface, just subclass from Interface::
-
-        class IFoo(interface.Interface):
-            ...
-
-    To create a class that implements that interface, use interface.Implements:
-
-        class Foo(object):
-            interface.Implements(IFoo)
-
-    If Foo doesn't implement some method from IFoo, an exception is raised at class creation time.
-"""
 
 __all__ = [
     "AssertDeclaresInterface",
