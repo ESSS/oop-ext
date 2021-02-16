@@ -2,7 +2,7 @@
 """
 Extensions to python native types.
 """
-from typing import TYPE_CHECKING, Any, NoReturn, Iterator, TypeVar
+from typing import TYPE_CHECKING, Any, NoReturn, Iterator
 
 if TYPE_CHECKING:
     from typing_extensions import Literal

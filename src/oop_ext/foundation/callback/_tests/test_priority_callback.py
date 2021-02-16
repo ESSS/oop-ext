@@ -1,7 +1,7 @@
 from oop_ext.foundation.callback import PriorityCallback
 
 
-def testPriorityCallback():
+def testPriorityCallback() -> None:
     priority_callback = PriorityCallback()
 
     called = []
