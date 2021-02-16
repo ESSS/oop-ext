@@ -1,5 +1,6 @@
 import weakref
 from functools import partial
+from typing import Generator, Any, List
 
 import pytest
 
@@ -31,7 +32,7 @@ class Stub:
 
 
 @pytest.fixture(autouse=True)
-def restore_test_classes():
+def restore_test_classes() -> Generator[None, None, None]:
     """
     It can't reliably bind callbacks to methods in local temporary classes from Python 3 onward,
     as callback is unable to later know to which class was bound to.
@@ -44,8 +45,8 @@ def restore_test_classes():
     original_c_foo = C.foo
 
     yield
-    Stub.call = original_stub_call
-    C.foo = original_c_foo
+    Stub.call = original_stub_call  # type:ignore[assignment]
+    C.foo = original_c_foo  # type:ignore[assignment]
 
 
 class Test:
@@ -71,7 +72,7 @@ class Test:
         self.before_called = None
         self.before_count = 0
 
-    def testClassOverride(self):
+    def testClassOverride(self) -> None:
         Before(C.foo, self.before)
         After(C.foo, self.after)
 
@@ -98,7 +99,7 @@ class Test:
         assert self.before_called == (self.b, 2)
         assert self.before_count == 2
 
-    def testInstanceOverride(self):
+    def testInstanceOverride(self) -> None:
         Before(self.a.foo, self.before)
         After(self.a.foo, self.after)
 
@@ -132,7 +133,7 @@ class Test:
         assert self.before_called == (5,)
         assert self.before_count == 2
 
-    def testBoundMethodsWrong(self):
+    def testBoundMethodsWrong(self) -> None:
         foo = self.a.foo
         Before(foo, self.before)
         After(foo, self.after)
@@ -141,7 +142,7 @@ class Test:
         assert 0 == self.before_count
         assert 0 == self.after_count
 
-    def testBoundMethodsRight(self):
+    def testBoundMethodsRight(self) -> None:
         foo = self.a.foo
         foo = Before(foo, self.before)
         foo = After(foo, self.after)
@@ -150,7 +151,7 @@ class Test:
         assert self.before_count == 1
         assert self.after_count == 1
 
-    def testReferenceDies(self):
+    def testReferenceDies(self) -> None:
         class Receiver:
             def before(dummy, *args):  # @NoSelf
                 self.before_count += 1
@@ -173,7 +174,7 @@ class Test:
         assert self.before_args == (10,)
         assert self.before_count == 1
 
-    def testSenderDies(self):
+    def testSenderDies(self) -> None:
         class Sender:
             def foo(s, *args):  # @NoSelf
                 s.args = args
@@ -198,7 +199,7 @@ class Test:
             f(10)  # must have already died: we don't have a strong reference
         assert w() is None
 
-    def testLessArgs(self):
+    def testLessArgs(self) -> None:
         class C:
             def foo(self, _x, _y, **_kwargs):
                 pass
@@ -227,7 +228,7 @@ class Test:
         assert self.after_1_res == 10
         assert self.after_0_res == 0
 
-    def testWithCallable(self):
+    def testWithCallable(self) -> None:
         class Stub:
             def call(self, _b):
                 pass
@@ -243,7 +244,7 @@ class Test:
 
         assert a.called
 
-    def testCallback(self):
+    def testCallback(self) -> None:
 
         self.args = [None, None]
 
@@ -270,11 +271,11 @@ class Test:
 
         c.Unregister(foo)
 
-    def test_extra_args(self):
+    def test_extra_args(self) -> None:
         """
         Tests the extra-args parameter in Register method.
         """
-        self.zulu_calls = []
+        self.zulu_calls: List[Any] = []
 
         def zulu_one(*args):
             self.zulu_calls.append(args)
@@ -283,7 +284,7 @@ class Test:
             self.zulu_calls.append(args)
 
         alpha = Callback()
-        alpha.Register(zulu_one, [1, 2])
+        alpha.Register(zulu_one, (1, 2))
 
         assert self.zulu_calls == []
 
@@ -294,7 +295,7 @@ class Test:
         assert self.zulu_calls == [(1, 2, "a"), (1, 2, "a", "b", "c")]
 
         # Test a second method with extra-args
-        alpha.Register(zulu_too, [9])
+        alpha.Register(zulu_too, (9,))
 
         alpha("a")
         assert self.zulu_calls == [
@@ -304,7 +305,7 @@ class Test:
             (9, "a"),
         ]
 
-    def test_sender_as_parameter(self):
+    def test_sender_as_parameter(self) -> None:
         self.zulu_calls = []
 
         def zulu_one(*args):
@@ -326,7 +327,7 @@ class Test:
         self.a.foo(1)
         assert self.zulu_calls == [(self.a, 1), (self.a, 1)]
 
-    def test_sender_as_parameter_after_and_before(self):
+    def test_sender_as_parameter_after_and_before(self) -> None:
         self.zulu_calls = []
 
         def zulu_one(*args):
@@ -342,7 +343,7 @@ class Test:
         self.a.foo(0)
         assert self.zulu_calls == [(1, (self.a, 0)), (2, (0,))]
 
-    def testContains(self):
+    def testContains(self) -> None:
         def foo(x):
             pass
 
@@ -354,7 +355,9 @@ class Test:
         c.Unregister(foo)
         assert not c.Contains(foo)
 
-    def testCallbackReceiverDies(self):
+    args: Any
+
+    def testCallbackReceiverDies(self) -> None:
         class A:
             def on_foo(dummy, *args):  # @NoSelf
                 self.args = args
@@ -379,7 +382,7 @@ class Test:
         foo(5, 6)
         assert self.args == (3, 4)
 
-    def testActionMethodDies(self):
+    def testActionMethodDies(self) -> None:
         class A:
             def foo(self):
                 pass
@@ -406,7 +409,7 @@ class Test:
 
         assert weak_a() is None
 
-    def testAfterRegisterMultipleAndUnregisterOnce(self):
+    def testAfterRegisterMultipleAndUnregisterOnce(self) -> None:
         class A:
             def foo(self):
                 pass
@@ -445,7 +448,7 @@ class Test:
         a.foo()
         assert 5 == self.after_exec
 
-    def testOnClassMethod(self):
+    def testOnClassMethod(self) -> None:
         class A:
             @classmethod
             def foo(cls):
@@ -475,7 +478,7 @@ class Test:
         assert 1 == self.after_exec_class_method
         assert 2 == self.after_exec_self_method
 
-    def testSenderDies2(self):
+    def testSenderDies2(self) -> None:
         After(self.a.foo, self.after, True)
         self.a.foo(1)
         assert (self.a, 1) == self.after_called
@@ -486,7 +489,7 @@ class Test:
         del self.a
         assert a() is None
 
-    def testCallbacksBeforeAfter(self):
+    def testCallbacksBeforeAfter(self) -> None:
         """
         Callbacks.Before and After should call the registered function before/after another
         function.
@@ -507,7 +510,7 @@ class Test:
         self.a.foo(42)
         assert events == ["before_bar", "after_bar"]
 
-    def testCallbacksRegister(self):
+    def testCallbacksRegister(self) -> None:
         """
         Callbacks().Register() when used as a context manager unregisters the callbacks
         automatically when the context ends.
@@ -533,7 +536,7 @@ class Test:
 
         assert events == ["c1-first", "c2-first"]
 
-    def testAfterRemove(self):
+    def testAfterRemove(self) -> None:
 
         my_object = _MyClass()
         my_object.SetAlpha(0)
@@ -549,7 +552,7 @@ class Test:
         my_object.SetAlpha(2)
         assert my_object.bravo == 1
 
-    def testAfterRemoveCallback(self):
+    def testAfterRemoveCallback(self) -> None:
         my_object = _MyClass()
         my_object.SetAlpha(0)
         my_object.SetBravo(0)
@@ -567,7 +570,7 @@ class Test:
         my_object.SetAlpha(4)
         assert my_object.bravo == 3
 
-    def testAfterRemoveCallbackAndSenderAsParameter(self):
+    def testAfterRemoveCallbackAndSenderAsParameter(self) -> None:
         my_object = _MyClass()
         my_object.SetAlpha(0)
         my_object.SetBravo(0)
@@ -587,7 +590,7 @@ class Test:
         my_object.SetAlpha(4)
         assert 3 == self._value
 
-    def testDeadCallbackCleared(self):
+    def testDeadCallbackCleared(self) -> None:
         my_object = _MyClass()
         my_object.SetAlpha(0)
         my_object.SetBravo(0)
@@ -604,6 +607,9 @@ class Test:
         a = A()
         b = B()
 
+        self._a_value = None
+        self._b_value = None
+
         # Test After/Remove with a callback and sender_as_parameter
         After(my_object.SetAlpha, a.event, sender_as_parameter=True)
         After(my_object.SetAlpha, b.event, sender_as_parameter=False)
@@ -618,7 +624,7 @@ class Test:
         assert 4 == self._b_value
         assert w() is None
 
-    def testRemoveCallbackPlain(self):
+    def testRemoveCallbackPlain(self) -> None:
         class C:
             def __init__(self, name):
                 self.name = name
@@ -654,7 +660,7 @@ class Test:
         # self.assertNotRaises(RuntimeError, c.Unregister, instance2.OnCallback)
         c.Unregister(instance2.OnCallback)
 
-    def testRemoveCallbackContext(self):
+    def testRemoveCallbackContext(self) -> None:
         """Callback.Register() returns a context that can be used to unregister that call."""
         events = []
 
@@ -680,7 +686,7 @@ class Test:
         c2("c2-second")
         assert events == ["c1-first", "c2-first"]
 
-    def testRegisterTwice(self):
+    def testRegisterTwice(self) -> None:
         self.called = 0
 
         def After(*args):
@@ -693,7 +699,7 @@ class Test:
         c()
         assert self.called == 1
 
-    def testHandleErrorOnCallback(self, mocker):
+    def testHandleErrorOnCallback(self, mocker) -> None:
         self.called = 0
 
         def After(*args, **kwargs):
@@ -717,7 +723,7 @@ class Test:
             c()
         assert self.called == 1
 
-    def testAfterBeforeHandleError(self):
+    def testAfterBeforeHandleError(self) -> None:
         class C:
             def Method(self, x):
                 return x * 2
@@ -744,7 +750,7 @@ class Test:
         assert self.before_called == 1
         assert self.after_called == 0
 
-    def testKeyReusedAfterDead(self, monkeypatch):
+    def testKeyReusedAfterDead(self, monkeypatch) -> None:
         self._gotten_key = False
 
         def GetKey(*args, **kwargs):
@@ -815,7 +821,7 @@ class Test:
         assert not c.Contains(AfterMethodB)
         assert len(c) == 0
 
-    def testNeedsUnregister(self):
+    def testNeedsUnregister(self) -> None:
         c = Callback()
 
         # Even when the function isn't registered, we not raise an error.
@@ -825,7 +831,7 @@ class Test:
         # self.assertNotRaises(RuntimeError, c.Unregister, Func)
         c.Unregister(Func)
 
-    def testUnregisterAll(self):
+    def testUnregisterAll(self) -> None:
         c = Callback()
 
         # self.assertNotRaises(AttributeError, c.UnregisterAll)
@@ -842,7 +848,7 @@ class Test:
         c()
         assert self.called == False
 
-    def testOnClassAndOnInstance1(self):
+    def testOnClassAndOnInstance1(self) -> None:
         vals = []
 
         def OnCall1(instance, val):
@@ -858,7 +864,7 @@ class Test:
         s.call(True)
         assert [("call_instance", True), ("call_class", True)] == vals
 
-    def testOnClassAndOnInstance2(self):
+    def testOnClassAndOnInstance2(self) -> None:
         vals = []
 
         def OnCall1(instance, val):
@@ -880,7 +886,7 @@ class Test:
         s.call(True)
         assert [("call_instance", True)] == vals
 
-    def testOnNullClass(self):
+    def testOnNullClass(self) -> None:
         class _MyNullSubClass(Null):
             def GetIstodraw(self):
                 return True
@@ -892,13 +898,13 @@ class Test:
 
         After(s.SetIstodraw, AfterSetIstodraw)
 
-    def testListMethodAsCallback(self, mocker):
+    def testListMethodAsCallback(self, mocker) -> None:
         """
         This was based on a failure on
         souring20.core.model.multiple_simulation_runs._tests.test_multiple_simulation_runs.testNormalExecution
         which failed with "TypeError: cannot create weak reference to 'list' object"
         """
-        vals = []
+        vals: List[str] = []
 
         class Stub:
             def call(self, *args, **kwargs):
@@ -910,7 +916,7 @@ class Test:
         s.call("call_append")
         assert ["call_append"] == vals
 
-    def testCallbackWithMagicMock(self, mocker):
+    def testCallbackWithMagicMock(self, mocker) -> None:
         """
         Check that we can register mock.MagicMock objects in callbacks.
 
@@ -958,7 +964,7 @@ class Test:
         c(30, name="Z")
         assert len(magic_mock.call_args_list) == 2
 
-    def testCallbackInstanceWeakRef(self):
+    def testCallbackInstanceWeakRef(self) -> None:
         class Obj:
             def __init__(self):
                 self.called = False
@@ -972,10 +978,11 @@ class Test:
         c()
         assert c.Contains(obj)
         assert obj.called
-        obj = weakref.ref(obj)
-        assert obj() is None
+        obj_ref = weakref.ref(obj)
+        del obj
+        assert obj_ref() is None
 
-    def testBeforeAfterWeakProxy(self):
+    def testBeforeAfterWeakProxy(self) -> None:
         class Foo:
             def __init__(self):
                 Before(self.SetFilename, GetWeakProxy(self._BeforeSetFilename))
@@ -997,7 +1004,7 @@ class Test:
         assert foo.before
         assert foo.after
 
-    def testKeepStrongReference(self):
+    def testKeepStrongReference(self) -> None:
         class Obj:
             __CALLBACK_KEEP_STRONG_REFERENCE__ = True
 
@@ -1013,11 +1020,12 @@ class Test:
         c()
         assert c.Contains(obj)
         assert obj.called
-        obj = weakref.ref(obj)
+        obj_ref = weakref.ref(obj)
+        del obj
         # Not collected because of __CALLBACK_KEEP_STRONG_REFERENCE__ in the class.
-        assert obj() is not None
+        assert obj_ref() is not None
 
-    def testWeakMethodProxy(self):
+    def testWeakMethodProxy(self) -> None:
         class Obj:
             def Foo(self):
                 self.called = True
@@ -1030,12 +1038,13 @@ class Test:
         c()
         assert obj.called
         assert c.Contains(proxy)
-        obj = weakref.ref(obj)
-        assert obj() is None
+        obj_ref = weakref.ref(obj)
+        del obj
+        assert obj_ref() is None
         c()
         assert len(c) == 0
 
-    def testWeakMethodProxy2(self):
+    def testWeakMethodProxy2(self) -> None:
         def Foo():
             self.called = True
 
@@ -1047,12 +1056,12 @@ class Test:
         assert self.called
         assert c.Contains(proxy)
 
-    def testWeakRefToCallback(self):
+    def testWeakRefToCallback(self) -> None:
         c = Callback()
         c_ref = weakref.ref(c)
         assert c_ref() is c
 
-    def testCallbackAndPartial(self):
+    def testCallbackAndPartial(self) -> None:
         from functools import partial
 
         called = []
@@ -1066,7 +1075,7 @@ class Test:
         c()
         assert called == ["lambda", "partial"]
 
-    def testCallbackInsideCallback(self):
+    def testCallbackInsideCallback(self) -> None:
         class A(object):
             c = Callback()
 

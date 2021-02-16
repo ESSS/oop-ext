@@ -14,6 +14,9 @@ class Method:
     (and its __call__ method is checked for the parameters)
     """
 
+    __self__: object
+    __name__: str
+
 
 class Null:
     """

@@ -3,7 +3,7 @@ import inspect
 import logging
 import types
 import weakref
-from typing import Callable, Any, Tuple, Hashable
+from typing import Callable, Any, Tuple, Hashable, Sequence
 
 import attr
 
@@ -255,7 +255,7 @@ class Callback:
     def Register(
         self,
         func: Callable[..., Any],
-        extra_args: Tuple[object, ...] = _EXTRA_ARGS_CONSTANT,
+        extra_args: Sequence[object] = _EXTRA_ARGS_CONSTANT,
     ) -> "_UnregisterContext":
         """
         Registers a function in the callback.
