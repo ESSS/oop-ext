@@ -18,6 +18,7 @@ from oop_ext.interface import (
     IsImplementation,
     ReadOnlyAttribute,
     IsImplementationOfAny,
+    TypeCheckingSupport,
 )
 from oop_ext import interface
 
@@ -914,3 +915,25 @@ def testClassMethodBug(mocker) -> None:
 
     mocker.spy(FooImplementation, "foo")
     AssertImplements(FooImplementation, IFoo, requires_declaration=True)
+
+
+def testInterfaceTypeChecking() -> None:
+    """
+    This doesn't really test anything in runtime, it is here for the benefit
+    of type-checking to ensure TypeCheckingSupport is working (the code
+    below won't pass type checking otherwise).
+    """
+
+    class IAcme(Interface, TypeCheckingSupport):
+        def Foo(self, a, b=None) -> int:
+            ...
+
+    @ImplementsInterface(IAcme)
+    class Acme:
+        def Foo(self, a, b=None) -> int:
+            return 40 + a
+
+    def Foo(a: IAcme) -> int:
+        return a.Foo(2)
+
+    assert Foo(Acme()) == 42

@@ -34,6 +34,7 @@ from ._interface import (
     IsImplementation,
     IsImplementationOfAny,
     ReadOnlyAttribute,
+    TypeCheckingSupport,
 )
 
 
@@ -44,15 +45,16 @@ __all__ = [
     "Attribute",
     "BadImplementationError",
     "CacheInterfaceAttrs",
+    "DeclareClassImplements",
     "GetImplementedInterfaces",
     "IAdaptable",
+    "ImplementsInterface",
     "Interface",
     "InterfaceError",
     "InterfaceImplementationMetaClass",
     "InterfaceImplementorStub",
     "IsImplementation",
-    "ReadOnlyAttribute",
-    "ImplementsInterface",
-    "DeclareClassImplements",
     "IsImplementationOfAny",
+    "ReadOnlyAttribute",
+    "TypeCheckingSupport",
 ]

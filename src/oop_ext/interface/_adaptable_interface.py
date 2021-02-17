@@ -1,7 +1,8 @@
+from ._interface import TypeCheckingSupport
 from ._interface import Interface
 
 
-class IAdaptable(Interface):
+class IAdaptable(Interface, TypeCheckingSupport):
     """
     An interface for an object that is adaptable.
 

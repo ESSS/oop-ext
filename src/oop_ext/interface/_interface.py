@@ -42,8 +42,6 @@ from typing import (
     Generic,
     Type,
     Any,
-    overload,
-    NoReturn,
     Sequence,
     Tuple,
     Optional,
@@ -63,6 +61,31 @@ from oop_ext.foundation.cached_method import ImmutableParamsCachedMethod
 
 if TYPE_CHECKING:
     from traceback import StackSummary
+
+
+# TypeCheckingSupport acts as a subclass during type checking so the type-checker
+# recognizes Interface subclasses as Protocol implementations.
+# When subclassing a Protocol, the subclass must also explicitly subclass Protocol again
+# for the type checker to recognize them:
+#
+# https://www.python.org/dev/peps/pep-0544/#merging-and-extending-protocols
+#
+# Quote:
+# Subclassing a protocol class would not turn the subclass into a protocol unless
+# it also has typing.Protocol as an explicit base class.
+#
+# We declare TypeCheckingSupport as an alias to Protocol only during type checking,
+# because Protocol is a complex meta class and brings a bunch of problems when trying to use
+# it as an Interface superclass, namely declaring new methods
+# (__init__, __init_subclass__, __getitem__, etc) which our Interface code now assumes
+# should be part of the interface.
+#
+# By using a custom alias, only really enabled during type-checking, we hide that detail
+# from users and avoid the runtime problems.
+if TYPE_CHECKING:
+    from typing_extensions import Protocol as TypeCheckingSupport
+else:
+    TypeCheckingSupport = object
 
 
 class InterfaceError(RuntimeError):
@@ -149,14 +172,15 @@ class InterfaceImplementorStub(Generic[T]):
         return self.__wrapped.__call__(*args, **kwargs)
 
 
-class Interface:
+# Instance to check if we are receiving an argument during Interface.__new__
+_SENTINEL = object()
+
+
+class Interface(TypeCheckingSupport):
     """Base class for interfaces.
 
     A interface describes a behavior that some objects must implement.
     """
-
-    # : instance to check if we are receiving an argument during __new__
-    _SENTINEL = object()
 
     def __new__(cls, class_: Any = _SENTINEL) -> Any:
         """
@@ -181,7 +205,7 @@ class Interface:
         # check if class_or_object implements this interface
         from ._adaptable_interface import IAdaptable
 
-        if class_ is cls._SENTINEL:
+        if class_ is _SENTINEL:
             raise InterfaceError("Can't instantiate Interface.")
         else:
             if isinstance(class_, type):
@@ -205,19 +229,21 @@ class Interface:
                 _AssertImplementsFullChecking(class_, cls, check_attr=True)
                 return InterfaceImplementorStub(class_, cls)
 
-    @classmethod
-    def __init_subclass__(cls, **kwargs: object) -> None:
+    if not TYPE_CHECKING:
 
-        for name in dir(cls):
-            obj = getattr(cls, name)
-            if _IsMethod(obj):
-                sig = inspect.signature(obj)
-                try:
-                    hash(sig)
-                except TypeError:
-                    raise TypeError(
-                        f"Method {cls.__name__}.{name} contains unhashable arguments:\n{sig}"
-                    ) from None
+        @classmethod
+        def __init_subclass__(cls, **kwargs: object) -> None:
+
+            for name in dir(cls):
+                obj = getattr(cls, name)
+                if _IsMethod(obj):
+                    sig = inspect.signature(obj)
+                    try:
+                        hash(sig)
+                    except TypeError:
+                        raise TypeError(
+                            f"Method {cls.__name__}.{name} contains unhashable arguments:\n{sig}"
+                        ) from None
 
 
 def _GetClassForInterfaceChecking(class_or_instance: Any) -> Type:
@@ -233,6 +259,32 @@ def _GetClassForInterfaceChecking(class_or_instance: Any) -> Type:
 
 def _IsClass(obj: object) -> bool:
     return isinstance(obj, type)
+
+
+if TYPE_CHECKING:
+
+    def _CheckIsInterfaceSubclass(interface: Any) -> None:
+        pass
+
+
+else:
+
+    def _CheckIsInterfaceSubclass(interface: Any) -> None:
+        """
+        Checks that the given class is an Interface subclass.
+
+        Note: during type-checking this is a no-op, because during type checking Interface
+        subclasses Protocol, however issubclass will only work in Protocol subclasses decorated
+        with @runtime_checkable; given this is not really used during type-checking, a
+        no-op during type checking seems a good solution.
+        """
+        # noinspection PyProtocol
+        is_interface = issubclass(interface, Interface)
+        if not is_interface:
+            raise InterfaceError(
+                "To check against an interface, an interface is required (received: %s -- mro:%s)"
+                % (interface, interface.__mro__)
+            )
 
 
 def IsImplementation(
@@ -258,12 +310,7 @@ def IsImplementation(
 
     :see: :py:func:`.AssertImplements`
     """
-    is_interface = issubclass(interface, Interface)
-    if not is_interface:
-        raise InterfaceError(
-            "To check against an interface, an interface is required (received: %s -- mro:%s)"
-            % (interface, interface.__mro__)
-        )
+    _CheckIsInterfaceSubclass(interface)
 
     class_ = _GetClassForInterfaceChecking(class_or_instance)
 
@@ -463,11 +510,7 @@ def _IsInterfaceDeclared(class_: Type, interface: Type[Interface]) -> bool:
     if class_ is None:
         return False
 
-    if not issubclass(interface, Interface):
-        raise InterfaceError(
-            "To check against an interface, an interface is required (received: %s -- mro:%s)"
-            % (interface, interface.__mro__)
-        )
+    _CheckIsInterfaceSubclass(interface)
 
     declared_interfaces = GetImplementedInterfaces(class_)
 
@@ -694,12 +737,7 @@ def _AssertImplementsFullChecking(
     # Moved from the file to avoid cyclic import:
     from oop_ext.foundation.types_ import Null
 
-    is_interface = issubclass(interface, Interface)
-    if not is_interface:
-        raise InterfaceError(
-            "To check against an interface, an interface is required (received: %s -- mro:%s)"
-            % (interface, interface.__mro__)
-        )
+    _CheckIsInterfaceSubclass(interface)
 
     if isinstance(class_or_instance, Null):
         return
@@ -799,9 +837,7 @@ def _AssertImplementsFullChecking(
 DEBUG = False
 
 
-def ImplementsInterface(
-    *interfaces: Type[Interface], **kwargs: object
-) -> Callable[[T], T]:
+def ImplementsInterface(*interfaces: Any, **kwargs: object) -> Callable[[T], T]:
     """
     Make sure a class implements the given interfaces. Must be used in as class decorator:
 
