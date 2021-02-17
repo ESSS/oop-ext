@@ -1,4 +1,5 @@
 # mypy: disallow-untyped-defs
+# mypy: disallow-any-decorated
 import functools
 import inspect
 import logging

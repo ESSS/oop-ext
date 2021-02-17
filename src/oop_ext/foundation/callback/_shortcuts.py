@@ -1,3 +1,5 @@
+# mypy: disallow-untyped-defs
+# mypy: disallow-any-decorated
 import weakref
 from typing import Union, Optional, Callable, Any, Tuple, Sequence
 
@@ -135,7 +137,7 @@ class _MethodWrapper(
         self._before.Register(callback, extra_args)
 
     def AppendAfter(
-        self, callback, extra_args: Optional[Sequence[object]] = None
+        self, callback: Callable, extra_args: Optional[Sequence[object]] = None
     ) -> None:
         """
         Append the given callbacks in the list of callback to be executed AFTER the method.
@@ -200,7 +202,7 @@ def WrapForCallback(method: Union[Method, _MethodWrapper, Callable]) -> _MethodW
 
         # we must make it a regular call for classmethods (it MUST not be a bound
         # method nor class when doing that).
-        def call(*args, **kwargs):
+        def call(*args: object, **kwargs: object) -> Any:
             return wrapper(*args, **kwargs)
 
         call.__name__ = method.__name__

@@ -1,4 +1,5 @@
 # mypy: disallow-untyped-defs
+# mypy: disallow-any-decorated
 """
 This module provides a basic interface concept.
 
@@ -614,7 +615,9 @@ class CacheInterfaceAttrs:
     )
 
     @classmethod
-    def RegisterAttributeClass(cls, attribute_class: Type[Attribute]) -> Set[Any]:
+    def RegisterAttributeClass(
+        cls: Type["CacheInterfaceAttrs"], attribute_class: Type[Attribute]
+    ) -> Set[Attribute]:
         """
         Registers a class to be considered as an attribute class.
 
@@ -714,7 +717,7 @@ def _IsMethod(member: object) -> bool:
 
 @Deprecated(AssertImplements)
 def AssertImplementsFullChecking(
-    class_or_instance: Any, interface: Type[Interface], check_attr: bool = True
+    class_or_instance: object, interface: Type[Interface], check_attr: bool = True
 ) -> None:
     return AssertImplements(class_or_instance, interface)
 
@@ -1035,5 +1038,7 @@ def GetImplementedInterfaces(class_or_object: Any) -> FrozenSet[Type[Interface]]
 
 
 @Deprecated(AssertImplements)
-def AssertDeclaresInterface(class_or_instance: Any, interface: Type[Interface]) -> None:
+def AssertDeclaresInterface(
+    class_or_instance: object, interface: Type[Interface]
+) -> None:
     AssertImplements(class_or_instance, interface)

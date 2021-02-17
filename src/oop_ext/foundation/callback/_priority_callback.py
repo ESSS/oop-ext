@@ -1,3 +1,7 @@
+# mypy: disallow-untyped-defs
+# mypy: disallow-any-decorated
+from typing import Callable, Any, Tuple
+
 from oop_ext.foundation.decorators import Override
 from oop_ext.foundation.odict import odict
 
@@ -12,18 +16,25 @@ class PriorityCallback(Callback):
     INFO_POS_PRIORITY = 3
 
     @Override(Callback._GetInfo)
-    def _GetInfo(self, func, priority):
+    def _GetInfo(  # type:ignore[misc, override]
+        self, func: Callable, priority: int
+    ) -> Any:
         """
         Overridden to add the priority to the info.
 
-        :param int priority:
+        :param priority:
             The priority to be set to the added callback.
         """
         info = Callback._GetInfo(self, func)
         return info + (priority,)
 
     @Override(Callback.Register)
-    def Register(self, func, extra_args=Callback._EXTRA_ARGS_CONSTANT, priority=5):
+    def Register(  # type:ignore[misc, override]
+        self,
+        func: Callable,
+        extra_args: Tuple[object, ...] = Callback._EXTRA_ARGS_CONSTANT,
+        priority: int = 5,
+    ) -> None:
         """
         Register a function in the callback.
         :param object func:
