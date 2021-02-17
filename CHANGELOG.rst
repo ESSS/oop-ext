@@ -8,6 +8,12 @@
 
   The types were developed against ``mypy`` version 0.800.
 
+* Fixed ``Callbacks.Before`` and ``Callbacks.After`` signatures: previously their signature conveyed
+  that they supported multiple callbacks, but it was a mistake which would break callers because
+  every parameter after the 2nd would be considered the ``sender_as_parameter`` parameter, which
+  was forwarded to ``After`` and ``Before`` functions of the ``_shortcuts.py``
+  module.
+
 1.0.0 (2020-10-01)
 ------------------
 

@@ -1,7 +1,12 @@
-from typing import Callable, Any, List, Tuple
+# mypy: disallow-untyped-defs
+# mypy: disallow-any-decorated
+from typing import Callable, Any, List, Tuple, TypeVar, cast
 
 from ._callback import Callback, _UnregisterContext
 from ._shortcuts import After, Before, Remove
+
+
+T = TypeVar("T", bound=Callable)
 
 
 class Callbacks:
@@ -34,7 +39,9 @@ class Callbacks:
         self._function_callbacks: List[Tuple[Callable, Callable]] = []
         self._contexts: List[_UnregisterContext] = []
 
-    def Before(self, sender, *callbacks, **kwargs):
+    def Before(
+        self, sender: T, callback: Callable, *, sender_as_parameter: bool = False
+    ) -> T:
         """
         Registers a callback to be executed before an arbitrary function.
 
@@ -50,19 +57,23 @@ class Callbacks:
 
         The call above will result in ``callback`` to be called for *every instance* of ``C``.
         """
-        sender = Before(sender, *callbacks, **kwargs)
-        for callback in callbacks:
-            self._function_callbacks.append((sender, callback))
+        sender = cast(
+            T, Before(sender, callback, sender_as_parameter=sender_as_parameter)
+        )
+        self._function_callbacks.append((sender, callback))
         return sender
 
-    def After(self, sender, *callbacks, **kwargs):
+    def After(
+        self, sender: T, callback: Callable, *, sender_as_parameter: bool = False
+    ) -> T:
         """
         Same as :meth:`Before`, but will call the callback after the ``sender`` function has
         been called.
         """
-        sender = After(sender, *callbacks, **kwargs)
-        for callback in callbacks:
-            self._function_callbacks.append((sender, callback))
+        sender = cast(
+            T, After(sender, callback, sender_as_parameter=sender_as_parameter)
+        )
+        self._function_callbacks.append((sender, callback))
         return sender
 
     def RemoveAll(self) -> None:
@@ -81,11 +92,11 @@ class Callbacks:
         """Context manager support: when the context ends, unregister all callbacks."""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    def __exit__(self, *args: object) -> None:
         """Context manager support: when the context ends, unregister all callbacks."""
         self.RemoveAll()
 
-    def Register(self, callback: Callback, func: Callable[..., Any]) -> None:
+    def Register(self, callback: Callback, func: Callable) -> None:
         """
         Registers the given function into the given callback.
 
