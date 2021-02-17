@@ -1,3 +1,4 @@
+# mypy: disallow-untyped-defs
 import functools
 import inspect
 import logging
@@ -169,7 +170,7 @@ class Callback:
                 obj_str = "{}".format(func.__class__)
                 print("Changed behavior for: %s" % obj_str)
 
-                def on_die(r):
+                def on_die(r: Any) -> None:
                     # I.e.: the hint here is that a reference may die before expected
                     print("Reference died: {}".format(obj_str))
 
@@ -430,7 +431,7 @@ class _UnregisterContext:
     _callback: Callback
     _key: Hashable
 
-    def Unregister(self):
+    def Unregister(self) -> None:
         """Unregister the callback which returned this context"""
         self._callback._UnregisterByKey(self._key)
 
@@ -442,7 +443,7 @@ class _CallbackWrapper(Method):
         # Maintaining the OriginalMethod() interface that clients expect.
         self.OriginalMethod = weak_method_callback
 
-    def __call__(self, sender, *args, **kwargs) -> None:
+    def __call__(self, sender: Any, *args: object, **kwargs: object) -> None:
         c = self.weak_method_callback()
         if c is None:
             raise ReferenceError(
