@@ -1,3 +1,4 @@
+# mypy: disallow-untyped-defs
 """
 This module provides a basic interface concept.
 
@@ -52,6 +53,7 @@ from typing import (
     Callable,
     List,
     FrozenSet,
+    NoReturn,
 )
 
 from oop_ext.foundation.decorators import Deprecated
@@ -97,7 +99,7 @@ class BadImplementationError(InterfaceError):
 
 
 class InterfaceImplementationMetaClass(type):
-    def __new__(cls, name, bases, dct):
+    def __new__(cls, name: str, bases: Tuple, dct: Dict) -> Any:
         C = type.__new__(cls, name, bases, dct)
         if IsDevelopment():  # Only doing check in dev mode.
             for I in dct.get("__implements__", []):
@@ -141,35 +143,35 @@ class InterfaceImplementorStub(Generic[T]):
             )
         return getattr(self.__wrapped, attr)
 
-    def __getitem__(self, *args, **kwargs):
+    def __getitem__(self, *args: Any, **kwargs: Any) -> Any:
         if "__getitem__" not in self.__interface_methods:
             raise AttributeError(
                 "Error. The interface {} does not have the attribute '{}' declared.".format(
                     self.__implemented_interface, "__getitem__"
                 )
             )
-        return self.__wrapped.__getitem__(*args, **kwargs)
+        return self.__wrapped.__getitem__(*args, **kwargs)  # type:ignore[index]
 
-    def __setitem__(self, *args, **kwargs):
+    def __setitem__(self, *args: Any, **kwargs: Any) -> Any:
         if "__setitem__" not in self.__interface_methods:
             raise AttributeError(
                 "Error. The interface {} does not have the attribute '{}' declared.".format(
                     self.__implemented_interface, "__setitem__"
                 )
             )
-        return self.__wrapped.__setitem__(*args, **kwargs)
+        return self.__wrapped.__setitem__(*args, **kwargs)  # type:ignore[index]
 
     def __repr__(self) -> str:
         return "<InterfaceImplementorStub %s>" % self.__wrapped
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
         if "__call__" not in self.__interface_methods:
             raise AttributeError(
                 "Error. The interface {} does not have the attribute '{}' declared.".format(
                     self.__implemented_interface, "__call__"
                 )
             )
-        return self.__wrapped.__call__(*args, **kwargs)
+        return self.__wrapped.__call__(*args, **kwargs)  # type:ignore[operator]
 
 
 # Instance to check if we are receiving an argument during Interface.__new__
@@ -420,10 +422,10 @@ class __ResultsCache:
     def SetResult(self, args: Any, result: Any) -> Any:
         self._cache[args] = result
 
-    def GetResult(self, args) -> Any:
+    def GetResult(self, args: Any) -> Any:
         return self._cache.get(args, None)
 
-    def ForgetResult(self, args):
+    def ForgetResult(self, args: Any) -> Any:
         self._cache.pop(args, None)
 
 
@@ -517,7 +519,7 @@ def _IsImplementationFullChecking(
         return True
 
 
-def _IsInterfaceDeclared(class_: Type, interface: Type[Interface]) -> bool:
+def _IsInterfaceDeclared(class_: Optional[Type], interface: Type[Interface]) -> bool:
     """
     :type interface: Interface
     :param interface:
@@ -791,7 +793,7 @@ def _AssertImplementsFullChecking(
                 msg = msg % (attr_name, class_or_instance, interface)
                 raise BadImplementationError(msg)
 
-    def GetSignature(method) -> inspect.Signature:
+    def GetSignature(method: Any) -> inspect.Signature:
         """
         Get the inspect.Signature object for the method, considering the possibility of instances of Method,
         in which case, we must obtain the arguments of the instance "__call__" method.
@@ -873,8 +875,8 @@ def ImplementsInterface(*interfaces: Any, no_check: bool = False) -> Callable[[T
     called = [False]
 
     class Check:
-        def __init__(self):
-            def _OnDie(ref) -> None:
+        def __init__(self) -> None:
+            def _OnDie(ref: Any) -> None:
                 # We may just use warnings.warn in the future, after our
                 # codebase is properly 'sanitized', instead of handle_exception.
                 #
@@ -934,16 +936,12 @@ def ImplementsInterface(*interfaces: Any, no_check: bool = False) -> Callable[[T
 
             return type_
 
-        def __bool__(self):
+        def __bool__(self) -> NoReturn:
             called[0] = True
             raise RuntimeError(
                 "Invalid attempt to test interface.ImplementsInterface(). Did you "
                 "mean interface.IsImplementation()?"
             )
-
-        def __nonzero__(self):
-            # Py 2 compatibility
-            return self.__bool__()
 
     return Check()
 
@@ -1007,7 +1005,7 @@ def _GetMROForOldStyleClass(class_: Type) -> List[Type]:
         A list with all the bases in the older MRO (method resolution order)
     """
 
-    def _CalculateMro(class_, mro):
+    def _CalculateMro(class_: Any, mro: Any) -> Any:
         for base in class_.__bases__:
             if base not in mro:
                 mro.append(base)
