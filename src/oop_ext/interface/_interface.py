@@ -38,6 +38,7 @@ AssertImplements(impl, IMyCalculator)
 
 import inspect
 import sys
+from contextlib import suppress
 from typing import (
     TypeVar,
     Generic,
@@ -415,23 +416,11 @@ def AssertImplements(
     assert is_implementation, reason
 
 
-class __ResultsCache:
-    def __init__(self) -> None:
-        self._cache: Dict[Any, Any] = {}
-
-    def SetResult(self, args: Any, result: Any) -> Any:
-        self._cache[args] = result
-
-    def GetResult(self, args: Any) -> Any:
-        return self._cache.get(args, None)
-
-    def ForgetResult(self, args: Any) -> Any:
-        self._cache.pop(args, None)
-
-
-__ImplementsCache = __ResultsCache()
-
-__ImplementedInterfacesCache = __ResultsCache()
+# Using explicit memoization, because we need to forget some values at some times
+__ImplementsCache: Dict[
+    Tuple[Type, Type[Interface], bool], Tuple[bool, Optional[str]]
+] = {}
+__ImplementedInterfacesCache: Dict[Type, FrozenSet[Type[Interface]]] = {}
 
 
 def _CheckIfClassImplements(
@@ -453,18 +442,13 @@ def _CheckIfClassImplements(
         If the class doesn't implement the given interface, will return False, and a message stating
         the reason (missing methods, etc.). The message may be None.
     """
+    with suppress(KeyError):
+        return __ImplementsCache[(class_, interface, requires_declaration)]
+
     assert _IsClass(class_)
-
-    # Using explicit memoization, because we need to forget some values at some times
-    cache = __ImplementsCache
-
-    cached_result = cache.GetResult((class_, interface, requires_declaration))
-    if cached_result is not None:
-        return cached_result
 
     is_implementation = True
     reason = None
-
     # Exception: Null implements every Interface (useful for Null Object Pattern and for testing)
     from oop_ext.foundation.types_ import Null
 
@@ -489,7 +473,7 @@ def _CheckIfClassImplements(
         )
 
     result = (is_implementation, reason)
-    cache.SetResult((class_, interface, requires_declaration), result)
+    __ImplementsCache[(class_, interface, requires_declaration)] = result
     return result
 
 
@@ -983,9 +967,9 @@ def DeclareClassImplements(class_: Type, *interfaces: Type[Interface]) -> None:
     try:
         for interface in interfaces:
             # Forget any previous checks
-            __ImplementsCache.ForgetResult((class_, interface, False))
-            __ImplementsCache.ForgetResult((class_, interface, True))
-            __ImplementedInterfacesCache.ForgetResult(class_)
+            __ImplementsCache.pop((class_, interface, False), None)
+            __ImplementsCache.pop((class_, interface, True), None)
+            __ImplementedInterfacesCache.pop(class_, None)
 
             AssertImplements(class_, interface, requires_declaration=False)
     except:
@@ -1017,12 +1001,10 @@ def _GetMROForOldStyleClass(class_: Type) -> List[Type]:
 
 
 def _GetClassImplementedInterfaces(class_: Type) -> FrozenSet[Type[Interface]]:
-    cache = __ImplementedInterfacesCache
-    result = cache.GetResult(class_)
-    if result is not None:
-        return result
+    with suppress(KeyError):
+        return __ImplementedInterfacesCache[class_]
 
-    result = set()
+    implemented_interfaces = set()
 
     mro = inspect.getmro(class_)
 
@@ -1034,11 +1016,10 @@ def _GetClassImplementedInterfaces(class_: Type) -> FrozenSet[Type[Interface]]:
             for interface_type in interface_mro:
                 if interface_type in (Interface, object):
                     continue
-                result.add(interface_type)
+                implemented_interfaces.add(interface_type)
 
-    result = frozenset(result)
-
-    cache.SetResult(class_, result)
+    result = frozenset(implemented_interfaces)
+    __ImplementedInterfacesCache[class_] = result
     return result
 
 
