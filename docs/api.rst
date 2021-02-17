@@ -13,3 +13,11 @@ API Reference
 
 .. autoclass:: Callbacks
     :members:
+
+
+.. py:module:: oop_ext.interface
+
+.. autoclass:: Interface
+    :members:
+
+.. autofunction:: ImplementsInterface

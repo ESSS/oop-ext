@@ -180,6 +180,24 @@ class Interface(TypeCheckingSupport):
     """Base class for interfaces.
 
     A interface describes a behavior that some objects must implement.
+
+    **TypeCheckingSupport**
+
+    .. versionadded:: 1.1.0
+
+    Interfaces that which to support static type checkers such as ``mypy`` also need to subclass
+    from this class:
+
+    .. code-block:: python
+
+        from oop_ext.interface import Interface, TypeCheckingSupport
+
+        class IDataSaver(Interface, TypeCheckingSupport):
+            ...
+
+
+    The ``TypeCheckingSupport`` exists solely for the benefit of type checkers, and has zero runtime
+    cost associated with it.
     """
 
     def __new__(cls, class_: Any = _SENTINEL) -> Any:
@@ -837,30 +855,20 @@ def _AssertImplementsFullChecking(
 DEBUG = False
 
 
-def ImplementsInterface(*interfaces: Any, **kwargs: object) -> Callable[[T], T]:
+def ImplementsInterface(*interfaces: Any, no_check: bool = False) -> Callable[[T], T]:
     """
     Make sure a class implements the given interfaces. Must be used in as class decorator:
 
-    ```python
-    @ImplementsInterface(IFoo)
-    class Foo(object):
-        pass
-    ```
+    .. code-block:: python
 
-    To avoid checking if the class implements declared interfaces during class creation time, or for
-    old-style classes, make sure to pass the flag `no_check` as True:
+        @ImplementsInterface(IFoo)
+        class Foo(object):
+            ...
 
-    ```python
-    @ImplementsInterface(IFoo, no_check=True)
-    class Foo(object):
-        pass
-    ```
+    :param no_check:
+        If ``True``, does not check if the class implements the declared interfaces
+        during import time.
     """
-    no_check = kwargs.pop("no_check", False)
-    assert (
-        len(kwargs) == 0
-    ), "Expected only 'no_init_check' as kwargs. Found: {}".format(kwargs)
-
     called = [False]
 
     class Check:

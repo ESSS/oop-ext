@@ -99,6 +99,9 @@ If you run into an error that you believe to be incorrect, please let us know in
 
 The types were developed against ``mypy`` version 0.800.
 
+See `the docs <https://oop-extensions.readthedocs.io/en/latest/interfaces.html#static-type-checking>`__
+for more information.
+
 Contributing
 ------------
 
