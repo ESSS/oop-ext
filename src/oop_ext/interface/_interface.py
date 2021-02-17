@@ -192,6 +192,7 @@ class Interface(TypeCheckingSupport):
 
         from oop_ext.interface import Interface, TypeCheckingSupport
 
+
         class IDataSaver(Interface, TypeCheckingSupport):
             ...
 

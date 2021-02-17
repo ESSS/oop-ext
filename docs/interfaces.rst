@@ -15,6 +15,7 @@ Interfaces are declared by subclassing :class:`oop_ext.interface.Interface`:
 
     from oop_ext.interface import Interface
 
+
     class IDataSaver(Interface):
         """
         Interface for classes capable of saving a dict containing
@@ -48,9 +49,9 @@ We can now have multiple implementations of ``IDataSaver``, for example:
 
     from oop_ext.interface import ImplementsInterface
 
+
     @ImplementsInterface(IDataSaver)
     class JSONSaver:
-
         def __init__(self, path: Path) -> None:
             self.path = path
 
@@ -95,6 +96,7 @@ type checking provided by static type checkers, one just needs to subclass from 
 .. code-block:: python
 
     from oop_ext.interface import Interface, TypeCheckingSupport
+
 
     class IDataSaver(Interface, TypeCheckingSupport):
         """

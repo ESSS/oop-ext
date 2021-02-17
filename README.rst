@@ -37,11 +37,13 @@ Here's a simple example showing some nice features:
 
     from oop_ext.interface import Interface, ImplementsInterface
 
+
     class IDisposable(Interface):
         def dispose(self):
             """
             Clears this object
             """
+
         def is_disposed(self) -> bool:
             """
             Returns True if the object has been cleared

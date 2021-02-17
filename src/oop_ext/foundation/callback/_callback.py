@@ -62,21 +62,22 @@ class Callback:
             # `free function`
             pass
 
-        class Foo:
 
+        class Foo:
             def bound_fn(self, foo):
                 pass
 
-        class Bar:
 
+        class Bar:
             @classmethod
             def class_fn(cls, foo):
                 pass
 
-        class ObjectFn:
 
+        class ObjectFn:
             def __call__(self, foo):
                 pass
+
 
         foo = Foo()  # foo is `custom object`, foo.bound_fn is `bound method`
         bar = Bar()  # Bar.class_fn is `class method`, bar.class_fn is `bound class method`
@@ -84,7 +85,7 @@ class Callback:
         object_fn = ObjectFn()  # `function object`
 
         obj = object()  # `object`
-        string = 'foo'  # `string`
+        string = "foo"  # `string`
         builtin_fn = string.split  # `builtin function`
 
     And where columns are:
