@@ -1,4 +1,8 @@
-from ._fast_callback import Callback
+# mypy: disallow-untyped-defs
+# mypy: disallow-any-decorated
+from typing import Dict, Tuple, Callable
+
+from ._callback import Callback
 
 
 class SingleCallCallback:
@@ -9,7 +13,7 @@ class SingleCallCallback:
     The callback parameter is pre-registered and kept as a weak-reference.
     """
 
-    def __init__(self, callback_parameter):
+    def __init__(self, callback_parameter: object) -> None:
         """
         :param object callback_parameter:
             A weak-reference is kept to this object (because the usual use-case is making a call
@@ -24,10 +28,10 @@ class SingleCallCallback:
         self._done_callbacks = Callback()
         self._done = False
 
-        self._args = ()
-        self._kwargs = {}
+        self._args: Tuple[object, ...] = ()
+        self._kwargs: Dict[str, object] = {}
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args: object, **kwargs: object) -> None:
         if self._done:
             raise AssertionError("This callback can only be called once.")
 
@@ -49,13 +53,13 @@ class SingleCallCallback:
         else:
             self._done_callbacks(*args, **kwargs)
 
-    def Unregister(self, fn):
+    def Unregister(self, fn: Callable) -> None:
         self._done_callbacks.Unregister(fn)
 
-    def UnregisterAll(self):
+    def UnregisterAll(self) -> None:
         self._done_callbacks.UnregisterAll()
 
-    def Register(self, fn):
+    def Register(self, fn: Callable) -> None:
         if self._callback_parameter is not None:
             callback_parameter = self._callback_parameter()
             if callback_parameter is None:
@@ -72,7 +76,7 @@ class SingleCallCallback:
             else:
                 fn(*self._args, **self._kwargs)
 
-    def AllowCallingAgain(self):
+    def AllowCallingAgain(self) -> None:
         """
         This callback is usually called only once, afterwards, any registry will call it directly
         (and the callback cannot be called anymore).

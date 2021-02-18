@@ -1,18 +1,19 @@
+# mypy: disallow-untyped-defs
+# mypy: disallow-any-decorated
 import functools
 import inspect
 import logging
 import types
 import weakref
-from typing import Callable, Any, Tuple, Hashable
+from typing import Callable, Any, Tuple, Hashable, Sequence, Union, cast, Optional
 
 import attr
 
 from oop_ext.foundation.compat import GetClassForUnboundMethod
 from oop_ext.foundation.is_frozen import IsDevelopment
 from oop_ext.foundation.odict import odict
+from oop_ext.foundation.types_ import Method
 from oop_ext.foundation.weak_ref import WeakMethodProxy
-
-from ._callback_wrapper import _CallbackWrapper
 
 log = logging.getLogger(__name__)
 
@@ -63,21 +64,22 @@ class Callback:
             # `free function`
             pass
 
-        class Foo:
 
+        class Foo:
             def bound_fn(self, foo):
                 pass
 
-        class Bar:
 
+        class Bar:
             @classmethod
             def class_fn(cls, foo):
                 pass
 
-        class ObjectFn:
 
+        class ObjectFn:
             def __call__(self, foo):
                 pass
+
 
         foo = Foo()  # foo is `custom object`, foo.bound_fn is `bound method`
         bar = Bar()  # Bar.class_fn is `class method`, bar.class_fn is `bound class method`
@@ -85,7 +87,7 @@ class Callback:
         object_fn = ObjectFn()  # `function object`
 
         obj = object()  # `object`
-        string = 'foo'  # `string`
+        string = "foo"  # `string`
         builtin_fn = string.split  # `builtin function`
 
     And where columns are:
@@ -108,12 +110,12 @@ class Callback:
     # properly test the new behavior).
     DEBUG_NEW_WEAKREFS = False
 
-    def __init__(self):
+    def __init__(self) -> None:
         # callbacks is no longer lazily created: This makes the creation a bit slower, but
         # everything else is faster (as having to check for hasattr each time is slow).
         self._callbacks = odict()
 
-    def _GetKey(self, func, extra_args):
+    def _GetKey(self, func: Union["_CallbackWrapper", Method, Callable]) -> Hashable:
         """
         :param object func:
             The function for which we want the key.
@@ -126,25 +128,31 @@ class Callback:
         is garbage collected, a new function may end up having the same key.
         """
         if func.__class__ == _CallbackWrapper:
+            func = cast(_CallbackWrapper, func)
             func = func.OriginalMethod()
 
         try:
-            if func.__self__ is not None:
+            if func.__self__ is not None:  # type:ignore[union-attr]
                 # bound method
                 return (
-                    id(func.__self__),
-                    id(func.__func__),
-                    id(func.__self__.__class__),
+                    id(func.__self__),  # type:ignore[union-attr]
+                    id(func.__func__),  # type:ignore[union-attr]
+                    id(func.__self__.__class__),  # type:ignore[union-attr]
                 )
             else:
-                return (id(func.__func__), id(GetClassForUnboundMethod(func)))
+                return (
+                    id(func.__func__),  # type:ignore[union-attr]
+                    id(GetClassForUnboundMethod(func)),
+                )
 
         except AttributeError:
             # not a method -- a callable: create a strong reference (the CallbackWrapper
             # is depending on this behaviour... is it correct?)
             return id(func)
 
-    def _GetInfo(self, func):
+    def _GetInfo(
+        self, func: Union[None, WeakMethodProxy, Method, Callable]
+    ) -> Tuple[Any, Any, Any]:
         """
         :rtype: tuple(func_obj, func_func, func_class)
         :returns:
@@ -155,6 +163,7 @@ class Callback:
         # at this point, but if it's a WeakMethodProxy, register the original method (we'll make a
         # weak reference later anyways).
         if func.__class__ == WeakMethodProxy:
+            func = cast(WeakMethodProxy, func)
             func = func.GetWrappedFunction()
 
         if _IsCallableObject(func):
@@ -162,30 +171,37 @@ class Callback:
                 obj_str = "{}".format(func.__class__)
                 print("Changed behavior for: %s" % obj_str)
 
-                def ondie(r):
+                def on_die(r: Any) -> None:
                     # I.e.: the hint here is that a reference may die before expected
                     print("Reference died: {}".format(obj_str))
 
-                return (weakref.ref(func, ondie), None, None)
+                return (weakref.ref(func, on_die), None, None)
             return (weakref.ref(func), None, None)
 
         try:
-            if func.__self__ is not None and func.__func__ is not None:
+            if (
+                func.__self__ is not None  # type:ignore[union-attr]
+                and func.__func__ is not None  # type:ignore[union-attr]
+            ):
                 # bound method
                 return (
-                    weakref.ref(func.__self__),
-                    func.__func__,
-                    func.__self__.__class__,
+                    weakref.ref(func.__self__),  # type:ignore[union-attr]
+                    func.__func__,  # type:ignore[union-attr]
+                    func.__self__.__class__,  # type:ignore[union-attr]
                 )
             else:
                 # unbound method
-                return (None, func.__func__, GetClassForUnboundMethod(func))
+                return (
+                    None,
+                    func.__func__,  # type:ignore[union-attr]
+                    GetClassForUnboundMethod(func),
+                )
         except AttributeError:
             # not a method -- a callable: create a strong reference (the CallbackWrapper
             # is depending on this behaviour... is it correct?)
             return (None, func, None)
 
-    def __call__(self, *args, **kwargs):  # @DontTrace
+    def __call__(self, *args: object, **kwargs: object) -> Any:  # @DontTrace
         """
         Calls every registered function with the given args and kwargs.
         """
@@ -233,7 +249,7 @@ class Callback:
         for func, extra_args in to_call:
             func(*extra_args + args, **kwargs)
 
-    def _FilterToCall(self, to_call, args, kwargs):
+    def _FilterToCall(self, to_call: Any, args: Any, kwargs: Any) -> Any:
         """
         Provides a chance for subclasses to filter the function/extra arguments to call.
 
@@ -256,7 +272,7 @@ class Callback:
     def Register(
         self,
         func: Callable[..., Any],
-        extra_args: Tuple[object, ...] = _EXTRA_ARGS_CONSTANT,
+        extra_args: Sequence[object] = _EXTRA_ARGS_CONSTANT,
     ) -> "_UnregisterContext":
         """
         Registers a function in the callback.
@@ -285,13 +301,17 @@ class Callback:
         if extra_args is not self._EXTRA_ARGS_CONSTANT:
             extra_args = tuple(extra_args)
 
-        key = self._GetKey(func, extra_args)
+        key = self._GetKey(func)
         callbacks = self._callbacks
         callbacks.pop(key, None)  # Remove if it exists
         callbacks[key] = (self._GetInfo(func), extra_args)
         return _UnregisterContext(self, key)
 
-    def Contains(self, func, extra_args=_EXTRA_ARGS_CONSTANT):
+    def Contains(
+        self,
+        func: Callable[..., Any],
+        extra_args: Sequence[object] = _EXTRA_ARGS_CONSTANT,
+    ) -> bool:
         """
         :param object func:
             The function that may be contained in this callback.
@@ -301,7 +321,7 @@ class Callback:
             True if the function is already registered within the callbacks and False
             otherwise.
         """
-        key = self._GetKey(func, extra_args)
+        key = self._GetKey(func)
 
         callbacks = self._callbacks
 
@@ -309,8 +329,11 @@ class Callback:
         if info_and_extra_args is None:
             return False
 
-        if func.__class__ == WeakMethodProxy:
-            func = func.GetWrappedFunction()
+        real_func: Optional[Callable] = func
+
+        if real_func.__class__ == WeakMethodProxy:
+            real_func = cast(WeakMethodProxy, real_func)
+            real_func = real_func.GetWrappedFunction()
 
         # We must check if it's actually the same, because it may be that the ids we've gotten for
         # this object were actually from a garbage-collected function that was previously registered.
@@ -326,23 +349,23 @@ class Callback:
                 del callbacks[key]
                 return False
             else:
-                return func is func_obj or (
+                return real_func is func_obj or (
                     func_func is not None
-                    and func == types.MethodType(func_func, func_obj)
+                    and real_func == types.MethodType(func_func, func_obj)
                 )
         else:
-            if func_func.__class__ == _CallbackWrapper:
+            if type(func_func) is _CallbackWrapper:
                 # The instance of the _CallbackWrapper already died! (func_obj is None)
                 original_method = func_func.OriginalMethod()
                 if original_method is None:
                     del callbacks[key]
                     return False
-                return original_method == func
+                return original_method == real_func
 
-            if func_func == func:
+            if func_func == real_func:
                 return True
             try:
-                f = func.__func__
+                f = real_func.__func__  # type:ignore[union-attr]
             except AttributeError:
                 return False
             else:
@@ -350,17 +373,21 @@ class Callback:
 
         raise AssertionError("Should not get here!")
 
-    def Unregister(self, func, extra_args=_EXTRA_ARGS_CONSTANT):
+    def Unregister(
+        self,
+        func: Callable[..., Any],
+        extra_args: Sequence[object] = _EXTRA_ARGS_CONSTANT,
+    ) -> None:
         """
         Unregister a function previously registered with Register.
 
         :param object func:
             The function to be unregistered.
         """
-        key = self._GetKey(func, extra_args)
+        key = self._GetKey(func)
         self._UnregisterByKey(key)
 
-    def _UnregisterByKey(self, key: Hashable):
+    def _UnregisterByKey(self, key: Hashable) -> None:
         """Unregisters a function registered with Register() by providing the internal key."""
         try:
             # As there can only be 1 instance with the same id alive, it should be OK just
@@ -372,17 +399,17 @@ class Callback:
             # exception, just do nothing
             pass
 
-    def UnregisterAll(self):
+    def UnregisterAll(self) -> None:
         """
         Unregisters all functions
         """
         self._callbacks.clear()
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._callbacks)
 
 
-def _IsCallableObject(func):
+def _IsCallableObject(func: object) -> bool:
     return (
         not inspect.isbuiltin(func)
         and not inspect.isfunction(func)
@@ -405,6 +432,23 @@ class _UnregisterContext:
     _callback: Callback
     _key: Hashable
 
-    def Unregister(self):
+    def Unregister(self) -> None:
         """Unregister the callback which returned this context"""
         self._callback._UnregisterByKey(self._key)
+
+
+class _CallbackWrapper(Method):
+    def __init__(self, weak_method_callback: Callable) -> None:
+        self.weak_method_callback = weak_method_callback
+
+        # Maintaining the OriginalMethod() interface that clients expect.
+        self.OriginalMethod = weak_method_callback
+
+    def __call__(self, sender: Any, *args: object, **kwargs: object) -> None:
+        c = self.weak_method_callback()
+        if c is None:
+            raise ReferenceError(
+                "This should never happen: The sender already died, so, "
+                "how can this method still be called?"
+            )
+        c(sender(), *args, **kwargs)

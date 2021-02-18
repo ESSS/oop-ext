@@ -37,11 +37,13 @@ Here's a simple example showing some nice features:
 
     from oop_ext.interface import Interface, ImplementsInterface
 
+
     class IDisposable(Interface):
         def dispose(self):
             """
             Clears this object
             """
+
         def is_disposed(self) -> bool:
             """
             Returns True if the object has been cleared
@@ -88,6 +90,19 @@ Alternatively you can assert that an object implements the desired interface wit
     AssertImplements(my_object, IDisposable)
     my_object.dispose()
 
+
+Type Checking
+-------------
+
+As of ``1.1.0``, ``oop-ext`` includes inline type annotations and exposes them to user programs.
+
+If you are running a type checker such as mypy on your tests, you may start noticing type errors indicating incorrect usage.
+If you run into an error that you believe to be incorrect, please let us know in an issue.
+
+The types were developed against ``mypy`` version 0.800.
+
+See `the docs <https://oop-extensions.readthedocs.io/en/latest/interfaces.html#static-type-checking>`__
+for more information.
 
 Contributing
 ------------

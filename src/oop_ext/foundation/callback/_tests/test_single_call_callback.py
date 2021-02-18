@@ -3,7 +3,7 @@ import pytest
 from oop_ext.foundation.callback.single_call_callback import SingleCallCallback
 
 
-def testSingleCallCallback():
+def testSingleCallCallback() -> None:
     class Stub:
         pass
 
@@ -47,7 +47,7 @@ def testSingleCallCallback():
         callback.Register(Method1)
 
 
-def testSingleCallCallbackNoParameter():
+def testSingleCallCallbackNoParameter() -> None:
     class Stub:
         pass
 

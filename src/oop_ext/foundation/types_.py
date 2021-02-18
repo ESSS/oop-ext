@@ -2,7 +2,7 @@
 """
 Extensions to python native types.
 """
-from typing import TYPE_CHECKING, Any, NoReturn, Iterator, TypeVar
+from typing import TYPE_CHECKING, Any, NoReturn, Iterator
 
 if TYPE_CHECKING:
     from typing_extensions import Literal
@@ -13,6 +13,9 @@ class Method:
     This class is an 'organization' class, so that subclasses are considered as methods
     (and its __call__ method is checked for the parameters)
     """
+
+    __self__: object
+    __name__: str
 
 
 class Null:
