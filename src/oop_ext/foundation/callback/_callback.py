@@ -1,5 +1,54 @@
 # mypy: disallow-untyped-defs
 # mypy: disallow-any-decorated
+"""
+Callbacks provide an interface to register other callbacks, that will be *called back* when the
+``Callback`` object is called.
+
+A ``Callback`` is similar to holding a pointer to a function, except it supports multiple functions.
+
+Example:
+
+.. code-block::
+
+    class Data:
+
+        def __init__(self, x: int) -> None:
+            self._x = x
+            self.on_changed = Callback()
+
+        @property
+        def x(self) -> int:
+            return self._x
+
+        @x.setter
+        def x(self, x: int) -> None:
+            self._x = x
+            self.on_changed(x)
+
+In the code above, ``Data`` contains a ``x`` property, which triggers a ``on_changed`` callback
+whenever ``x`` changes.
+
+We can be notified whenever ``x`` changes by registering a function in the callback:
+
+.. code-block::
+
+    def on_x(x: int) -> None:
+        print(f"x changed to {x}")
+
+    data = Data(10)
+    data.on_changed.Register(on_x)
+    data.x = 20
+
+The code above will print ``x changed to 20``, because changing ``data.x`` triggers all functions
+registered in ``data.on_changed``.
+
+An important feature is that the functions connected to the callback are *weakly referenced*, so
+methods connected to a callback won't keep the method instance alive due to the connection.
+
+We can unregister functions using :meth:`Unregister <Callback.Unregister>`, check if a function
+is registered with :meth:`Contains <Callback.Contains>`, and unregister all connected functions
+with :meth:`UnregisterAll <Callback.UnregisterAll>`.
+"""
 import functools
 import inspect
 import logging
@@ -23,17 +72,7 @@ class Callback:
     Object that provides a way for others to connect in it and later call it to call
     those connected.
 
-    .. note::
-        This implementation is improved in that it works directly accessing functions based
-        on a key in an ordered dict, so, Register, Unregister and Contains are much faster than the
-        old callback.
-
-    .. note:: it only stores weakrefs to objects connected.
-
-    .. note::
-        After an internal refactoring, ``__slots__`` has been added, so, it cannot have
-        weakrefs to it (but as it stores weakrefs internally, that shouldn't be a problem).
-        If weakrefs are really needed, ``__weakref__`` should be added to the slots.
+    Callbacks are stored as weakrefs to objects connected.
 
     **Determining kind of callable (Python 3)**
 
@@ -98,6 +137,11 @@ class Callback:
     * has__self__: hasattr(obj, '__self__')
     * has__call__: hasattr(obj, '__call__')
     * has__call__self__: hasattr(obj.__call__, '__self__') if hasattr(obj, '__call__') else False
+
+    .. note::
+        After an internal refactoring, ``__slots__`` has been added, so, it cannot have
+        weakrefs to it (but as it stores weakrefs internally, that shouldn't be a problem).
+        If weakrefs are really needed, ``__weakref__`` should be added to the slots.
     """
 
     __slots__ = ["_callbacks", "_handle_errors", "__weakref__"]
@@ -197,11 +241,11 @@ class Callback:
                     GetClassForUnboundMethod(func),
                 )
         except AttributeError:
-            # not a method -- a callable: create a strong reference (the CallbackWrapper
+            # not a method -- a callable: create a strong reference (CallbackWrapper
             # is depending on this behaviour... is it correct?)
             return (None, func, None)
 
-    def __call__(self, *args: object, **kwargs: object) -> Any:  # @DontTrace
+    def __call__(self, *args: object, **kwargs: object) -> None:  # @DontTrace
         """
         Calls every registered function with the given args and kwargs.
         """
@@ -370,8 +414,6 @@ class Callback:
                 return False
             else:
                 return f == func_func
-
-        raise AssertionError("Should not get here!")
 
     def Unregister(
         self,
