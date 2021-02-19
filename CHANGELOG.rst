@@ -1,4 +1,4 @@
-1.1.0 (UNRELEASED)
+1.1.0 (2021-02-19)
 ------------------
 
 * #25: ``oop-ext`` now includes inline type annotations and exposes them to user programs.
