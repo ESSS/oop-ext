@@ -7,6 +7,7 @@ Welcome to Oop_ext documentation!
 
    readme
    installation
+   callbacks
    interfaces
    api
    contributing

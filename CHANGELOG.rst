@@ -1,12 +1,30 @@
 1.1.0 (UNRELEASED)
 ------------------
 
-* ``oop-ext`` now includes inline type annotations and exposes them to user programs.
+* #25: ``oop-ext`` now includes inline type annotations and exposes them to user programs.
 
   If you are running a type checker such as mypy on your tests, you may start noticing type errors indicating incorrect usage.
   If you run into an error that you believe to be incorrect, please let us know in an issue.
 
   The types were developed against ``mypy`` version 0.800.
+
+* #26: New type-checked ``Callback`` variants, ``Callback0``, ``Callback1``, ``Callback2``, etc, providing
+  type checking for all operations(calling, ``Register``, etc) at nearly zero runtime cost.
+
+  Example:
+
+  .. code-block:: python
+
+      from oop_ext.foundation.callback import Callback2
+
+
+      def changed(x: int, v: float) -> None:
+          ...
+
+
+      on_changed = Callback2[int, float]()
+      on_changed(10, 5.25)
+
 
 * Fixed ``Callbacks.Before`` and ``Callbacks.After`` signatures: previously their signature conveyed
   that they supported multiple callbacks, but it was a mistake which would break callers because

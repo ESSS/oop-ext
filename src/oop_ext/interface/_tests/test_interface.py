@@ -917,23 +917,51 @@ def testClassMethodBug(mocker) -> None:
     AssertImplements(FooImplementation, IFoo, requires_declaration=True)
 
 
-def testInterfaceTypeChecking() -> None:
+def testInterfaceTypeChecking(type_checker) -> None:
     """
-    This doesn't really test anything in runtime, it is here for the benefit
-    of type-checking to ensure TypeCheckingSupport is working (the code
-    below won't pass type checking otherwise).
+    Check that TypeCheckingSupport makes interfaces recognizable by mypy.
     """
+    type_checker.make_file(
+        """
+        from oop_ext.interface import Interface
+        class IAcme(Interface):
+            def Foo(self, a, b=None) -> int:
+                ...
 
-    class IAcme(Interface, TypeCheckingSupport):
-        def Foo(self, a, b=None) -> int:
-            ...
+        class Acme:
+            def Foo(self, a, b=None) -> int:
+                return 40 + a
 
-    @ImplementsInterface(IAcme)
-    class Acme:
-        def Foo(self, a, b=None) -> int:
-            return 40 + a
+        def Foo(a: IAcme) -> int:
+            return a.Foo(2)
 
-    def Foo(a: IAcme) -> int:
-        return a.Foo(2)
+        Foo(Acme())
+        """
+    )
+    result = type_checker.run()
+    result.assert_errors(
+        [
+            'Argument 1 to "Foo" has incompatible type "Acme"; expected "IAcme"',
+        ]
+    )
 
-    assert Foo(Acme()) == 42
+    # Using TypeCheckingSupport, now mypy understands Acme implements IAcme.
+    type_checker.make_file(
+        """
+        from oop_ext.interface import Interface, TypeCheckingSupport
+        class IAcme(Interface, TypeCheckingSupport):
+            def Foo(self, a, b=None) -> int:
+                ...
+
+        class Acme:
+            def Foo(self, a, b=None) -> int:
+                return 40 + a
+
+        def Foo(a: IAcme) -> int:
+            return a.Foo(2)
+
+        Foo(Acme())
+        """
+    )
+    result = type_checker.run()
+    result.assert_ok()

@@ -15,7 +15,15 @@ with io.open("CHANGELOG.rst", encoding="UTF-8") as changelog_file:
 requirements = ["attrs"]
 extras_require = {
     "docs": ["sphinx >= 1.4", "sphinx_rtd_theme", "sphinx-autodoc-typehints"],
-    "testing": ["codecov", "pytest", "pytest-cov", "pytest-mock", "pre-commit", "tox"],
+    "testing": [
+        "codecov",
+        "pytest",
+        "pytest-cov",
+        "pytest-mock",
+        "pre-commit",
+        "tox",
+        "mypy",
+    ],
 }
 setup(
     author="ESSS",
@@ -29,7 +37,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
-    description="OOP Extensions is a set of utilities for object oriented programming which is missing on Python core libraries.",
+    description="OOP Extensions is a set of utilities for object oriented programming not found on Python's standard library.",
     extras_require=extras_require,
     install_requires=requirements,
     license="MIT license",
