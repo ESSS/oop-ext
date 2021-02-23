@@ -969,8 +969,9 @@ def testInterfaceTypeChecking(type_checker) -> None:
     result.assert_ok()
 
 
-def testDecorators():
-    """Interfaces and the foundation decorators need to play nice together."""
+@pytest.mark.parametrize("register_callback", [True, False])
+def testDecorators(register_callback: bool):
+    """Interfaces and the foundation decorators/callbacks need to play nice together."""
 
     class IFoo(Interface):
         def GetValues(self, unit: str) -> List[float]:
@@ -1002,6 +1003,21 @@ def testDecorators():
         @Override(AbstractFoo.GetCaption)
         def GetCaption(cls) -> str:
             return "Foo"
+
+    from oop_ext.foundation import callback
+
+    if register_callback:
+
+        def AfterCaption(*args):
+            pass
+
+        # Ensure methods overwritten by callbacks don't interfere with interface
+        # signature detection:  Callback.After overwrites the method object on the class,
+        # with potentially a different signature.
+        callback.After(Foo.GetCaption, AfterCaption)
+
+    AssertImplements(Foo, IFoo)
+    AssertImplements(Foo(), IFoo)
 
     assert Foo.GetCaption() == "Foo"
     assert Foo().GetValues("m") == [0.1, 10.0]

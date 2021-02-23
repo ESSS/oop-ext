@@ -1067,7 +1067,7 @@ def _GetGenericImplementationSignatures() -> Set[inspect.Signature]:
     def func3(cls, *args, **kwargs):  # type:ignore[no-untyped-def]
         ...
 
-    def func4(*args: object, **kwargs: object) -> object:  # type:ignore[no-untyped-def]
+    def func4(*args: object, **kwargs: object) -> object:
         ...
 
     def func5(  # type:ignore[no-untyped-def]
@@ -1086,6 +1086,48 @@ def _GetGenericImplementationSignatures() -> Set[inspect.Signature]:
     def func8(cls: object, *args: object, **kwargs: object) -> object:
         ...
 
+    def func9(  # type:ignore[no-untyped-def]
+        *args: object, **kwargs: object
+    ) -> Any:
+        ...
+
+    def func10(  # type:ignore[no-untyped-def]
+        self, *args: object, **kwargs: object
+    ) -> Any:
+        ...
+
+    def func11(  # type:ignore[no-untyped-def]
+        cls, *args: object, **kwargs: object
+    ) -> Any:
+        ...
+
+    def func12(self: object, *args: object, **kwargs: object) -> Any:
+        ...
+
+    def func13(cls: object, *args: object, **kwargs: object) -> Any:
+        ...
+
+    def func14(  # type:ignore[no-untyped-def]
+        *args: object, **kwargs: object
+    ) -> NoReturn:
+        ...
+
+    def func15(  # type:ignore[no-untyped-def]
+        self, *args: object, **kwargs: object
+    ) -> NoReturn:
+        ...
+
+    def func16(  # type:ignore[no-untyped-def]
+        cls, *args: object, **kwargs: object
+    ) -> NoReturn:
+        ...
+
+    def func17(self: object, *args: object, **kwargs: object) -> NoReturn:
+        ...
+
+    def func18(cls: object, *args: object, **kwargs: object) -> NoReturn:
+        ...
+
     _GENERIC_IMPLEMENTATION_SIGNATURES = {
         inspect.Signature.from_callable(func1),
         inspect.Signature.from_callable(func2),
@@ -1095,5 +1137,15 @@ def _GetGenericImplementationSignatures() -> Set[inspect.Signature]:
         inspect.Signature.from_callable(func6),
         inspect.Signature.from_callable(func7),
         inspect.Signature.from_callable(func8),
+        inspect.Signature.from_callable(func9),
+        inspect.Signature.from_callable(func10),
+        inspect.Signature.from_callable(func11),
+        inspect.Signature.from_callable(func12),
+        inspect.Signature.from_callable(func13),
+        inspect.Signature.from_callable(func14),
+        inspect.Signature.from_callable(func15),
+        inspect.Signature.from_callable(func16),
+        inspect.Signature.from_callable(func17),
+        inspect.Signature.from_callable(func18),
     }
     return _GENERIC_IMPLEMENTATION_SIGNATURES
