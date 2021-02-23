@@ -167,7 +167,9 @@ def Abstract(func: F) -> F:
 
     '''
 
-    def AbstractWrapper(self: object, *args: object, **kwargs: object) -> NoReturn:
+    # Make sure to use one of the valid general signatures accepted by AssertImplements
+    # so this decorator can be used in interface implementations.
+    def AbstractWrapper(self: object, *args: object, **kwargs: object) -> object:
         """
         This wrapper method replaces the implementation of the (abstract) method, providing a
         friendly message to the user.
