@@ -159,12 +159,21 @@ class Callback:
         # everything else is faster (as having to check for hasattr each time is slow).
         self._callbacks = odict()
 
-    def _GetKey(self, func: Union["_CallbackWrapper", Method, Callable]) -> Hashable:
+    def _GetKey(
+        self,
+        func: Union["_CallbackWrapper", Method, Callable],
+        extra_args: Sequence[object],
+    ) -> Hashable:
         """
-        :param object func:
+        :param func:
             The function for which we want the key.
 
-        :rtype: object
+        :param extra_args:
+            Extra arguments associated with the function.
+
+            IMPORTANT: while this argument is not used here, subclasses might use that
+            argument themselves, so don't remove it.
+
         :returns:
             Returns the key to be used to access the object.
 
@@ -345,7 +354,7 @@ class Callback:
         if extra_args is not self._EXTRA_ARGS_CONSTANT:
             extra_args = tuple(extra_args)
 
-        key = self._GetKey(func)
+        key = self._GetKey(func, extra_args)
         callbacks = self._callbacks
         callbacks.pop(key, None)  # Remove if it exists
         callbacks[key] = (self._GetInfo(func), extra_args)
@@ -365,7 +374,7 @@ class Callback:
             True if the function is already registered within the callbacks and False
             otherwise.
         """
-        key = self._GetKey(func)
+        key = self._GetKey(func, extra_args)
 
         callbacks = self._callbacks
 
@@ -426,7 +435,7 @@ class Callback:
         :param object func:
             The function to be unregistered.
         """
-        key = self._GetKey(func)
+        key = self._GetKey(func, extra_args)
         self._UnregisterByKey(key)
 
     def _UnregisterByKey(self, key: Hashable) -> None:
