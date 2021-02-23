@@ -47,7 +47,7 @@ class PriorityCallback(Callback):
         if extra_args is not self._EXTRA_ARGS_CONSTANT:
             extra_args = tuple(extra_args)
 
-        key = self._GetKey(func)
+        key = self._GetKey(func, extra_args)
         try:
             callbacks = self._callbacks
         except AttributeError:
