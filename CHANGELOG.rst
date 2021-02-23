@@ -1,3 +1,10 @@
+1.1.2 (2021-02-23)
+------------------
+
+* #41: Fix regression introduced in ``1.1.0`` where installing a callback using
+  ``callback.After`` or ``callback.Before`` would make a method no longer compliant with
+  the signature required by its interface.
+
 1.1.1 (2021-02-23)
 ------------------
 
