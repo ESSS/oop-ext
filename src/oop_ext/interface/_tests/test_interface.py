@@ -1,8 +1,10 @@
 import re
 import textwrap
+from typing import List
 
 import pytest
 
+from oop_ext.foundation.decorators import Implements, Abstract, Override
 from oop_ext.foundation.types_ import Method, Null
 from oop_ext.interface import (
     AssertImplements,
@@ -965,3 +967,41 @@ def testInterfaceTypeChecking(type_checker) -> None:
     )
     result = type_checker.run()
     result.assert_ok()
+
+
+def testDecorators():
+    """Interfaces and the foundation decorators need to play nice together."""
+
+    class IFoo(Interface):
+        def GetValues(self, unit: str) -> List[float]:
+            ...
+
+        @classmethod
+        def GetCaption(cls) -> str:
+            ...
+
+    @ImplementsInterface(IFoo)
+    class AbstractFoo:
+        @Implements(IFoo.GetValues)
+        @Abstract
+        def GetValues(self, unit: str) -> List[float]:
+            ...
+
+        @classmethod
+        @Implements(IFoo.GetCaption)
+        @Abstract
+        def GetCaption(cls) -> str:
+            ...
+
+    class Foo(AbstractFoo):
+        @Override(AbstractFoo.GetValues)
+        def GetValues(self, unit: str) -> List[float]:
+            return [0.1, 10.0]
+
+        @classmethod
+        @Override(AbstractFoo.GetCaption)
+        def GetCaption(cls) -> str:
+            return "Foo"
+
+    assert Foo.GetCaption() == "Foo"
+    assert Foo().GetValues("m") == [0.1, 10.0]

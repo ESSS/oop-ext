@@ -384,6 +384,11 @@ def AssertImplements(
     If given a class, will try to match the class against a given interface. If given an object
     (instance), will try to match the class of the given object.
 
+    Each method will need to match the interface exactly, including type annotations. The exception
+    is that implementations might declare generic signatures (like ``*args, **kwargs`` or
+    ``*args: object, **kwargs: object``), which will then bypass this checking. This is done
+    so wrappers/decorators can be used together in interfaces.
+
     :type class_or_instance: type or classobj or object
 
     :type interface: Interface
@@ -790,12 +795,7 @@ def _AssertImplementsFullChecking(
         else:
             return inspect.signature(method)
 
-    # methods which use the following signatures always match against interface method checks
-    acceptable_impl_signatures = {
-        inspect.Signature.from_callable(lambda *args, **kwargs: None),
-        inspect.Signature.from_callable(lambda self, *args, **kwargs: None),
-        inspect.Signature.from_callable(lambda cls, *args, **kwargs: None),
-    }
+    acceptable_impl_signatures = _GetGenericImplementationSignatures()
 
     class_ = _GetClassForInterfaceChecking(class_or_instance)
 
@@ -1042,3 +1042,58 @@ def AssertDeclaresInterface(
     class_or_instance: object, interface: Type[Interface]
 ) -> None:
     AssertImplements(class_or_instance, interface)
+
+
+# Cache for _GetGenericImplementationSignatures result.
+_GENERIC_IMPLEMENTATION_SIGNATURES: Optional[Set[inspect.Signature]] = None
+
+
+def _GetGenericImplementationSignatures() -> Set[inspect.Signature]:
+    """
+    Return a set of signatures that should always be considered a match against interface
+    methods: they represent generic signatures that are commonly used by wrappers.
+    """
+    global _GENERIC_IMPLEMENTATION_SIGNATURES
+
+    if _GENERIC_IMPLEMENTATION_SIGNATURES is not None:
+        return _GENERIC_IMPLEMENTATION_SIGNATURES
+
+    def func1(*args, **kwargs):  # type:ignore[no-untyped-def]
+        ...
+
+    def func2(self, *args, **kwargs):  # type:ignore[no-untyped-def]
+        ...
+
+    def func3(cls, *args, **kwargs):  # type:ignore[no-untyped-def]
+        ...
+
+    def func4(*args: object, **kwargs: object) -> object:  # type:ignore[no-untyped-def]
+        ...
+
+    def func5(  # type:ignore[no-untyped-def]
+        self, *args: object, **kwargs: object
+    ) -> object:
+        ...
+
+    def func6(  # type:ignore[no-untyped-def]
+        cls, *args: object, **kwargs: object
+    ) -> object:
+        ...
+
+    def func7(self: object, *args: object, **kwargs: object) -> object:
+        ...
+
+    def func8(cls: object, *args: object, **kwargs: object) -> object:
+        ...
+
+    _GENERIC_IMPLEMENTATION_SIGNATURES = {
+        inspect.Signature.from_callable(func1),
+        inspect.Signature.from_callable(func2),
+        inspect.Signature.from_callable(func3),
+        inspect.Signature.from_callable(func4),
+        inspect.Signature.from_callable(func5),
+        inspect.Signature.from_callable(func6),
+        inspect.Signature.from_callable(func7),
+        inspect.Signature.from_callable(func8),
+    }
+    return _GENERIC_IMPLEMENTATION_SIGNATURES

@@ -1,3 +1,9 @@
+1.1.1 (UNRELEASED)
+------------------
+
+* #36: Fix regression introduced in ``1.1.0`` where ``Abstract`` and ``Implements`` decorators
+  could no longer be used in interfaces implementations.
+
 1.1.0 (2021-02-19)
 ------------------
 
