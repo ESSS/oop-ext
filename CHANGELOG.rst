@@ -1,8 +1,9 @@
-1.1.1 (UNRELEASED)
+1.1.1 (2021-02-23)
 ------------------
 
 * #38: Reintroduce ``extra_args`` argument to ``Callback._GetKey``, so subclasses can make use
   of it.
+
 * #36: Fix regression introduced in ``1.1.0`` where ``Abstract`` and ``Implements`` decorators
   could no longer be used in interfaces implementations.
 
