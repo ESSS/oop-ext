@@ -969,6 +969,12 @@ def testInterfaceTypeChecking(type_checker) -> None:
     result.assert_ok()
 
 
+def testAttributeTypeChecking(type_checker) -> None:
+    class IFoo(Interface, TypeCheckingSupport):
+        value: int = Attribute(int)
+        ro_value: int = ReadOnlyAttribute(int)
+
+
 @pytest.mark.parametrize("register_callback", [True, False])
 def testDecorators(register_callback: bool):
     """Interfaces and the foundation decorators/callbacks need to play nice together."""

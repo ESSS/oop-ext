@@ -1,3 +1,13 @@
+1.1.3 (UNRELEASED)
+------------------
+
+* #43: Fix support for type annotated ``Attribute`` and ``ReadOnlyAttribute``:
+
+  .. code-block:: python
+
+      class IFoo(Interface):
+          value: int = Attribute(int)
+
 1.1.2 (2021-02-23)
 ------------------
 
