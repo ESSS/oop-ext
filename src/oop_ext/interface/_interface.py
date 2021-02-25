@@ -536,70 +536,84 @@ def _IsInterfaceDeclared(class_: Optional[Type], interface: Type[Interface]) -> 
     return interface in declared_and_subclasses
 
 
-class Attribute:
-    """"""
+if not TYPE_CHECKING:
 
-    _do_not_check_instance = object()
+    class Attribute:
+        """"""
 
-    def __init__(
-        self, attribute_type: Type, instance: object = _do_not_check_instance
-    ) -> None:
-        """
-        :param type attribute_type:
-            Will check the attribute type in the implementation against this type.
-            Checks if the attribute is a direct instance of attribute_type, or of it implements it.
+        _do_not_check_instance = object()
 
-        :param object instance:
-            If passed, will check for *equality* against this instance. The default is to not check
-            for equality.
-        """
-        self.attribute_type = attribute_type
-        self.instance = instance
+        def __init__(
+            self, attribute_type: Type, instance: object = _do_not_check_instance
+        ) -> None:
+            """
+            :param type attribute_type:
+                Will check the attribute type in the implementation against this type.
+                Checks if the attribute is a direct instance of attribute_type, or of it implements it.
 
-    def Match(self, attribute: object) -> Tuple[bool, Optional[str]]:
-        """
-        :param object attribute:
-            Object that will be compared to see if it matches the expected interface.
+            :param object instance:
+                If passed, will check for *equality* against this instance. The default is to not check
+                for equality.
+            """
+            self.attribute_type = attribute_type
+            self.instance = instance
 
-        :returns:
-            If the given object implements or inherits from the interface expected by this
-            attribute, will return (True, None), otherwise will return (False, message), where
-            message is an error message of why there was a mismatch (may be None also).
-        """
-        msg = None
+        def Match(self, attribute: object) -> Tuple[bool, Optional[str]]:
+            """
+            :param object attribute:
+                Object that will be compared to see if it matches the expected interface.
 
-        if isinstance(attribute, self.attribute_type):
-            return (True, None)
+            :returns:
+                If the given object implements or inherits from the interface expected by this
+                attribute, will return (True, None), otherwise will return (False, message), where
+                message is an error message of why there was a mismatch (may be None also).
+            """
+            msg = None
 
-        if self.instance is not self._do_not_check_instance:
-            if self.instance == attribute:
+            if isinstance(attribute, self.attribute_type):
                 return (True, None)
-            else:
-                return (
-                    False,
-                    "The instance ({}) does not match the expected one ({}).".format(
-                        self.instance, attribute
-                    ),
-                )
 
-        try:
-            if _IsImplementationFullChecking(attribute, self.attribute_type):
-                return (True, msg)
-        except InterfaceError as exception_msg:
-            # Necessary because whenever a value is compared to an interface it does not inherits
-            # from, IsImplementation raises an InterfaceError. In this context, an error like that
-            # will mean that our candidate attribute is in fact not matching the interface, so we
-            # capture this error and return False.
-            msg = exception_msg
+            if self.instance is not self._do_not_check_instance:
+                if self.instance == attribute:
+                    return (True, None)
+                else:
+                    return (
+                        False,
+                        "The instance ({}) does not match the expected one ({}).".format(
+                            self.instance, attribute
+                        ),
+                    )
 
-        return (False, None)
+            try:
+                if _IsImplementationFullChecking(attribute, self.attribute_type):
+                    return (True, msg)
+            except InterfaceError as exception_msg:
+                # Necessary because whenever a value is compared to an interface it does not inherits
+                # from, IsImplementation raises an InterfaceError. In this context, an error like that
+                # will mean that our candidate attribute is in fact not matching the interface, so we
+                # capture this error and return False.
+                msg = exception_msg
+
+            return (False, None)
+
+    class ReadOnlyAttribute(Attribute):
+        """
+        This is an attribute that should be treated as read-only (note that usually this means that
+        the related property should be also declared as read-only).
+        """
 
 
-class ReadOnlyAttribute(Attribute):
-    """
-    This is an attribute that should be treated as read-only (note that usually this means that
-    the related property should be also declared as read-only).
-    """
+else:
+    # Type checking interfaces for Attribute and ReadOnlyAttribute: they
+    # should be considered simple wrappers by the type checker, as that are handled
+    # by Interface during runtime when checking if an implementation has the required
+    # attributes.
+
+    def Attribute(attribute_type: Type[T], instance: object = ...) -> T:
+        ...
+
+    def ReadOnlyAttribute(attribute_type: Type[T], instance: object = ...) -> T:
+        ...
 
 
 class CacheInterfaceAttrs:
@@ -621,8 +635,8 @@ class CacheInterfaceAttrs:
 
     @classmethod
     def RegisterAttributeClass(
-        cls: Type["CacheInterfaceAttrs"], attribute_class: Type[Attribute]
-    ) -> Set[Attribute]:
+        cls: Type["CacheInterfaceAttrs"], attribute_class: Type[object]
+    ) -> Set[object]:
         """
         Registers a class to be considered as an attribute class.
 
