@@ -1,4 +1,4 @@
-1.1.3 (UNRELEASED)
+1.2.0 (2021-03-09)
 ------------------
 
 * #43: Fix support for type annotated ``Attribute`` and ``ReadOnlyAttribute``:
