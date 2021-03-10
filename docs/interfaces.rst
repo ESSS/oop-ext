@@ -73,8 +73,23 @@ bring to the table **runtime validation**.
 
 If later on we add a new method to our ``IDataSaver`` interface, we will get errors at during
 *import time* about implementations which don't implement the new method, making it easy to spot
-the problems early. Interfaces also verify parameters, type annotations, and default values, making
+the problems early. Interfaces also verify parameters names and  default values, making
 it easy to keep implementations and interfaces in sync.
+
+.. note::
+
+    .. versionchanged:: 2.0.0
+
+    Interfaces do not check type annotations at all.
+
+    It was supported initially, but in practice
+    this feature has shown up to be an impediment to adopting type annotations incrementally, as it
+    discourages adding type annotations to improve existing interfaces, or annotating
+    existing implementations without having to update the interface (and all other implementations
+    by consequence).
+
+    It was decided to let the static type checker correctly deal with matching type annotations, as
+    it can do so more accurately than ``oop-ext`` did before.
 
 Static Type Checking
 --------------------
