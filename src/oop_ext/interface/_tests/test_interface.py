@@ -860,6 +860,50 @@ def testKeywordOnlyArguments() -> None:
                 pass
 
 
+class TestTypeAnnotations:
+    def testInterfaceNoAnnotations(self) -> None:
+        """
+        Ignore type annotations for interface checking when interface has type annotations.
+        """
+
+        class IFoo(interface.Interface):
+            def foo(self, x: int) -> None:
+                pass
+
+        @interface.ImplementsInterface(IFoo)
+        class Foo:
+            def foo(self, x):
+                pass
+
+    def testImplementationNoAnnotations(self) -> None:
+        """
+        Ignore type annotations for interface checking when implementation has type annotations.
+        """
+
+        class IFoo(interface.Interface):
+            def foo(self, x):
+                pass
+
+        @interface.ImplementsInterface(IFoo)
+        class Foo:
+            def foo(self, x: int) -> None:
+                pass
+
+    def testMismatchedAnnotations(self) -> None:
+        """
+        Type annotations are not verified at all.
+        """
+
+        class IFoo(interface.Interface):
+            def foo(self, x: float) -> object:
+                pass
+
+        @interface.ImplementsInterface(IFoo)
+        class Foo3:
+            def foo(self, x: int) -> tuple:
+                pass
+
+
 def testHashableArgumentsInterface() -> None:
 
     expected = "Method IFoo.foo contains unhashable arguments:\n" "(self, x=[])"

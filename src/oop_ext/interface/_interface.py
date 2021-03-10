@@ -40,6 +40,7 @@ AssertImplements(impl, IMyCalculator)
 import inspect
 import sys
 from contextlib import suppress
+from functools import lru_cache
 from typing import (
     TypeVar,
     Generic,
@@ -803,11 +804,22 @@ def _AssertImplementsFullChecking(
         """
         Get the inspect.Signature object for the method, considering the possibility of instances of Method,
         in which case, we must obtain the arguments of the instance "__call__" method.
+
+        The returned signature is also stripped of any type annotation information, as we don't want to
+        check them at runtime.
         """
         if isinstance(method, Method):
-            return inspect.signature(type(method).__call__)
+            signature = inspect.signature(type(method).__call__)
         else:
-            return inspect.signature(method)
+            signature = inspect.signature(method)
+
+        new_parameters = [
+            p.replace(annotation=inspect.Signature.empty)
+            for p in signature.parameters.values()
+        ]
+        return signature.replace(
+            parameters=new_parameters, return_annotation=inspect.Signature.empty
+        )
 
     acceptable_impl_signatures = _GetGenericImplementationSignatures()
 
@@ -1058,19 +1070,15 @@ def AssertDeclaresInterface(
     AssertImplements(class_or_instance, interface)
 
 
-# Cache for _GetGenericImplementationSignatures result.
-_GENERIC_IMPLEMENTATION_SIGNATURES: Optional[Set[inspect.Signature]] = None
-
-
-def _GetGenericImplementationSignatures() -> Set[inspect.Signature]:
+@lru_cache(maxsize=1)
+def _GetGenericImplementationSignatures() -> FrozenSet[inspect.Signature]:
     """
     Return a set of signatures that should always be considered a match against interface
     methods: they represent generic signatures that are commonly used by wrappers.
-    """
-    global _GENERIC_IMPLEMENTATION_SIGNATURES
 
-    if _GENERIC_IMPLEMENTATION_SIGNATURES is not None:
-        return _GENERIC_IMPLEMENTATION_SIGNATURES
+    Only list variants without type annotations, as they are stripped by the method which
+    uses this information.
+    """
 
     def func1(*args, **kwargs):  # type:ignore[no-untyped-def]
         ...
@@ -1081,85 +1089,10 @@ def _GetGenericImplementationSignatures() -> Set[inspect.Signature]:
     def func3(cls, *args, **kwargs):  # type:ignore[no-untyped-def]
         ...
 
-    def func4(*args: object, **kwargs: object) -> object:
-        ...
-
-    def func5(  # type:ignore[no-untyped-def]
-        self, *args: object, **kwargs: object
-    ) -> object:
-        ...
-
-    def func6(  # type:ignore[no-untyped-def]
-        cls, *args: object, **kwargs: object
-    ) -> object:
-        ...
-
-    def func7(self: object, *args: object, **kwargs: object) -> object:
-        ...
-
-    def func8(cls: object, *args: object, **kwargs: object) -> object:
-        ...
-
-    def func9(  # type:ignore[no-untyped-def]
-        *args: object, **kwargs: object
-    ) -> Any:
-        ...
-
-    def func10(  # type:ignore[no-untyped-def]
-        self, *args: object, **kwargs: object
-    ) -> Any:
-        ...
-
-    def func11(  # type:ignore[no-untyped-def]
-        cls, *args: object, **kwargs: object
-    ) -> Any:
-        ...
-
-    def func12(self: object, *args: object, **kwargs: object) -> Any:
-        ...
-
-    def func13(cls: object, *args: object, **kwargs: object) -> Any:
-        ...
-
-    def func14(  # type:ignore[no-untyped-def]
-        *args: object, **kwargs: object
-    ) -> NoReturn:
-        ...
-
-    def func15(  # type:ignore[no-untyped-def]
-        self, *args: object, **kwargs: object
-    ) -> NoReturn:
-        ...
-
-    def func16(  # type:ignore[no-untyped-def]
-        cls, *args: object, **kwargs: object
-    ) -> NoReturn:
-        ...
-
-    def func17(self: object, *args: object, **kwargs: object) -> NoReturn:
-        ...
-
-    def func18(cls: object, *args: object, **kwargs: object) -> NoReturn:
-        ...
-
-    _GENERIC_IMPLEMENTATION_SIGNATURES = {
-        inspect.Signature.from_callable(func1),
-        inspect.Signature.from_callable(func2),
-        inspect.Signature.from_callable(func3),
-        inspect.Signature.from_callable(func4),
-        inspect.Signature.from_callable(func5),
-        inspect.Signature.from_callable(func6),
-        inspect.Signature.from_callable(func7),
-        inspect.Signature.from_callable(func8),
-        inspect.Signature.from_callable(func9),
-        inspect.Signature.from_callable(func10),
-        inspect.Signature.from_callable(func11),
-        inspect.Signature.from_callable(func12),
-        inspect.Signature.from_callable(func13),
-        inspect.Signature.from_callable(func14),
-        inspect.Signature.from_callable(func15),
-        inspect.Signature.from_callable(func16),
-        inspect.Signature.from_callable(func17),
-        inspect.Signature.from_callable(func18),
-    }
-    return _GENERIC_IMPLEMENTATION_SIGNATURES
+    return frozenset(
+        {
+            inspect.Signature.from_callable(func1),
+            inspect.Signature.from_callable(func2),
+            inspect.Signature.from_callable(func3),
+        }
+    )

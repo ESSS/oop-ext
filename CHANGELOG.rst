@@ -1,3 +1,17 @@
+2.2.0 (2021-03-10)
+------------------
+
+* #47: Interfaces no longer check type annotations at all.
+
+  It was supported initially, but in practice
+  this feature has shown up to be an impediment to adopting type annotations incrementally, as it
+  discourages adding type annotations to improve existing interfaces, or annotating
+  existing implementations without having to update the interface (and all other implementations
+  by consequence).
+
+  It was decided to let the static type checker correctly deal with matching type annotations, as
+  it can do so more accurately than ``oop-ext`` did before.
+
 1.2.0 (2021-03-09)
 ------------------
 
