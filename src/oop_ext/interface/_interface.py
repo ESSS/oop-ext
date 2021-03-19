@@ -57,6 +57,7 @@ from typing import (
     List,
     FrozenSet,
     NoReturn,
+    cast,
 )
 
 from oop_ext.foundation.decorators import Deprecated
@@ -99,6 +100,11 @@ class InterfaceError(RuntimeError):
 
 class BadImplementationError(InterfaceError):
     pass
+
+
+# InterfaceType should be changed to ``Type[Interface]`` after https://github.com/python/mypy/issues/5374
+# is fixed.
+InterfaceType = Type[Any]
 
 
 class InterfaceImplementationMetaClass(type):
@@ -313,16 +319,16 @@ else:
 
 def IsImplementation(
     class_or_instance: Any,
-    interface: Type[Interface],
+    interface: InterfaceType,
     *,
     requires_declaration: bool = True,
 ) -> bool:
     """
-    :type class_or_instance: type or classobj or object
+    :param class_or_instance: type or classobj or object
 
-    :type interface: Type[Interface]
+    :param interface: the interface type to check.
 
-    :type requires_declaration: bool
+    :param requires_declaration:
         If `True`, the Interface must have been explicitly declared through :py:func:`ImplementsInterface`
         for `class_or_interface` to be considered an implementation of `interface`. Otherwise it'd only
         check if `class_or_interface` has all methods defined on `interface`.
@@ -348,7 +354,7 @@ def IsImplementation(
 
 def IsImplementationOfAny(
     class_or_instance: Any,
-    interfaces: Sequence[Type[Interface]],
+    interfaces: Sequence[InterfaceType],
     *,
     requires_declaration: bool = True,
 ) -> bool:
@@ -377,7 +383,7 @@ def IsImplementationOfAny(
 
 def AssertImplements(
     class_or_instance: Any,
-    interface: Type[Interface],
+    interface: InterfaceType,
     *,
     requires_declaration: bool = True,
 ) -> None:
@@ -425,13 +431,13 @@ def AssertImplements(
 
 # Using explicit memoization, because we need to forget some values at some times
 __ImplementsCache: Dict[
-    Tuple[Type, Type[Interface], bool], Tuple[bool, Optional[str]]
+    Tuple[Type, InterfaceType, bool], Tuple[bool, Optional[str]]
 ] = {}
-__ImplementedInterfacesCache: Dict[Type, FrozenSet[Type[Interface]]] = {}
+__ImplementedInterfacesCache: Dict[Type, FrozenSet[InterfaceType]] = {}
 
 
 def _CheckIfClassImplements(
-    class_: Type, interface: Type[Interface], *, requires_declaration: bool = True
+    class_: Type, interface: InterfaceType, *, requires_declaration: bool = True
 ) -> Tuple[bool, Optional[str]]:
     """
     :type class_: type or classobj
@@ -485,7 +491,7 @@ def _CheckIfClassImplements(
 
 
 def _IsImplementationFullChecking(
-    class_or_instance: Any, interface: Type[Interface]
+    class_or_instance: Any, interface: InterfaceType
 ) -> bool:
     """
     Used internally by Attribute.
@@ -510,7 +516,7 @@ def _IsImplementationFullChecking(
         return True
 
 
-def _IsInterfaceDeclared(class_: Optional[Type], interface: Type[Interface]) -> bool:
+def _IsInterfaceDeclared(class_: Optional[Type], interface: InterfaceType) -> bool:
     """
     :type interface: Interface
     :param interface:
@@ -656,7 +662,7 @@ class CacheInterfaceAttrs:
         return result
 
     def __GetInterfaceMethodsAndAttrs(
-        self, interface: Type[Interface]
+        self, interface: InterfaceType
     ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         """
         :type interface: the interface from where the methods and attributes should be gotten.
@@ -693,7 +699,7 @@ class CacheInterfaceAttrs:
     cache: ImmutableParamsCachedMethod
 
     def GetInterfaceMethodsAndAttrs(
-        self, interface: Type[Interface]
+        self, interface: InterfaceType
     ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         """
         We have to make the creation of the ImmutableParamsCacheManager lazy because
@@ -737,7 +743,7 @@ def _IsMethod(member: object) -> bool:
 
 @Deprecated(AssertImplements)
 def AssertImplementsFullChecking(
-    class_or_instance: object, interface: Type[Interface], check_attr: bool = True
+    class_or_instance: object, interface: InterfaceType, check_attr: bool = True
 ) -> None:
     return AssertImplements(class_or_instance, interface)
 
@@ -747,7 +753,7 @@ _INTERFACE_METHODS_TO_IGNORE = {"__init_subclass__"}
 
 
 def _AssertImplementsFullChecking(
-    class_or_instance: Any, interface: Type[Interface], check_attr: bool = True
+    class_or_instance: Any, interface: InterfaceType, check_attr: bool = True
 ) -> None:
     """
     Used internally.
@@ -959,7 +965,7 @@ def ImplementsInterface(*interfaces: Any, no_check: bool = False) -> Callable[[T
     return Check()
 
 
-def DeclareClassImplements(class_: Type, *interfaces: Type[Interface]) -> None:
+def DeclareClassImplements(class_: Type, *interfaces: InterfaceType) -> None:
     """
     This is a way to tell, from outside of the class, that a given :arg class_: implements the
     given :arg interfaces:.
@@ -1029,7 +1035,7 @@ def _GetMROForOldStyleClass(class_: Type) -> List[Type]:
     return mro
 
 
-def _GetClassImplementedInterfaces(class_: Type) -> FrozenSet[Type[Interface]]:
+def _GetClassImplementedInterfaces(class_: Type) -> FrozenSet[InterfaceType]:
     with suppress(KeyError):
         return __ImplementedInterfacesCache[class_]
 
@@ -1052,7 +1058,7 @@ def _GetClassImplementedInterfaces(class_: Type) -> FrozenSet[Type[Interface]]:
     return result
 
 
-def GetImplementedInterfaces(class_or_object: Any) -> FrozenSet[Type[Interface]]:
+def GetImplementedInterfaces(class_or_object: Any) -> FrozenSet[InterfaceType]:
     """
     Return the interfaces implemented by the object or class passed.
     """
@@ -1063,9 +1069,38 @@ def GetImplementedInterfaces(class_or_object: Any) -> FrozenSet[Type[Interface]]
     return _GetClassImplementedInterfaces(class_)
 
 
+def GetProxy(interface: InterfaceType, obj: T) -> T:
+    """
+    Obtains a *proxy object* for ``obj``, which contains only methods and attributes declared in ``interface``.
+
+    Usage:
+
+    .. code-block:: python
+
+        def run_simulation(params: SimulationParameters, saver: IDataSaver) -> None:
+            data = calculate(params)
+            proxy = GetProxy(IDataSaver, saver)
+            proxy.save(data)
+
+    Note however this is redundant when used with type checkers: ``saver: IDataSaver`` already tells the
+    type checker to only allow access to legal members. This is useful however when type annotating legacy
+    code which doesn't have any type annotations and makes use of the runtime mechanism to ensure
+    interface compliance.
+
+    .. note::
+
+        As of ``mypy 0.812``, there's `a bug <https://github.com/python/mypy/issues/5374>`__ that prevents
+        :func:`GetProxy <oop_ext.interface.GetProxy>` from being properly type annotated.
+        Hopefully this will be improved in the future.
+
+    """
+    x = interface(obj)  # type:ignore[call-arg]
+    return x
+
+
 @Deprecated(AssertImplements)
 def AssertDeclaresInterface(
-    class_or_instance: object, interface: Type[Interface]
+    class_or_instance: object, interface: InterfaceType
 ) -> None:
     AssertImplements(class_or_instance, interface)
 
