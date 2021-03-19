@@ -91,8 +91,8 @@ it easy to keep implementations and interfaces in sync.
     It was decided to let the static type checker correctly deal with matching type annotations, as
     it can do so more accurately than ``oop-ext`` did before.
 
-Static Type Checking
---------------------
+Type Checking
+-------------
 
 .. versionadded:: 1.1.0
 
@@ -132,3 +132,71 @@ for the benefits of the type checkers.
 
     Due to how ``Protocol`` works in Python, every ``Interface`` subclass **also** needs to subclass
     ``TypeCheckingSupport``.
+
+
+Proxies
+-------
+
+Given an interface and an object that implements an interface, you can call :func:`GetProxy <oop_ext.interface.GetProxy>`
+to obtain a *proxy object* which only contains methods and attributes defined in the interface.
+
+For example, using the ``JSONSaver`` from the previous example:
+
+.. code-block:: python
+
+    def run_simulation(params, saver):
+        data = calculate(params)
+        proxy = GetProxy(IDataSaver, saver)
+        proxy.save(data)
+
+The ``proxy`` object contains a stub implementation which contains only methods and attributes in ``IDataSaver``. This
+prevents mistakes like accessing a method that is defined in ``JSONSaver``, but is not part of ``IDataSaver``.
+
+Legacy Proxies
+^^^^^^^^^^^^^^
+
+With type annotations however, this is redundant: the type checker will prevent access to any method not declared in
+``IDataSaver``:
+
+.. code-block:: python
+
+    def run_simulation(params: SimulationParameters, saver: IDataSaver) -> None:
+        data = calculate(params)
+        saver.save(data)
+
+However when adding type annotations to legacy code, one will encounter this construct:
+
+.. code-block:: python
+
+    def run_simulation(params, saver):
+        data = calculate(params)
+        proxy = IDataSaver(saver)
+        proxy.save(data)
+
+Here "creating an instance" of the interface, passing an implementation of that interface, returns the stub
+implementation. This API was implemented like this for historic reasons, mainly because it would trick IDEs into
+providing code completion for ``proxy`` as if a ``IDataSaver`` instance.
+
+When adding type annotations, prefer to convert that to :func:`GetProxy <oop_ext.interface.GetProxy>`,
+which is friendlier to type checkers:
+
+.. code-block:: python
+
+    def run_simulation(params: SimulationParameters, saver: IDataSaver) -> None:
+        data = calculate(params)
+        proxy = GetProxy(IDataSaver, saver)
+        proxy.save(data)
+
+Or even better, if you don't require runtime checking, let the type checker do its job:
+
+.. code-block:: python
+
+    def run_simulation(params: SimulationParameters, saver: IDataSaver) -> None:
+        data = calculate(params)
+        saver.save(data)
+
+
+.. note::
+
+    As of ``mypy 0.812``, there's `a bug <https://github.com/python/mypy/issues/5374>`__ that prevents
+    :func:`GetProxy <oop_ext.interface.GetProxy>` from being properly type annotated. Hopefully this will be improved in the future.

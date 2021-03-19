@@ -21,26 +21,27 @@ from oop_ext.interface import (
     ReadOnlyAttribute,
     IsImplementationOfAny,
     TypeCheckingSupport,
+    GetProxy,
 )
 from oop_ext import interface
 
 
-class _InterfM1(Interface):
+class _InterfM1(Interface, TypeCheckingSupport):
     def m1(self):
         ""
 
 
-class _InterfM2(Interface):
+class _InterfM2(Interface, TypeCheckingSupport):
     def m2(self):
         ""
 
 
-class _InterfM3(Interface):
+class _InterfM3(Interface, TypeCheckingSupport):
     def m3(self, arg1, arg2):
         ""
 
 
-class _InterfM4(_InterfM3):
+class _InterfM4(_InterfM3, TypeCheckingSupport):
     def m4(self):
         ""
 
@@ -318,7 +319,8 @@ def testCallbackAndInterfaces() -> None:
     AssertImplements(o, _InterfM1)  # Not raises BadImplementationError
 
 
-def testInterfaceStubFromClasses() -> None:
+@pytest.mark.parametrize("mode", ["call", "proxy"])
+def testInterfaceStubFromClasses(mode: str) -> None:
     @ImplementsInterface(_InterfM1)
     class My:
         def m1(self):
@@ -328,15 +330,19 @@ def testInterfaceStubFromClasses() -> None:
             ""
 
     m0 = My()
-    m1 = _InterfM1(
-        m0
-    )  # will make sure that we only access the attributes/methods declared in the interface
+    m1: _InterfM1
+    # Proxy will make sure that we only access the attributes/methods declared in the interface
+    if mode == "call":
+        m1 = _InterfM1(m0)  # type:ignore[misc]
+    else:
+        assert mode == "proxy"
+        m1 = GetProxy(_InterfM1, m0)
     assert "m1" == m1.m1()
     getattr(m0, "m2")  # Not raises AttributeError
     with pytest.raises(AttributeError):
         getattr(m1, "m2")
 
-    _InterfM1(m1)  # Not raise BadImplementationError
+    GetProxy(_InterfM1, m1)  # Not raise BadImplementationError
 
 
 def testStubsFromInstances() -> None:
@@ -402,7 +408,7 @@ def testIsImplementationWithSubclasses() -> None:
     assert IsImplementation(m4, _InterfM3) == True
 
     # When wrapped in an m4 interface it should still accept m3 as a declared interface
-    wrapped_intef_m4 = _InterfM4(m4)
+    wrapped_intef_m4 = GetProxy(_InterfM4, m4)
     assert IsImplementation(wrapped_intef_m4, _InterfM4) == True
     assert IsImplementation(wrapped_intef_m4, _InterfM3) == True
 
@@ -509,9 +515,11 @@ def testAdaptableInterface() -> None:
             ""
 
     a = A()
-    b = _InterfM1(a)  # will try to adapt, as it does not directly implements m1
+    b = GetProxy(
+        _InterfM1, a
+    )  # will try to adapt, as it does not directly implement m1
     assert b is not None
-    b.m1()  # has m1
+    b.m1()  # type:ignore[attr-defined]
     with pytest.raises(AttributeError):
         getattr(b, "non_existent")
 

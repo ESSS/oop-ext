@@ -20,3 +20,4 @@ API Reference
     :members:
 
 .. autofunction:: ImplementsInterface
+.. autofunction:: GetProxy

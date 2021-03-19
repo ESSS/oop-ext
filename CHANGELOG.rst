@@ -1,4 +1,17 @@
-2.2.0 (2021-03-10)
+2.1.0 (2021-03-19)
+------------------
+
+* #48: New type-checker friendly ``proxy = GetProxy(I, obj)`` function as an alternative to ``proxy = I(obj)``. The
+  latter is not accepted by type checkers in general because interfaces are protocols, which can't be instantiated.
+
+  Also fixed a type-checking error with ``AsssertImplements``::
+
+      Only concrete class can be given where "Type[Interface]" is expected
+
+  This happens due to `python/mypy#5374 <https://github.com/python/mypy/issues/5374>`__.
+
+
+2.0.0 (2021-03-10)
 ------------------
 
 * #47: Interfaces no longer check type annotations at all.
