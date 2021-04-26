@@ -546,7 +546,7 @@ def _IsInterfaceDeclared(class_: Optional[Type], interface: InterfaceType) -> bo
 if not TYPE_CHECKING:
 
     class Attribute:
-        """"""
+        """ """
 
         _do_not_check_instance = object()
 
