@@ -28,49 +28,49 @@ from oop_ext import interface
 
 class _InterfM1(Interface, TypeCheckingSupport):
     def m1(self):
-        ""
+        """ """
 
 
 class _InterfM2(Interface, TypeCheckingSupport):
     def m2(self):
-        ""
+        """ """
 
 
 class _InterfM3(Interface, TypeCheckingSupport):
     def m3(self, arg1, arg2):
-        ""
+        """ """
 
 
 class _InterfM4(_InterfM3, TypeCheckingSupport):
     def m4(self):
-        ""
+        """ """
 
 
 def testBasics() -> None:
     class I(Interface):
         def foo(self, a, b=None):
-            ""
+            """ """
 
         def bar(self):
-            ""
+            """ """
 
     @ImplementsInterface(I)
     class C:
         def foo(self, a, b=None):
-            ""
+            """ """
 
         def bar(self):
-            ""
+            """ """
 
     class C2:
         def foo(self, a, b=None):
-            ""
+            """ """
 
         def bar(self):
-            ""
+            """ """
 
     class D:
-        ""
+        """ """
 
     assert IsImplementation(I(C()), I) == True  # OK
 
@@ -99,7 +99,7 @@ def testBasics() -> None:
 def testMissingMethod() -> None:
     class I(Interface):
         def foo(self, a, b=None):
-            ""
+            """ """
 
     with pytest.raises(
         AssertionError,
@@ -114,7 +114,7 @@ def testMissingMethod() -> None:
         @ImplementsInterface(I)
         class C:
             def foo(self, a):
-                ""
+                """ """
 
     with pytest.raises(AssertionError) as e:
         TestMissingSignature()
@@ -130,7 +130,7 @@ def testMissingMethod() -> None:
         @ImplementsInterface(I)
         class C:
             def foo(self, a, b):
-                ""
+                """ """
 
     with pytest.raises(AssertionError) as e:
         TestMissingSignatureOptional()
@@ -146,7 +146,7 @@ def testMissingMethod() -> None:
         @ImplementsInterface(I)
         class C:
             def foo(self, a, c):
-                ""
+                """ """
 
     with pytest.raises(AssertionError) as e:
         TestWrongParameterName()
@@ -162,38 +162,38 @@ def testMissingMethod() -> None:
 def testSubclasses() -> None:
     class I(Interface):
         def foo(self, a, b=None):
-            ""
+            """ """
 
     @ImplementsInterface(I)
     class C:
         def foo(self, a, b=None):
-            ""
+            """ """
 
     class D(C):
-        ""
+        """ """
 
 
 def testSubclasses2() -> None:
     class I(Interface):
         def foo(self):
-            ""
+            """ """
 
     class I2(Interface):
         def bar(self):
-            ""
+            """ """
 
     @ImplementsInterface(I)
     class C:
         def foo(self):
-            ""
+            """ """
 
     @ImplementsInterface(I2)
     class D(C):
         def bar(self):
-            ""
+            """ """
 
     class E(D):
-        ""
+        """ """
 
     assert GetImplementedInterfaces(C) == {I}
     assert GetImplementedInterfaces(D) == {I2, I}
@@ -203,11 +203,11 @@ def testSubclasses2() -> None:
 def testNoName() -> None:
     class I(Interface):
         def MyMethod(self, foo):
-            ""
+            """ """
 
     class C:
         def MyMethod(self, bar):
-            ""
+            """ """
 
     with pytest.raises(AssertionError):
         AssertImplements(C(), I)
@@ -303,10 +303,10 @@ def testCallbackAndInterfaces() -> None:
     @ImplementsInterface(_InterfM1)
     class My:
         def m1(self):
-            ""
+            """ """
 
     def MyCallback():
-        ""
+        """ """
 
     from oop_ext.foundation.callback import After
 
@@ -327,7 +327,7 @@ def testInterfaceStubFromClasses(mode: str) -> None:
             return "m1"
 
         def m2(self):
-            ""
+            """ """
 
     m0 = My()
     m1: _InterfM1
@@ -377,20 +377,20 @@ def testIsImplementationWithSubclasses() -> None:
     @ImplementsInterface(_InterfM2)
     class My2:
         def m2(self):
-            ""
+            """ """
 
     @ImplementsInterface(_InterfM3)
     class My3:
         def m3(self, arg1, arg2):
-            ""
+            """ """
 
     @ImplementsInterface(_InterfM4)
     class My4:
         def m3(self, arg1, arg2):
-            ""
+            """ """
 
         def m4(self):
-            ""
+            """ """
 
     m2 = My2()
     m3 = My3()
@@ -430,15 +430,15 @@ def testClassImplementMethod() -> None:
     @ImplementsInterface(_InterfM1)
     class My:
         def m1(self):
-            ""
+            """ """
 
     class MyRightMethod(Method):
         def __call__(self):
-            ""
+            """ """
 
     class MyWrongMethod:
         def __call__(self):
-            ""
+            """ """
 
     # NOTE: It doesn't matter runtime modifications in the instance, what is really being tested
     #       is the *class* of the object (My) is what is really being tested.
@@ -467,18 +467,18 @@ def testGetImplementedInterfaces() -> None:
     @ImplementsInterface(_InterfM1)
     class A:
         def m1(self):
-            ""
+            """ """
 
     class B(A):
-        ""
+        """ """
 
     @ImplementsInterface(_InterfM4)
     class C:
         def m4(self):
-            ""
+            """ """
 
         def m3(self, arg1, arg2):
-            ""
+            """ """
 
     assert 1 == len(GetImplementedInterfaces(B()))
     assert set(GetImplementedInterfaces(C())) == {_InterfM4, _InterfM3}
@@ -488,12 +488,12 @@ def testGetImplementedInterfaces2() -> None:
     @ImplementsInterface(_InterfM1)
     class A:
         def m1(self):
-            ""
+            """ """
 
     @ImplementsInterface(_InterfM2)
     class B(A):
         def m2(self):
-            ""
+            """ """
 
     assert 2 == len(GetImplementedInterfaces(B()))
     with pytest.raises(AssertionError):
@@ -512,7 +512,7 @@ def testAdaptableInterface() -> None:
     @ImplementsInterface(_InterfM1)
     class B:
         def m1(self):
-            ""
+            """ """
 
     a = A()
     b = GetProxy(
@@ -532,7 +532,7 @@ def testNull() -> None:
     )  # Not raises BadImplementationError
 
     class ExtendedNull(Null):
-        ""
+        """ """
 
     AssertImplements(
         ExtendedNull(), _InterfM2, requires_declaration=False
@@ -542,10 +542,10 @@ def testNull() -> None:
 def testSetItem() -> None:
     class InterfSetItem(Interface):
         def __setitem__(self, item_id, subject):
-            ""
+            """ """
 
         def __getitem__(self, item_id):
-            ""
+            """ """
 
     @ImplementsInterface(InterfSetItem)
     class A:
@@ -572,7 +572,7 @@ def testAssertImplementsDoesNotDirObject() -> None:
 
             class MyMethod(Method):
                 def __call__(self):
-                    ""
+                    """ """
 
             return MyMethod()
 
@@ -590,7 +590,7 @@ def testImplementorWithAny() -> None:
 
     class M3:
         def m3(self, *args, **kwargs):
-            ""
+            """ """
 
     AssertImplements(M3(), _InterfM3, requires_declaration=False)
 
@@ -598,7 +598,7 @@ def testImplementorWithAny() -> None:
 def testInterfaceCheckRequiresInterface() -> None:
     class M3:
         def m3(self, *args, **kwargs):
-            ""
+            """ """
 
     with pytest.raises(InterfaceError):
         AssertImplements(M3(), M3)  # type:ignore[arg-type]
@@ -642,7 +642,7 @@ def testReadOnlyAttributeMissingImplementation() -> None:
     @ImplementsInterface(IZoo)
     class FlawedZoo:
         def __init__(self, value):
-            ""
+            """ """
 
     # NOTE: Testing private methods here
     from oop_ext.interface._interface import _AssertImplementsFullChecking
@@ -655,18 +655,18 @@ def testReadOnlyAttributeMissingImplementation() -> None:
 def testImplementsTwice() -> None:
     class I1(Interface):
         def Method1(self):
-            ""
+            """ """
 
     class I2(Interface):
         def Method2(self):
-            ""
+            """ """
 
     def Create():
         @ImplementsInterface(I1)
         @ImplementsInterface(I2)
         class Foo:
             def Method2(self):
-                ""
+                """ """
 
     # Error because I1 is not implemented.
     with pytest.raises(AssertionError):
@@ -676,30 +676,30 @@ def testImplementsTwice() -> None:
 def testDeclareClassImplements() -> None:
     class I1(Interface):
         def M1(self):
-            ""
+            """ """
 
     class I2(Interface):
         def M2(self):
-            ""
+            """ """
 
     class C0:
-        ""
+        """ """
 
     class C1:
         def M1(self):
-            ""
+            """ """
 
     class C2:
         def M2(self):
-            ""
+            """ """
 
     @ImplementsInterface(I2)
     class C2B:
         def M2(self):
-            ""
+            """ """
 
     class C12B(C1, C2B):
-        ""
+        """ """
 
     with pytest.raises(AssertionError):
         DeclareClassImplements(C0, I1)
@@ -730,7 +730,7 @@ def testDeclareClassImplements() -> None:
 
     # Exception: if I define a class *after* using DeclareClassImplements in the base, it works:
     class C12(C1, C2):
-        ""
+        """ """
 
     AssertImplements(C12, I1)
     AssertImplements(C12, I2)
@@ -748,12 +748,12 @@ def testCallableInterfaceStub() -> None:
     # ok, calling a stub for a callable
     class IFoo(Interface):
         def __call__(self, bar):
-            ""
+            """ """
 
     @ImplementsInterface(IFoo)
     class Foo:
         def __call__(self, bar):
-            ""
+            """ """
 
     foo = Foo()
     stub = IFoo(foo)
@@ -762,12 +762,12 @@ def testCallableInterfaceStub() -> None:
     # wrong, calling a stub for a non-callable
     class IBar(Interface):
         def something(self, stuff):
-            ""
+            """ """
 
     @ImplementsInterface(IBar)
     class Bar:
         def something(self, stuff):
-            ""
+            """ """
 
     bar = Bar()
     stub2 = IBar(bar)
@@ -939,7 +939,7 @@ def testHashableArgumentsImplementation() -> None:
 def testIsImplementationOfAny() -> None:
     class A:
         def m3(self, arg1, arg2):
-            ""
+            """ """
 
     a_obj = A()
     AssertImplements(a_obj, _InterfM3, requires_declaration=False)
@@ -959,13 +959,13 @@ def testClassMethodBug(mocker) -> None:
     class IFoo(Interface):
         @classmethod
         def foo(cls):
-            ""
+            """ """
 
     @ImplementsInterface(IFoo)
     class FooImplementation:
         @classmethod
         def foo(cls):
-            ""
+            """ """
 
     mocker.spy(FooImplementation, "foo")
     AssertImplements(FooImplementation, IFoo, requires_declaration=True)

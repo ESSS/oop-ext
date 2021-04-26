@@ -12,12 +12,12 @@ def testImplementsFail() -> None:
 
         class IFoo:
             def DoIt(self):
-                ""
+                """ """
 
         class Implementation:
             @Implements(IFoo.DoIt)
             def DoNotDoIt(self):
-                ""
+                """ """
 
 
 def testImplementsOK() -> None:
@@ -58,22 +58,22 @@ def testOverride() -> None:
     def TestERROR():
         class A:
             def MyMethod(self):
-                ""
+                """ """
 
         class B(A):
             @Override(A.Method)  # it will raise an error at this point
             def Method(self):
-                ""
+                """ """
 
     def TestNoMatch():
         class A:
             def Method(self):
-                ""
+                """ """
 
         class B(A):
             @Override(A.Method)
             def MethodNoMatch(self):
-                ""
+                """ """
 
     TestOK()
     with pytest.raises(AttributeError):
@@ -133,7 +133,7 @@ def testAbstract() -> None:
     class Alpha:
         @Abstract
         def Method(self):
-            ""
+            """ """
 
     alpha = Alpha()
     with pytest.raises(NotImplementedError):
