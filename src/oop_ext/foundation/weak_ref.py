@@ -450,7 +450,7 @@ def IsSame(o1: Any, o2: Any) -> bool:
         weak = o2
         original = o1
 
-    weaks = cast(List, weakref.getweakrefs(original))
+    weaks = weakref.getweakrefs(original)
     for w in weaks:
         if w is weak:  # check the weak object identity
             return True
