@@ -1,6 +1,8 @@
 # mypy: disallow-untyped-defs
 # mypy: disallow-any-decorated
-from typing import Dict, Tuple, Callable
+from typing import Callable
+from typing import Dict
+from typing import Tuple
 
 from ._callback import Callback
 

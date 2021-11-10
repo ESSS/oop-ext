@@ -4,18 +4,16 @@ from typing import Any
 
 import pytest
 
-from oop_ext.foundation.weak_ref import (
-    GetRealObj,
-    GetWeakProxy,
-    GetWeakRef,
-    IsSame,
-    IsWeakProxy,
-    IsWeakRef,
-    WeakList,
-    WeakMethodProxy,
-    WeakMethodRef,
-    WeakSet,
-)
+from oop_ext.foundation.weak_ref import GetRealObj
+from oop_ext.foundation.weak_ref import GetWeakProxy
+from oop_ext.foundation.weak_ref import GetWeakRef
+from oop_ext.foundation.weak_ref import IsSame
+from oop_ext.foundation.weak_ref import IsWeakProxy
+from oop_ext.foundation.weak_ref import IsWeakRef
+from oop_ext.foundation.weak_ref import WeakList
+from oop_ext.foundation.weak_ref import WeakMethodProxy
+from oop_ext.foundation.weak_ref import WeakMethodRef
+from oop_ext.foundation.weak_ref import WeakSet
 
 
 class _Stub:

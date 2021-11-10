@@ -1,5 +1,5 @@
-from ._interface import TypeCheckingSupport
 from ._interface import Interface
+from ._interface import TypeCheckingSupport
 
 
 class IAdaptable(Interface, TypeCheckingSupport):

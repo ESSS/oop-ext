@@ -1,10 +1,15 @@
 import warnings
-from typing import Tuple, Any, List
+from typing import Any
+from typing import List
+from typing import Tuple
 
 import pytest
 
 from oop_ext.foundation import is_frozen
-from oop_ext.foundation.decorators import Abstract, Deprecated, Implements, Override
+from oop_ext.foundation.decorators import Abstract
+from oop_ext.foundation.decorators import Deprecated
+from oop_ext.foundation.decorators import Implements
+from oop_ext.foundation.decorators import Override
 
 
 def testImplementsFail() -> None:

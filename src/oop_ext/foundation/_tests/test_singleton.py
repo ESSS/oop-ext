@@ -2,12 +2,10 @@ import pytest
 
 from oop_ext.foundation.callback import After
 from oop_ext.foundation.decorators import Override
-from oop_ext.foundation.singleton import (
-    PushPopSingletonError,
-    Singleton,
-    SingletonAlreadySetError,
-    SingletonNotSetError,
-)
+from oop_ext.foundation.singleton import PushPopSingletonError
+from oop_ext.foundation.singleton import Singleton
+from oop_ext.foundation.singleton import SingletonAlreadySetError
+from oop_ext.foundation.singleton import SingletonNotSetError
 
 
 def CheckCurrentSingleton(singleton_class, value):

@@ -3,7 +3,13 @@
 Collection of decorator with ONLY standard library dependencies.
 """
 import warnings
-from typing import Callable, Optional, NoReturn, TypeVar, Any, TYPE_CHECKING, cast
+from typing import Any
+from typing import Callable
+from typing import cast
+from typing import NoReturn
+from typing import Optional
+from typing import TYPE_CHECKING
+from typing import TypeVar
 
 from oop_ext.foundation.is_frozen import IsDevelopment
 

@@ -1,6 +1,11 @@
 # mypy: disallow-untyped-defs
 import threading
-from typing import Type, Set, TypeVar, Generic, List, Optional
+from typing import Generic
+from typing import List
+from typing import Optional
+from typing import Set
+from typing import Type
+from typing import TypeVar
 
 
 class SingletonError(RuntimeError):

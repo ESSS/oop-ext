@@ -16,10 +16,14 @@ Note the separate classes are needed for now, but if/when
 `pep-0646 <https://www.python.org/dev/peps/pep-0646>`__ lands, we should be able to
 implement the generic variants into ``Callback`` itself.
 """
+from typing import Callable
+from typing import Generic
+from typing import Sequence
+from typing import TYPE_CHECKING
+from typing import TypeVar
 
-from typing import Callable, Sequence, Generic, TypeVar, TYPE_CHECKING
-
-from ._callback import Callback, _UnregisterContext
+from ._callback import _UnregisterContext
+from ._callback import Callback
 
 T1 = TypeVar("T1")
 T2 = TypeVar("T2")

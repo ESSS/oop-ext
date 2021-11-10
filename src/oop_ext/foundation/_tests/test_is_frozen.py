@@ -1,9 +1,7 @@
-from oop_ext.foundation.is_frozen import (
-    IsDevelopment,
-    IsFrozen,
-    SetIsDevelopment,
-    SetIsFrozen,
-)
+from oop_ext.foundation.is_frozen import IsDevelopment
+from oop_ext.foundation.is_frozen import IsFrozen
+from oop_ext.foundation.is_frozen import SetIsDevelopment
+from oop_ext.foundation.is_frozen import SetIsFrozen
 
 
 def testIsFrozenIsDevelopment() -> None:

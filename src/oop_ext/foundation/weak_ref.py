@@ -1,22 +1,21 @@
 # mypy: disallow-untyped-defs
 import inspect
 import weakref
+from types import LambdaType
+from types import MethodType
+from typing import Any
+from typing import Callable
+from typing import cast
+from typing import Generic
+from typing import Iterable
+from typing import Iterator
+from typing import List
+from typing import Optional
+from typing import overload
+from typing import Set
+from typing import TypeVar
+from typing import Union
 from weakref import ReferenceType
-from types import LambdaType, MethodType
-from typing import (
-    Iterable,
-    Optional,
-    TypeVar,
-    Generic,
-    Iterator,
-    List,
-    Union,
-    Any,
-    Set,
-    cast,
-    overload,
-    Callable,
-)
 
 from oop_ext.foundation.decorators import Implements
 

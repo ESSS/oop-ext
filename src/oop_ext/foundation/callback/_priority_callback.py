@@ -1,11 +1,12 @@
 # mypy: disallow-untyped-defs
 # mypy: disallow-any-decorated
-from typing import Callable, Any, Tuple
-
-from oop_ext.foundation.decorators import Override
-from oop_ext.foundation.odict import odict
+from typing import Any
+from typing import Callable
+from typing import Tuple
 
 from ._callback import Callback
+from oop_ext.foundation.decorators import Override
+from oop_ext.foundation.odict import odict
 
 
 class PriorityCallback(Callback):
