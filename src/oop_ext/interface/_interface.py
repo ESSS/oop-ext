@@ -296,7 +296,6 @@ if TYPE_CHECKING:
     def _CheckIsInterfaceSubclass(interface: Any) -> None:
         pass
 
-
 else:
 
     def _CheckIsInterfaceSubclass(interface: Any) -> None:
@@ -608,7 +607,6 @@ if not TYPE_CHECKING:
         This is an attribute that should be treated as read-only (note that usually this means that
         the related property should be also declared as read-only).
         """
-
 
 else:
     # Type checking interfaces for Attribute and ReadOnlyAttribute: they
