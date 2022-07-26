@@ -49,7 +49,5 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     url="http://github.com/ESSS/oop-ext",
-    use_scm_version=True,
-    setup_requires=["setuptools_scm"],
     zip_safe=False,
 )
