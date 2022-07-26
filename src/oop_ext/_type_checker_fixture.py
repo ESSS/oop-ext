@@ -2,13 +2,13 @@
 # mypy: disallow-any-decorated
 import os
 import re
-from textwrap import dedent
-
-import mypy.api
 from pathlib import Path
-from typing import List, Tuple
+from textwrap import dedent
+from typing import List
+from typing import Tuple
 
 import attr
+import mypy.api
 import pytest
 
 

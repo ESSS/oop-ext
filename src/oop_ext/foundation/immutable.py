@@ -4,7 +4,14 @@
 
     USER: The cache-manager uses this module to generate a valid KEY for its cache dictionary.
 """
-from typing import Type, Any, Dict, Tuple, Callable, TypeVar, Generic, NoReturn
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import Generic
+from typing import NoReturn
+from typing import Tuple
+from typing import Type
+from typing import TypeVar
 
 _IMMUTABLE_TYPES = {float, int, str, bytes, bool, type(None)}
 

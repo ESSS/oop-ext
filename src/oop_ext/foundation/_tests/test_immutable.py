@@ -1,8 +1,11 @@
-from copy import copy, deepcopy
+from copy import copy
+from copy import deepcopy
 
 import pytest
 
-from oop_ext.foundation.immutable import AsImmutable, IdentityHashableRef, ImmutableDict
+from oop_ext.foundation.immutable import AsImmutable
+from oop_ext.foundation.immutable import IdentityHashableRef
+from oop_ext.foundation.immutable import ImmutableDict
 
 
 def testImmutable() -> None:

@@ -4,26 +4,27 @@ from typing import List
 
 import pytest
 
-from oop_ext.foundation.decorators import Implements, Abstract, Override
-from oop_ext.foundation.types_ import Method, Null
-from oop_ext.interface import (
-    AssertImplements,
-    Attribute,
-    BadImplementationError,
-    DeclareClassImplements,
-    GetImplementedInterfaces,
-    IAdaptable,
-    ImplementsInterface,
-    Interface,
-    InterfaceError,
-    InterfaceImplementorStub,
-    IsImplementation,
-    ReadOnlyAttribute,
-    IsImplementationOfAny,
-    TypeCheckingSupport,
-    GetProxy,
-)
 from oop_ext import interface
+from oop_ext.foundation.decorators import Abstract
+from oop_ext.foundation.decorators import Implements
+from oop_ext.foundation.decorators import Override
+from oop_ext.foundation.types_ import Method
+from oop_ext.foundation.types_ import Null
+from oop_ext.interface import AssertImplements
+from oop_ext.interface import Attribute
+from oop_ext.interface import BadImplementationError
+from oop_ext.interface import DeclareClassImplements
+from oop_ext.interface import GetImplementedInterfaces
+from oop_ext.interface import GetProxy
+from oop_ext.interface import IAdaptable
+from oop_ext.interface import ImplementsInterface
+from oop_ext.interface import Interface
+from oop_ext.interface import InterfaceError
+from oop_ext.interface import InterfaceImplementorStub
+from oop_ext.interface import IsImplementation
+from oop_ext.interface import IsImplementationOfAny
+from oop_ext.interface import ReadOnlyAttribute
+from oop_ext.interface import TypeCheckingSupport
 
 
 class _InterfM1(Interface, TypeCheckingSupport):

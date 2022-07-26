@@ -1,11 +1,9 @@
 import pytest
 
-from oop_ext.foundation.cached_method import (
-    AttributeBasedCachedMethod,
-    CachedMethod,
-    LastResultCachedMethod,
-    AbstractCachedMethod,
-)
+from oop_ext.foundation.cached_method import AbstractCachedMethod
+from oop_ext.foundation.cached_method import AttributeBasedCachedMethod
+from oop_ext.foundation.cached_method import CachedMethod
+from oop_ext.foundation.cached_method import LastResultCachedMethod
 
 
 def testCacheMethod(cached_obj: "MyTestObj") -> None:

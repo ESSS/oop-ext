@@ -1,12 +1,20 @@
 import weakref
 from functools import partial
-from typing import Generator, Any, List
+from typing import Any
+from typing import Generator
+from typing import List
 
 import pytest
 
-from oop_ext.foundation.callback import After, Before, Callback, Callbacks, Remove
+from oop_ext.foundation.callback import After
+from oop_ext.foundation.callback import Before
+from oop_ext.foundation.callback import Callback
+from oop_ext.foundation.callback import Callbacks
+from oop_ext.foundation.callback import Remove
 from oop_ext.foundation.types_ import Null
-from oop_ext.foundation.weak_ref import GetWeakProxy, WeakMethodProxy, WeakMethodRef
+from oop_ext.foundation.weak_ref import GetWeakProxy
+from oop_ext.foundation.weak_ref import WeakMethodProxy
+from oop_ext.foundation.weak_ref import WeakMethodRef
 
 
 class _MyClass:

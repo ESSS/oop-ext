@@ -54,7 +54,14 @@ import inspect
 import logging
 import types
 import weakref
-from typing import Callable, Any, Tuple, Hashable, Sequence, Union, cast, Optional
+from typing import Any
+from typing import Callable
+from typing import cast
+from typing import Hashable
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
 import attr
 

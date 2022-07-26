@@ -1,16 +1,14 @@
 # mypy: disallow-untyped-defs
 from abc import abstractmethod
-from typing import (
-    Generic,
-    TypeVar,
-    Callable,
-    Hashable,
-    Optional,
-    Dict,
-    Sequence,
-    Union,
-    cast,
-)
+from typing import Callable
+from typing import cast
+from typing import Dict
+from typing import Generic
+from typing import Hashable
+from typing import Optional
+from typing import Sequence
+from typing import TypeVar
+from typing import Union
 
 from .immutable import AsImmutable
 from .odict import odict

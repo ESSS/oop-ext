@@ -1,13 +1,18 @@
 # mypy: disallow-untyped-defs
 # mypy: disallow-any-decorated
 import weakref
-from typing import Union, Optional, Callable, Any, Tuple, Sequence
+from typing import Any
+from typing import Callable
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
+from ._callback import _CallbackWrapper
+from ._callback import Callback
+from ._callback import GetClassForUnboundMethod
 from oop_ext.foundation.types_ import Method
 from oop_ext.foundation.weak_ref import WeakMethodRef
-
-
-from ._callback import Callback, GetClassForUnboundMethod, _CallbackWrapper
 
 
 def _CreateBeforeOrAfter(
