@@ -36,6 +36,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
     description="OOP Extensions is a set of utilities for object oriented programming not found on Python's standard library.",
     extras_require=extras_require,
