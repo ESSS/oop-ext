@@ -20,6 +20,10 @@ OOP Extensions
 .. image:: https://results.pre-commit.ci/badge/github/ESSS/oop-ext/master.svg
     :target: https://results.pre-commit.ci/latest/github/ESSS/oop-ext/master
 
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=ESSS_oop-ext&metric=alert_status
+    :target: https://sonarcloud.io/project/overview?id=ESSS_oop-ext
+
+
 What is OOP Extensions ?
 ================================================================================
 
