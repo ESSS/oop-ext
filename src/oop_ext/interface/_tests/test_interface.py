@@ -797,7 +797,7 @@ def testImplementsInterfaceAsBoolError() -> None:
     assert IsImplementation(obj, I1)
 
     with pytest.raises(RuntimeError):
-        if ImplementsInterface(obj, I1):  # type:ignore[arg-type]
+        if ImplementsInterface(obj, I1):  # type:ignore[arg-type, truthy-function]
             pytest.fail('Managed to test "if ImplementsInterface(obj, I1):"')
 
 
@@ -909,7 +909,7 @@ class TestTypeAnnotations:
 
         @interface.ImplementsInterface(IFoo)
         class Foo3:
-            def foo(self, x: int) -> tuple:
+            def foo(self, x: int) -> tuple:  # type:ignore[empty-body]
                 pass
 
 
@@ -980,7 +980,7 @@ def testInterfaceTypeChecking(type_checker) -> None:
         """
         from oop_ext.interface import Interface
         class IAcme(Interface):
-            def Foo(self, a, b=None) -> int:
+            def Foo(self, a, b=None) -> int:  # type:ignore[empty-body]
                 ...
 
         class Acme:
@@ -1033,24 +1033,24 @@ def testDecorators(register_callback: bool):
     """Interfaces and the foundation decorators/callbacks need to play nice together."""
 
     class IFoo(Interface):
-        def GetValues(self, unit: str) -> List[float]:
+        def GetValues(self, unit: str) -> List[float]:  # type:ignore[empty-body]
             ...
 
         @classmethod
-        def GetCaption(cls) -> str:
+        def GetCaption(cls) -> str:  # type:ignore[empty-body]
             ...
 
     @ImplementsInterface(IFoo)
     class AbstractFoo:
         @Implements(IFoo.GetValues)
         @Abstract
-        def GetValues(self, unit: str) -> List[float]:
+        def GetValues(self, unit: str) -> List[float]:  # type:ignore[empty-body]
             ...
 
         @classmethod
         @Implements(IFoo.GetCaption)
         @Abstract
-        def GetCaption(cls) -> str:
+        def GetCaption(cls) -> str:  # type:ignore[empty-body]
             ...
 
     class Foo(AbstractFoo):
