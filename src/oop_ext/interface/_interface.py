@@ -611,10 +611,14 @@ else:
     # by Interface during runtime when checking if an implementation has the required
     # attributes.
 
-    def Attribute(attribute_type: Type[T], instance: object = ...) -> T:
+    def Attribute(  # type:ignore[empty-body]
+        attribute_type: Type[T], instance: object = ...
+    ) -> T:
         ...
 
-    def ReadOnlyAttribute(attribute_type: Type[T], instance: object = ...) -> T:
+    def ReadOnlyAttribute(  # type:ignore[empty-body]
+        attribute_type: Type[T], instance: object = ...
+    ) -> T:
         ...
 
 
