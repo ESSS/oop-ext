@@ -33,7 +33,6 @@ T5 = TypeVar("T5")
 
 
 class Callback0(Callback):
-
     if TYPE_CHECKING:
         CallableType = Callable[[], None]
 
@@ -63,7 +62,6 @@ class Callback0(Callback):
 
 
 class Callback1(Callback, Generic[T1]):
-
     if TYPE_CHECKING:
 
         def __call__(self, v1: T1) -> None:  # type:ignore[override]
@@ -92,7 +90,6 @@ class Callback1(Callback, Generic[T1]):
 
 
 class Callback2(Callback, Generic[T1, T2]):
-
     if TYPE_CHECKING:
 
         def __call__(self, v1: T1, v2: T2) -> None:  # type:ignore[override]
@@ -121,7 +118,6 @@ class Callback2(Callback, Generic[T1, T2]):
 
 
 class Callback3(Callback, Generic[T1, T2, T3]):
-
     if TYPE_CHECKING:
 
         def __call__(self, v1: T1, v2: T2, v3: T3) -> None:  # type:ignore[override]
@@ -150,7 +146,6 @@ class Callback3(Callback, Generic[T1, T2, T3]):
 
 
 class Callback4(Callback, Generic[T1, T2, T3, T4]):
-
     if TYPE_CHECKING:
 
         def __call__(  # type:ignore[override]
@@ -181,7 +176,6 @@ class Callback4(Callback, Generic[T1, T2, T3, T4]):
 
 
 class Callback5(Callback, Generic[T1, T2, T3, T4, T5]):
-
     if TYPE_CHECKING:
 
         def __call__(  # type:ignore[override]

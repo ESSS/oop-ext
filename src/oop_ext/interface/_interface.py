@@ -260,7 +260,6 @@ class Interface(TypeCheckingSupport):
 
         @classmethod
         def __init_subclass__(cls, **kwargs: object) -> None:
-
             for name in dir(cls):
                 obj = getattr(cls, name)
                 if _IsMethod(obj):

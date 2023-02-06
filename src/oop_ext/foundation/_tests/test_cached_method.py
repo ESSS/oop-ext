@@ -147,7 +147,6 @@ class MyTestObj:
         return self.method_count
 
     def CheckCounts(self, cache, method=0, miss=0, hit=0):
-
         if not hasattr(cache, "check_counts"):
             cache.check_counts = dict(method=0, miss=0, hit=0, call=0)
 

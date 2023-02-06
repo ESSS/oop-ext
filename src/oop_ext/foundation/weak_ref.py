@@ -367,7 +367,6 @@ def GetWeakProxy(obj: Any) -> Any:
         return None
 
     if not IsWeakProxy(obj):
-
         if IsWeakRef(obj):
             obj = obj()
 
@@ -398,7 +397,6 @@ def GetWeakRef(obj: T) -> SomeWeakRef:
         raise RuntimeError("Unable to get weak ref for proxy.")
 
     if not IsWeakRef(obj):
-
         # for methods we cannot create regular weak-refs
         if inspect.ismethod(obj):
             return WeakMethodRef(obj)
