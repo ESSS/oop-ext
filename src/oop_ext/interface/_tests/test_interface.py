@@ -415,7 +415,6 @@ def testIsImplementationWithSubclasses() -> None:
 
 
 def testIsImplementationWithBuiltInObjects() -> None:
-
     my_number = 10
     assert IsImplementation(my_number, _InterfM1) == False
 
@@ -842,7 +841,6 @@ def test_interface_subclass_mocked(mocker, check_before, autospec) -> None:
 
 
 def testErrorOnInterfaceDeclaration() -> None:
-
     with pytest.raises(AssertionError):
 
         class Foo:
@@ -914,7 +912,6 @@ class TestTypeAnnotations:
 
 
 def testHashableArgumentsInterface() -> None:
-
     expected = "Method IFoo.foo contains unhashable arguments:\n" "(self, x=[])"
     with pytest.raises(TypeError, match=re.escape(expected)):
 

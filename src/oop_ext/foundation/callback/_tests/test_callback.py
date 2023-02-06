@@ -253,7 +253,6 @@ class Test:
         assert a.called
 
     def testCallback(self) -> None:
-
         self.args = [None, None]
 
         def f1(*args):
@@ -545,7 +544,6 @@ class Test:
         assert events == ["c1-first", "c2-first"]
 
     def testAfterRemove(self) -> None:
-
         my_object = _MyClass()
         my_object.SetAlpha(0)
         my_object.SetBravo(0)

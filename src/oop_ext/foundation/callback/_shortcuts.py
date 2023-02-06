@@ -18,7 +18,6 @@ from oop_ext.foundation.weak_ref import WeakMethodRef
 def _CreateBeforeOrAfter(
     method: Callable, callback: Callable, sender_as_parameter: bool, before: bool = True
 ) -> "_MethodWrapper":
-
     wrapper = WrapForCallback(method)
     original_method = wrapper.OriginalMethod()
 
@@ -94,7 +93,6 @@ def Remove(method: Callable, callback: Callable) -> bool:
 class _MethodWrapper(
     Method
 ):  # It needs to be a subclass of Method for interface checks.
-
     __slots__ = ["_before", "_after", "_method", "_name", "OriginalMethod"]
 
     def __init__(self, method: Union[Method, "_MethodWrapper", Callable]):
@@ -110,7 +108,6 @@ class _MethodWrapper(
         return "_MethodWrapper({}): {}".format(id(self), self._name)
 
     def __call__(self, *args: object, **kwargs: object) -> Any:
-
         if self._before is not None:
             self._before(*args, **kwargs)
 
