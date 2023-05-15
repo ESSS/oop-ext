@@ -1,6 +1,7 @@
 2.2.0 (UNRELEASED)
 ------------------
 
+* Added support for interfaces that subclass ``Generic`` and partial/full implementations (meaning the implementation itself is not ``Generic``). Only for Python 3.7+.
 * Added support for Python 3.10.
 
 2.1.0 (2021-03-19)

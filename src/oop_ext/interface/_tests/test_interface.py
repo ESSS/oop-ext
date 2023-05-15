@@ -1,5 +1,7 @@
 import re
+import sys
 import textwrap
+from typing import Any
 from typing import List
 
 import pytest
@@ -1077,3 +1079,33 @@ def testDecorators(register_callback: bool):
 
     assert Foo.GetCaption() == "Foo"
     assert Foo().GetValues("m") == [0.1, 10.0]
+
+
+@pytest.mark.skipif(
+    sys.version_info[:2] <= (3, 6), reason="Only supported in Python 3.7+"
+)
+def testGenericSupport() -> None:
+    from typing import Generic, TypeVar
+
+    T = TypeVar("T")
+
+    class AnInterface(Generic[T], interface.Interface, interface.TypeCheckingSupport):
+        def foo(self, v: T) -> T:
+            ...
+
+    @interface.ImplementsInterface(AnInterface)
+    class Specialization:
+        def foo(self, v: str) -> str:
+            return v + "bar"
+
+    @interface.ImplementsInterface(AnInterface)
+    class FooGeneric(Generic[T]):
+        def foo(self, v: T) -> T:
+            return v
+
+    spec = Specialization()
+    assert spec.foo("hello") == "hellobar"
+
+    generic = FooGeneric[Any]()
+    assert generic.foo("hello") == "hello"
+    assert generic.foo(10) == 10

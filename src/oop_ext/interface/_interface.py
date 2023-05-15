@@ -684,6 +684,17 @@ class CacheInterfaceAttrs:
                 if attr in self.INTERFACE_OWN_METHODS:
                     continue
 
+            # error: Argument 2 to "issubclass" has incompatible type "<typing special form>"; expected "_ClassInfo"  [arg-type]
+            # This fails during type-checking, but is valid at runtime; let's keep this
+            # check to ensure we do not break existing cases by accident.
+            py37_plus = sys.version_info[:2] >= (3, 7)
+            if py37_plus and issubclass(interface, Generic):  # type:ignore[arg-type]
+                # Do not check some specific methods that Generic declares,
+                # in case we have a Generic interface and a partial/complete
+                # specialization as implementation (see testGenericSupport).
+                if attr in ("__class_getitem__", "__init_subclass__"):
+                    continue
+
             val = getattr(interface, attr)
 
             if type(val) in self._ATTRIBUTE_CLASSES:
