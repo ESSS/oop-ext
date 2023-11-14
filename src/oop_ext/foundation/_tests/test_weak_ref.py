@@ -318,7 +318,7 @@ def CustomAssertEqual(a, b):
         assert False, "{} != {}".format(a, b)
 
 
-def SetupTestAttributes():
+def SetupTestAttributes() -> Any:
     class C:
         x: int
 

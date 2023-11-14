@@ -391,7 +391,7 @@ class Callback:
 
         real_func: Optional[Callable] = func
 
-        if real_func.__class__ == WeakMethodProxy:
+        if isinstance(real_func, WeakMethodProxy):
             real_func = cast(WeakMethodProxy, real_func)
             real_func = real_func.GetWrappedFunction()
 
