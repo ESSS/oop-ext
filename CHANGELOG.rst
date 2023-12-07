@@ -2,6 +2,28 @@
 ------------------
 
 * Added support for Python 3.10.
+* #109: Non-generic implementers of generic interfaces are now correctly checked.
+
+  Previously checking if a non-generic class implements a generic interface always used to fail, as
+  the latter has a special method (``__class_getitem__``) that the former does't have, which led to
+  false negatives.
+
+  .. code-block:: python
+
+      class IFoo(Interface, typing.Generic[T]):
+          def Bar(self) -> T:
+              ...
+
+
+      @ImplementsInterface(IFoo, no_check=True)
+      class Foo:
+          @Implements(IFoo.Bar)
+          def Bar(self) -> str:
+              return "baz"
+
+
+      AssertImplements(Foo, IFoo)  # Ok now.
+
 
 2.1.0 (2021-03-19)
 ------------------
