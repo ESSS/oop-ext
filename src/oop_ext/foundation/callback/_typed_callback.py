@@ -43,22 +43,19 @@ class Callback0(Callback):
             self,
             func: CallableType,
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> "_UnregisterContext":
-            ...
+        ) -> "_UnregisterContext": ...
 
         def Unregister(
             self,
             func: CallableType,
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> None:
-            ...
+        ) -> None: ...
 
         def Contains(
             self,
             func: CallableType,
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> bool:
-            ...
+        ) -> bool: ...
 
 
 class Callback1(Callback, Generic[T1]):
@@ -71,22 +68,19 @@ class Callback1(Callback, Generic[T1]):
             self,
             func: Callable[[T1], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> "_UnregisterContext":
-            ...
+        ) -> "_UnregisterContext": ...
 
         def Unregister(
             self,
             func: Callable[[T1], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> None:
-            ...
+        ) -> None: ...
 
         def Contains(
             self,
             func: Callable[[T1], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> bool:
-            ...
+        ) -> bool: ...
 
 
 class Callback2(Callback, Generic[T1, T2]):
@@ -99,22 +93,19 @@ class Callback2(Callback, Generic[T1, T2]):
             self,
             func: Callable[[T1, T2], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> "_UnregisterContext":
-            ...
+        ) -> "_UnregisterContext": ...
 
         def Unregister(
             self,
             func: Callable[[T1, T2], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> None:
-            ...
+        ) -> None: ...
 
         def Contains(
             self,
             func: Callable[[T1, T2], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> bool:
-            ...
+        ) -> bool: ...
 
 
 class Callback3(Callback, Generic[T1, T2, T3]):
@@ -127,22 +118,19 @@ class Callback3(Callback, Generic[T1, T2, T3]):
             self,
             func: Callable[[T1, T2, T3], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> "_UnregisterContext":
-            ...
+        ) -> "_UnregisterContext": ...
 
         def Unregister(
             self,
             func: Callable[[T1, T2, T3], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> None:
-            ...
+        ) -> None: ...
 
         def Contains(
             self,
             func: Callable[[T1, T2, T3], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> bool:
-            ...
+        ) -> bool: ...
 
 
 class Callback4(Callback, Generic[T1, T2, T3, T4]):
@@ -150,29 +138,25 @@ class Callback4(Callback, Generic[T1, T2, T3, T4]):
 
         def __call__(  # type:ignore[override]
             self, v1: T1, v2: T2, v3: T3, v4: T4
-        ) -> None:
-            ...
+        ) -> None: ...
 
         def Register(
             self,
             func: Callable[[T1, T2, T3, T4], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> "_UnregisterContext":
-            ...
+        ) -> "_UnregisterContext": ...
 
         def Unregister(
             self,
             func: Callable[[T1, T2, T3, T4], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> None:
-            ...
+        ) -> None: ...
 
         def Contains(
             self,
             func: Callable[[T1, T2, T3, T4], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> bool:
-            ...
+        ) -> bool: ...
 
 
 class Callback5(Callback, Generic[T1, T2, T3, T4, T5]):
@@ -180,26 +164,22 @@ class Callback5(Callback, Generic[T1, T2, T3, T4, T5]):
 
         def __call__(  # type:ignore[override]
             self, v1: T1, v2: T2, v3: T3, v4: T4, v5: T5
-        ) -> None:
-            ...
+        ) -> None: ...
 
         def Register(
             self,
             func: Callable[[T1, T2, T3, T4, T5], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> "_UnregisterContext":
-            ...
+        ) -> "_UnregisterContext": ...
 
         def Unregister(
             self,
             func: Callable[[T1, T2, T3, T4, T5], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> None:
-            ...
+        ) -> None: ...
 
         def Contains(
             self,
             func: Callable[[T1, T2, T3, T4, T5], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> bool:
-            ...
+        ) -> bool: ...

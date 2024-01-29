@@ -95,12 +95,10 @@ class WeakList(Generic[T]):
         self.data.__delitem__(i)
 
     @overload
-    def __getitem__(self, i: int) -> Optional[T]:
-        ...
+    def __getitem__(self, i: int) -> Optional[T]: ...
 
     @overload
-    def __getitem__(self, i: slice) -> "WeakList":
-        ...
+    def __getitem__(self, i: slice) -> "WeakList": ...
 
     def __getitem__(self, i: Union[int, slice]) -> Union[Optional[T], "WeakList"]:
         if isinstance(i, slice):

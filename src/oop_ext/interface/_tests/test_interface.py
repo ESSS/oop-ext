@@ -350,8 +350,7 @@ def testStubsFromInstances() -> None:
     """Check that creating interface stubs (``foo = IFoo(foo)``) work as expected"""
 
     class IFoo(Interface):
-        def foo(self):
-            ...
+        def foo(self): ...
 
     class Foo:
         def foo(self):
