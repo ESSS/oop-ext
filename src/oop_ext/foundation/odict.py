@@ -1,9 +1,10 @@
 # mypy: disallow-untyped-defs
-import collections
 from typing import Any
 from typing import Hashable
 from typing import Iterable
 from typing import Union
+
+import collections
 
 
 class odict(collections.OrderedDict):

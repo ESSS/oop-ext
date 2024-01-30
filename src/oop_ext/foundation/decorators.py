@@ -2,17 +2,17 @@
 """
 Collection of decorator with ONLY standard library dependencies.
 """
-import warnings
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Callable
-from typing import cast
 from typing import NoReturn
 from typing import Optional
-from typing import TYPE_CHECKING
 from typing import TypeVar
+from typing import cast
+
+import warnings
 
 from oop_ext.foundation.is_frozen import IsDevelopment
-
 
 F = TypeVar("F", bound=Callable[..., Any])
 G = TypeVar("G", bound=Callable[..., Any])

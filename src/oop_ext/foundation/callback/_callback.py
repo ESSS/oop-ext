@@ -49,21 +49,21 @@ We can unregister functions using :meth:`Unregister <Callback.Unregister>`, chec
 is registered with :meth:`Contains <Callback.Contains>`, and unregister all connected functions
 with :meth:`UnregisterAll <Callback.UnregisterAll>`.
 """
-import functools
-import inspect
-import logging
 import types
-import weakref
 from typing import Any
 from typing import Callable
-from typing import cast
 from typing import Hashable
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
 from typing import Union
+from typing import cast
 
 import attr
+import functools
+import inspect
+import logging
+import weakref
 
 from oop_ext.foundation.compat import GetClassForUnboundMethod
 from oop_ext.foundation.is_frozen import IsDevelopment

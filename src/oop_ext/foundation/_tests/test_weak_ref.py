@@ -1,8 +1,8 @@
-import sys
-import weakref
 from typing import Any
 
 import pytest
+import sys
+import weakref
 
 from oop_ext.foundation.weak_ref import GetRealObj
 from oop_ext.foundation.weak_ref import GetWeakProxy

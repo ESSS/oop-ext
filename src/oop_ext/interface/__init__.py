@@ -15,6 +15,7 @@
 
     If Foo doesn't implement some method from IFoo, an exception is raised at class creation time.
 """
+
 from ._adaptable_interface import IAdaptable
 from ._interface import AssertDeclaresInterface
 from ._interface import AssertImplements
@@ -34,7 +35,6 @@ from ._interface import IsImplementation
 from ._interface import IsImplementationOfAny
 from ._interface import ReadOnlyAttribute
 from ._interface import TypeCheckingSupport
-
 
 __all__ = [
     "AssertDeclaresInterface",

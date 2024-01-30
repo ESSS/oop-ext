@@ -1,9 +1,9 @@
-import warnings
 from typing import Any
 from typing import List
 from typing import Tuple
 
 import pytest
+import warnings
 
 from oop_ext.foundation import is_frozen
 from oop_ext.foundation.decorators import Abstract

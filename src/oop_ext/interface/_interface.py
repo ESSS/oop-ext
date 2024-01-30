@@ -36,13 +36,9 @@ AssertImplements(impl, IMyCalculator)
 
 
 """
-import inspect
-import sys
-from contextlib import suppress
-from functools import lru_cache
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Callable
-from typing import cast
 from typing import Dict
 from typing import FrozenSet
 from typing import Generic
@@ -53,9 +49,14 @@ from typing import Sequence
 from typing import Set
 from typing import Tuple
 from typing import Type
-from typing import TYPE_CHECKING
 from typing import TypeVar
 from typing import Union
+from typing import cast
+
+import inspect
+import sys
+from contextlib import suppress
+from functools import lru_cache
 
 from oop_ext.foundation.cached_method import ImmutableParamsCachedMethod
 from oop_ext.foundation.decorators import Deprecated

@@ -1,15 +1,15 @@
 # mypy: disallow-untyped-defs
 # mypy: disallow-any-decorated
-import os
-import re
-from pathlib import Path
-from textwrap import dedent
 from typing import List
 from typing import Tuple
 
 import attr
 import mypy.api
+import os
 import pytest
+import re
+from pathlib import Path
+from textwrap import dedent
 
 
 @attr.s(auto_attribs=True)

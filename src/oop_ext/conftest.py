@@ -1,8 +1,8 @@
 # mypy: disallow-untyped-defs
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
+from pathlib import Path
 
 if TYPE_CHECKING:
     from ._type_checker_fixture import TypeCheckerFixture

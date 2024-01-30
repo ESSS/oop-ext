@@ -1,8 +1,8 @@
-import re
-import textwrap
 from typing import List
 
 import pytest
+import re
+import textwrap
 
 from oop_ext import interface
 from oop_ext.foundation.decorators import Abstract
