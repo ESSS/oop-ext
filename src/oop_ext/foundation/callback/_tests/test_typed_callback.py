@@ -1,7 +1,7 @@
-import re
 from typing import Tuple
 
 import pytest
+import re
 
 from oop_ext._type_checker_fixture import TypeCheckerFixture
 

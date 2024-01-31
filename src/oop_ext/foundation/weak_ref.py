@@ -1,24 +1,24 @@
 # mypy: disallow-untyped-defs
-import inspect
-import weakref
 from types import LambdaType
 from types import MethodType
 from typing import Any
 from typing import Callable
-from typing import cast
 from typing import Generic
 from typing import Iterable
 from typing import Iterator
 from typing import List
 from typing import Optional
-from typing import overload
 from typing import Set
 from typing import TypeVar
 from typing import Union
+from typing import cast
+from typing import overload
+
+import inspect
+import weakref
 from weakref import ReferenceType
 
 from oop_ext.foundation.decorators import Implements
-
 
 T = TypeVar("T")
 SomeWeakRef = Union[ReferenceType, "WeakMethodRef"]
@@ -95,12 +95,10 @@ class WeakList(Generic[T]):
         self.data.__delitem__(i)
 
     @overload
-    def __getitem__(self, i: int) -> Optional[T]:
-        ...
+    def __getitem__(self, i: int) -> Optional[T]: ...
 
     @overload
-    def __getitem__(self, i: slice) -> "WeakList":
-        ...
+    def __getitem__(self, i: slice) -> "WeakList": ...
 
     def __getitem__(self, i: Union[int, slice]) -> Union[Optional[T], "WeakList"]:
         if isinstance(i, slice):

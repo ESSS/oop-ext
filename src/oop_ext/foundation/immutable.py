@@ -31,7 +31,9 @@ def RegisterAsImmutable(immutable_type: Type[object]) -> None:
 
     copy._copy_dispatch[  # type:ignore[attr-defined]
         immutable_type
-    ] = copy._copy_immutable  # type:ignore[attr-defined]
+    ] = (
+        copy._copy_immutable  # type:ignore[attr-defined]
+    )
 
 
 def AsImmutable(value: Any, return_str_if_not_expected: bool = True) -> Any:

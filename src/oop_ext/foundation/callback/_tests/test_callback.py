@@ -1,10 +1,10 @@
-import weakref
-from functools import partial
 from typing import Any
 from typing import Generator
 from typing import List
 
 import pytest
+import weakref
+from functools import partial
 
 from oop_ext.foundation.callback import After
 from oop_ext.foundation.callback import Before

@@ -2,10 +2,10 @@
 """
 Extensions to python native types.
 """
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Iterator
 from typing import NoReturn
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing_extensions import Literal

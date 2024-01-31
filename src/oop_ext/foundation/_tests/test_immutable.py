@@ -1,7 +1,6 @@
+import pytest
 from copy import copy
 from copy import deepcopy
-
-import pytest
 
 from oop_ext.foundation.immutable import AsImmutable
 from oop_ext.foundation.immutable import IdentityHashableRef

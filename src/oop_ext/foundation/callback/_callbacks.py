@@ -2,17 +2,16 @@
 # mypy: disallow-any-decorated
 from typing import Any
 from typing import Callable
-from typing import cast
 from typing import List
 from typing import Tuple
 from typing import TypeVar
+from typing import cast
 
-from ._callback import _UnregisterContext
 from ._callback import Callback
+from ._callback import _UnregisterContext
 from ._shortcuts import After
 from ._shortcuts import Before
 from ._shortcuts import Remove
-
 
 T = TypeVar("T", bound=Callable)
 
