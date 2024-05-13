@@ -2,6 +2,10 @@
 ------------------
 
 * Added support for Python 3.10.
+* ``interface.IsImplementation`` now uses `TypeGuard`_ so ``mypy`` understands that if it returns ``True``, the
+  passed object can be considered an implementation of that interface.
+
+.. _TypeGuard: https://docs.python.org/3/library/typing.html#typing.TypeGuard
 
 2.1.0 (2021-03-19)
 ------------------
