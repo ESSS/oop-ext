@@ -1018,6 +1018,35 @@ def testInterfaceTypeChecking(type_checker) -> None:
     result.assert_ok()
 
 
+def testIsImplementation(type_checker) -> None:
+    """
+    Check that IsImplementation correctly tells mypy that the type now has that narrowed type
+    inside the if-block.
+    """
+    type_checker.make_file(
+        """
+        from oop_ext.interface import Interface, IsImplementation
+        class IAcme(Interface):
+            def Foo(self, a, b=None) -> int:  # type:ignore[empty-body]
+                ...
+
+        class Acme:
+            def Foo(self, a, b=None) -> int:
+                return 40 + a
+
+        def GetIt(a: object) -> int:
+            if IsImplementation(a, IAcme):
+                return a.Foo(10)
+            return 0
+
+        GetIt(Acme())
+        GetIt("hello")
+        """
+    )
+    result = type_checker.run()
+    result.assert_ok()
+
+
 def testAttributeTypeChecking(type_checker) -> None:
     class IFoo(Interface, TypeCheckingSupport):
         value: int = Attribute(int)
