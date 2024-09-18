@@ -58,6 +58,8 @@ import sys
 from contextlib import suppress
 from functools import lru_cache
 
+from typing_extensions import TypeGuard
+
 from oop_ext.foundation.cached_method import ImmutableParamsCachedMethod
 from oop_ext.foundation.decorators import Deprecated
 from oop_ext.foundation.is_frozen import IsDevelopment
@@ -100,7 +102,7 @@ class BadImplementationError(InterfaceError):
     pass
 
 
-# InterfaceType should be changed to ``Type[Interface]`` after https://github.com/python/mypy/issues/5374
+# InterfaceType should be changed to ``Type[Interface]`` after https://github.com/python/mypy/issues/4717
 # is fixed.
 InterfaceType = Type[Any]
 
@@ -315,10 +317,10 @@ else:
 
 def IsImplementation(
     class_or_instance: Any,
-    interface: InterfaceType,
+    interface: Type[T],
     *,
     requires_declaration: bool = True,
-) -> bool:
+) -> TypeGuard[T]:
     """
     :param class_or_instance: type or classobj or object
 
