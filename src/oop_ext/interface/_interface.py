@@ -746,7 +746,7 @@ def AssertImplementsFullChecking(
 
 
 # set of methods that might be declared in interfaces but should be not be required by implementations
-_INTERFACE_METHODS_TO_IGNORE = {"__init_subclass__"}
+_INTERFACE_METHODS_TO_IGNORE = {"__init_subclass__", "__class_getitem__"}
 
 
 def _AssertImplementsFullChecking(

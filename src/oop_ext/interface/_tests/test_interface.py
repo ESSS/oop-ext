@@ -1076,3 +1076,39 @@ def testDecorators(register_callback: bool):
 
     assert Foo.GetCaption() == "Foo"
     assert Foo().GetValues("m") == [0.1, 10.0]
+
+
+def testGenericInterface() -> None:
+    """Generic interfaces need to support checking on both generic and non-generic implementers"""
+    from typing import FrozenSet, Generic, TypeVar
+
+    T = TypeVar("T", covariant=True)
+
+    class IFoo(Interface, Generic[T], TypeCheckingSupport):
+        # Class instance defined here as a workaround for this class to work in Python 3.6.
+        __abstractmethods__: FrozenSet = frozenset()
+
+        def GetOutput(self) -> T:  # type:ignore[empty-body]
+            ...
+
+    @ImplementsInterface(IFoo, no_check=True)  # Will check later.
+    class GenericFoo(Generic[T]):
+        def __init__(self, output: T) -> None:
+            self.output = output
+
+        @Implements(IFoo.GetOutput)
+        def GetOutput(self) -> T:
+            return self.output
+
+    @ImplementsInterface(IFoo, no_check=True)
+    class NonGenericFoo:
+        @Implements(IFoo.GetOutput)
+        def GetOutput(self) -> int:
+            return 1
+
+    # This works out of the box.
+    AssertImplements(GenericFoo, IFoo)
+    AssertImplements(GenericFoo[str](output="foo"), IFoo)
+
+    # This only works if we skip the verification of `__class_getitem__` method.
+    AssertImplements(NonGenericFoo, IFoo)
