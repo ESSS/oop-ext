@@ -202,8 +202,7 @@ class Interface(TypeCheckingSupport):
         from oop_ext.interface import Interface, TypeCheckingSupport
 
 
-        class IDataSaver(Interface, TypeCheckingSupport):
-            ...
+        class IDataSaver(Interface, TypeCheckingSupport): ...
 
 
     The ``TypeCheckingSupport`` exists solely for the benefit of type checkers, and has zero runtime
@@ -881,8 +880,7 @@ def ImplementsInterface(*interfaces: Any, no_check: bool = False) -> Callable[[T
     .. code-block:: python
 
         @ImplementsInterface(IFoo)
-        class Foo(object):
-            ...
+        class Foo(object): ...
 
     :param no_check:
         If ``True``, does not check if the class implements the declared interfaces
