@@ -86,6 +86,86 @@ def testCallback1(type_checker: TypeCheckerFixture) -> None:
     result.assert_ok()
 
 
+def testPriorityCallback0(type_checker: TypeCheckerFixture) -> None:
+    type_checker.make_file(
+        """
+        from oop_ext.foundation.callback import PriorityCallback0
+
+        c = PriorityCallback0()
+        c(10)
+
+        def fail(x): pass
+        c.Register(fail, priority=2)
+        """
+    )
+    result = type_checker.run()
+    result.assert_errors(
+        [
+            'Too many arguments for "__call__"',
+            re.escape('incompatible type "Callable[[Any], Any]"'),
+        ]
+    )
+
+    type_checker.make_file(
+        """
+        from oop_ext.foundation.callback import PriorityCallback0
+
+        c = PriorityCallback0()
+        c()
+
+        def ok(): pass
+        c.Register(ok, priority=2)
+        """
+    )
+    result = type_checker.run()
+    result.assert_ok()
+
+
+def testPriorityCallback1(type_checker: TypeCheckerFixture) -> None:
+    type_checker.make_file(
+        """
+        from oop_ext.foundation.callback import PriorityCallback1
+
+        c = PriorityCallback1[int]()
+        c()
+        c(10, 10)
+
+        def fail(): pass
+        c.Register(fail, priority=2)
+
+        def fail2(x: str): pass
+        c.Register(fail2, priority=2)
+        """
+    )
+    result = type_checker.run()
+    result.assert_errors(
+        [
+            "Missing positional argument",
+            'Too many arguments for "__call__" of "PriorityCallback1"',
+            re.escape(
+                'Argument 1 to "Register" of "PriorityCallback1" has incompatible type "Callable[[], Any]"'
+            ),
+            re.escape(
+                'Argument 1 to "Register" of "PriorityCallback1" has incompatible type "Callable[[str], Any]"'
+            ),
+        ]
+    )
+
+    type_checker.make_file(
+        """
+        from oop_ext.foundation.callback import PriorityCallback1
+
+        c = PriorityCallback1[int]()
+        c(10)
+
+        def ok(x: int): pass
+        c.Register(ok, priority=2)
+        """
+    )
+    result = type_checker.run()
+    result.assert_ok()
+
+
 @pytest.mark.parametrize("args_count", [1, 2, 3, 4, 5])
 def testAllCallbacksSmokeTest(
     args_count: int, type_checker: TypeCheckerFixture

@@ -1,7 +1,10 @@
 2.2.0 (UNRELEASED)
 ------------------
 
+* ``PriorityCallback`` now has type checking support, similar to ``Callback``, with type checked variants: ``PriorityCallback0``, ``PriorityCallback1``, etc (`#128`_).
 * Added support for Python 3.10.
+
+.. _#128: https://github.com/ESSS/oop-ext/pull/128
 
 2.1.0 (2021-03-19)
 ------------------
