@@ -333,7 +333,7 @@ class Callback:
         self,
         func: Callable[..., Any],
         extra_args: Sequence[object] = _EXTRA_ARGS_CONSTANT,
-    ) -> "_UnregisterContext":
+    ) -> "UnregisterContext":
         """
         Registers a function in the callback.
 
@@ -365,7 +365,7 @@ class Callback:
         callbacks = self._callbacks
         callbacks.pop(key, None)  # Remove if it exists
         callbacks[key] = (self._GetInfo(func), extra_args)
-        return _UnregisterContext(self, key)
+        return UnregisterContext(self, key)
 
     def Contains(
         self,
@@ -478,12 +478,15 @@ def _IsCallableObject(func: object) -> bool:
 
 
 @attr.s(auto_attribs=True)
-class _UnregisterContext:
+class UnregisterContext:
     """
     Returned by Register(), supports easy removal of the callback later.
 
     Useful if many related callbacks are registered, so the contexts can be stored and used to
     unregister all the callbacks at once.
+
+    Note: this class was called `_UnregisterContext` initially, but for type-checking purposes
+    we made it public. The old name is still available for backward compatibility.
     """
 
     _callback: Callback
@@ -492,6 +495,10 @@ class _UnregisterContext:
     def Unregister(self) -> None:
         """Unregister the callback which returned this context"""
         self._callback._UnregisterByKey(self._key)
+
+
+# Backward compatibility alias.
+_UnregisterContext = UnregisterContext
 
 
 class _CallbackWrapper(Method):
