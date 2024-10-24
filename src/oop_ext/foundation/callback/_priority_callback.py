@@ -1,8 +1,9 @@
 # mypy: disallow-untyped-defs
 # mypy: disallow-any-decorated
 from typing import Any
-from typing import Callable
 from typing import Tuple
+
+from collections.abc import Callable
 
 from oop_ext.foundation.decorators import Override
 from oop_ext.foundation.odict import odict
@@ -35,7 +36,7 @@ class PriorityCallback(Callback):
     def Register(  # type:ignore[misc, override]
         self,
         func: Callable,
-        extra_args: Tuple[object, ...] = Callback._EXTRA_ARGS_CONSTANT,
+        extra_args: tuple[object, ...] = Callback._EXTRA_ARGS_CONSTANT,
         priority: int = 5,
     ) -> UnregisterContext:
         """

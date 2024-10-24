@@ -1,11 +1,12 @@
 # mypy: disallow-untyped-defs
 # mypy: disallow-any-decorated
 from typing import Any
-from typing import Callable
 from typing import List
 from typing import Tuple
 from typing import TypeVar
 from typing import cast
+
+from collections.abc import Callable
 
 from ._callback import Callback
 from ._callback import UnregisterContext
@@ -43,8 +44,8 @@ class Callbacks:
     """
 
     def __init__(self) -> None:
-        self._function_callbacks: List[Tuple[Callable, Callable]] = []
-        self._contexts: List[UnregisterContext] = []
+        self._function_callbacks: list[tuple[Callable, Callable]] = []
+        self._contexts: list[UnregisterContext] = []
 
     def Before(
         self, sender: T, callback: Callable, *, sender_as_parameter: bool = False

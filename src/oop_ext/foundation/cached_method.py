@@ -1,15 +1,15 @@
 # mypy: disallow-untyped-defs
-from typing import Callable
 from typing import Dict
 from typing import Generic
-from typing import Hashable
 from typing import Optional
-from typing import Sequence
 from typing import TypeVar
 from typing import Union
 from typing import cast
 
 from abc import abstractmethod
+from collections.abc import Callable
+from collections.abc import Hashable
+from collections.abc import Sequence
 
 from .immutable import AsImmutable
 from .odict import odict
@@ -96,7 +96,7 @@ class CachedMethod(AbstractCachedMethod, Generic[ResultType]):
 
     def __init__(self, cached_method: Callable[..., ResultType]) -> None:
         super().__init__(cached_method)
-        self._results: Dict[Hashable, ResultType] = {}
+        self._results: dict[Hashable, ResultType] = {}
 
     def _HasResult(self, key: Hashable) -> bool:
         return key in self._results
@@ -131,8 +131,8 @@ class LastResultCachedMethod(AbstractCachedMethod, Generic[ResultType]):
 
     def __init__(self, cached_method: Callable[..., ResultType]) -> None:
         super().__init__(cached_method)
-        self._key: Optional[object] = None
-        self._result: Optional[ResultType] = None
+        self._key: object | None = None
+        self._result: ResultType | None = None
 
     def _HasResult(self, key: Hashable) -> bool:
         return self._key == key
@@ -159,9 +159,9 @@ class AttributeBasedCachedMethod(CachedMethod, Generic[ResultType]):
     def __init__(
         self,
         cached_method: Callable[..., ResultType],
-        attr_name_list: Union[str, Sequence[str]],
+        attr_name_list: str | Sequence[str],
         cache_size: int = 1,
-        results: Optional[odict] = None,
+        results: odict | None = None,
     ):
         """
         :type cached_method: bound method to be cached

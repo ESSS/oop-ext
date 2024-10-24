@@ -1,9 +1,9 @@
 from typing import Any
-from typing import Generator
 from typing import List
 
 import pytest
 import weakref
+from collections.abc import Generator
 from functools import partial
 
 from oop_ext.foundation.callback import After
@@ -282,7 +282,7 @@ class Test:
         """
         Tests the extra-args parameter in Register method.
         """
-        self.zulu_calls: List[Any] = []
+        self.zulu_calls: list[Any] = []
 
         def zulu_one(*args):
             self.zulu_calls.append(args)
@@ -910,7 +910,7 @@ class Test:
         souring20.core.model.multiple_simulation_runs._tests.test_multiple_simulation_runs.testNormalExecution
         which failed with "TypeError: cannot create weak reference to 'list' object"
         """
-        vals: List[str] = []
+        vals: list[str] = []
 
         class Stub:
             def call(self, *args, **kwargs):
@@ -1082,7 +1082,7 @@ class Test:
         assert called == ["lambda", "partial"]
 
     def testCallbackInsideCallback(self) -> None:
-        class A(object):
+        class A:
             c = Callback()
 
             def __init__(self, **ka):
@@ -1098,7 +1098,7 @@ class Test:
             def _UpdateBValue(self, new_value):
                 self.other_value = new_value / 0  # division by zero
 
-        class B(object):
+        class B:
             c = Callback()
 
             def __init__(self, **ka):

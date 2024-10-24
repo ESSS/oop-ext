@@ -1029,7 +1029,7 @@ def testDecorators(register_callback: bool):
     """Interfaces and the foundation decorators/callbacks need to play nice together."""
 
     class IFoo(Interface):
-        def GetValues(self, unit: str) -> List[float]:  # type:ignore[empty-body]
+        def GetValues(self, unit: str) -> list[float]:  # type:ignore[empty-body]
             ...
 
         @classmethod
@@ -1040,7 +1040,7 @@ def testDecorators(register_callback: bool):
     class AbstractFoo:
         @Implements(IFoo.GetValues)
         @Abstract
-        def GetValues(self, unit: str) -> List[float]:  # type:ignore[empty-body]
+        def GetValues(self, unit: str) -> list[float]:  # type:ignore[empty-body]
             ...
 
         @classmethod
@@ -1051,7 +1051,7 @@ def testDecorators(register_callback: bool):
 
     class Foo(AbstractFoo):
         @Override(AbstractFoo.GetValues)
-        def GetValues(self, unit: str) -> List[float]:
+        def GetValues(self, unit: str) -> list[float]:
             return [0.1, 10.0]
 
         @classmethod

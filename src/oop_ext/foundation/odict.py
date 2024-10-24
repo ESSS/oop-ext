@@ -1,10 +1,10 @@
 # mypy: disallow-untyped-defs
 from typing import Any
-from typing import Hashable
-from typing import Iterable
 from typing import Union
 
 import collections
+from collections.abc import Hashable
+from collections.abc import Iterable
 
 
 class odict(collections.OrderedDict):
@@ -39,7 +39,7 @@ class odict(collections.OrderedDict):
         for k in moved:
             self.move_to_end(k, last=last)
 
-    def __delitem__(self, key: Union[Hashable, slice]) -> None:
+    def __delitem__(self, key: Hashable | slice) -> None:
         if isinstance(key, slice):
             # Properly deal with slices (based on order).
             keys = list(self.keys())

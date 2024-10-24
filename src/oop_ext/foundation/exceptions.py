@@ -10,7 +10,7 @@ def ExceptionToUnicode(exception: Exception) -> str:
     as a separated attribute
     """
     messages = []
-    exc: Optional[BaseException] = exception
+    exc: BaseException | None = exception
     while exc:
         messages.append(str(exc))
         exc = exc.__cause__ or exc.__context__

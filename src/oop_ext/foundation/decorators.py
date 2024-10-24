@@ -4,13 +4,13 @@ Collection of decorator with ONLY standard library dependencies.
 """
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Callable
 from typing import NoReturn
 from typing import Optional
 from typing import TypeVar
 from typing import cast
 
 import warnings
+from collections.abc import Callable
 
 from oop_ext.foundation.is_frozen import IsDevelopment
 
@@ -104,7 +104,7 @@ def Implements(method: G) -> Callable[[F], F]:
     return cast(Callable[[F], F], Wrapper)
 
 
-def Deprecated(what: Optional[object] = None) -> Callable[[F], F]:
+def Deprecated(what: object | None = None) -> Callable[[F], F]:
     """
     Decorator that marks a method as deprecated.
 
@@ -131,7 +131,7 @@ def Deprecated(what: Optional[object] = None) -> Callable[[F], F]:
                 implementation.
                 """
                 if what is not None:
-                    msg = "DEPRECATED: '%s' is deprecated, use '%s' instead" % (
+                    msg = "DEPRECATED: '{}' is deprecated, use '{}' instead".format(
                         func.__name__,
                         what,
                     )

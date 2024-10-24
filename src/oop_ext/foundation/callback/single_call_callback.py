@@ -1,8 +1,9 @@
 # mypy: disallow-untyped-defs
 # mypy: disallow-any-decorated
-from typing import Callable
 from typing import Dict
 from typing import Tuple
+
+from collections.abc import Callable
 
 from ._callback import Callback
 
@@ -30,8 +31,8 @@ class SingleCallCallback:
         self._done_callbacks = Callback()
         self._done = False
 
-        self._args: Tuple[object, ...] = ()
-        self._kwargs: Dict[str, object] = {}
+        self._args: tuple[object, ...] = ()
+        self._kwargs: dict[str, object] = {}
 
     def __call__(self, *args: object, **kwargs: object) -> None:
         if self._done:

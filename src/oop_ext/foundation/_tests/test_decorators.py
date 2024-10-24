@@ -97,7 +97,7 @@ def testDeprecated(monkeypatch) -> None:
     was_development = is_frozen.SetIsDevelopment(True)
     try:
         # Emit messages when in development
-        warn_params: List[Tuple[Any, Any]] = []
+        warn_params: list[tuple[Any, Any]] = []
 
         # ... deprecation with alternative
         @Deprecated("OtherMethod")
