@@ -17,6 +17,7 @@ from ._typed_callback import PriorityCallback2
 from ._typed_callback import PriorityCallback3
 from ._typed_callback import PriorityCallback4
 from ._typed_callback import PriorityCallback5
+from ._typed_callback import UnregisterContext
 
 __all__ = [
     "After",
@@ -36,6 +37,7 @@ __all__ = [
     "PriorityCallback3",
     "PriorityCallback4",
     "PriorityCallback5",
+    "UnregisterContext",
     "Remove",
     "WrapForCallback",
 ]

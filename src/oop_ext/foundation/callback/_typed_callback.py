@@ -12,9 +12,8 @@ variants should have nearly zero runtime cost (only the cost of an empty subclas
 
 Implemented so far up to 5 arguments, more can be added if we think it is necessary.
 
-Note the separate classes are needed for now, but if/when
-`pep-0646 <https://www.python.org/dev/peps/pep-0646>`__ lands, we should be able to
-implement the generic variants into ``Callback`` itself.
+Note the separate classes are needed for now, but after Python 3.11, we should be able to
+implement the generic variants (`pep-0646 <https://www.python.org/dev/peps/pep-0646>`__) into ``Callback`` itself.
 """
 from typing import TYPE_CHECKING
 from typing import Callable
@@ -23,7 +22,7 @@ from typing import Sequence
 from typing import TypeVar
 
 from ._callback import Callback
-from ._callback import _UnregisterContext
+from ._callback import UnregisterContext
 from ._priority_callback import PriorityCallback
 
 T1 = TypeVar("T1")
@@ -43,7 +42,7 @@ class Callback0(Callback):
             self,
             func: Callable[[], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> "_UnregisterContext": ...
+        ) -> "UnregisterContext": ...
 
         def Unregister(
             self,
@@ -68,7 +67,7 @@ class Callback1(Callback, Generic[T1]):
             self,
             func: Callable[[T1], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> "_UnregisterContext": ...
+        ) -> "UnregisterContext": ...
 
         def Unregister(
             self,
@@ -93,7 +92,7 @@ class Callback2(Callback, Generic[T1, T2]):
             self,
             func: Callable[[T1, T2], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> "_UnregisterContext": ...
+        ) -> "UnregisterContext": ...
 
         def Unregister(
             self,
@@ -118,7 +117,7 @@ class Callback3(Callback, Generic[T1, T2, T3]):
             self,
             func: Callable[[T1, T2, T3], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> "_UnregisterContext": ...
+        ) -> "UnregisterContext": ...
 
         def Unregister(
             self,
@@ -144,7 +143,7 @@ class Callback4(Callback, Generic[T1, T2, T3, T4]):
             self,
             func: Callable[[T1, T2, T3, T4], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> "_UnregisterContext": ...
+        ) -> "UnregisterContext": ...
 
         def Unregister(
             self,
@@ -170,7 +169,7 @@ class Callback5(Callback, Generic[T1, T2, T3, T4, T5]):
             self,
             func: Callable[[T1, T2, T3, T4, T5], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
-        ) -> "_UnregisterContext": ...
+        ) -> "UnregisterContext": ...
 
         def Unregister(
             self,
@@ -196,7 +195,7 @@ class PriorityCallback0(PriorityCallback):
             func: Callable[[], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
             priority: int = 5,
-        ) -> "_UnregisterContext": ...
+        ) -> "UnregisterContext": ...
 
         def Unregister(
             self,
@@ -223,7 +222,7 @@ class PriorityCallback1(PriorityCallback, Generic[T1]):
             func: Callable[[T1], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
             priority: int = 5,
-        ) -> "_UnregisterContext": ...
+        ) -> "UnregisterContext": ...
 
         def Unregister(
             self,
@@ -250,7 +249,7 @@ class PriorityCallback2(PriorityCallback, Generic[T1, T2]):
             func: Callable[[T1, T2], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
             priority: int = 5,
-        ) -> "_UnregisterContext": ...
+        ) -> "UnregisterContext": ...
 
         def Unregister(
             self,
@@ -277,7 +276,7 @@ class PriorityCallback3(PriorityCallback, Generic[T1, T2, T3]):
             func: Callable[[T1, T2, T3], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
             priority: int = 5,
-        ) -> "_UnregisterContext": ...
+        ) -> "UnregisterContext": ...
 
         def Unregister(
             self,
@@ -304,7 +303,7 @@ class PriorityCallback4(PriorityCallback, Generic[T1, T2, T3, T4]):
             func: Callable[[T1, T2, T3, T4], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
             priority: int = 5,
-        ) -> "_UnregisterContext": ...
+        ) -> "UnregisterContext": ...
 
         def Unregister(
             self,
@@ -331,7 +330,7 @@ class PriorityCallback5(PriorityCallback, Generic[T1, T2, T3, T4, T5]):
             func: Callable[[T1, T2, T2, T3, T4], None],
             extra_args: Sequence[object] = Callback._EXTRA_ARGS_CONSTANT,
             priority: int = 5,
-        ) -> "_UnregisterContext": ...
+        ) -> "UnregisterContext": ...
 
         def Unregister(
             self,

@@ -8,7 +8,7 @@ from oop_ext.foundation.decorators import Override
 from oop_ext.foundation.odict import odict
 
 from ._callback import Callback
-from ._callback import _UnregisterContext
+from ._callback import UnregisterContext
 
 
 class PriorityCallback(Callback):
@@ -37,7 +37,7 @@ class PriorityCallback(Callback):
         func: Callable,
         extra_args: Tuple[object, ...] = Callback._EXTRA_ARGS_CONSTANT,
         priority: int = 5,
-    ) -> _UnregisterContext:
+    ) -> UnregisterContext:
         """
         Register a function in the callback.
         :param object func:
@@ -68,4 +68,4 @@ class PriorityCallback(Callback):
             i += 1
 
         callbacks.insert(i, key, (new_info, extra_args))
-        return _UnregisterContext(self, key)
+        return UnregisterContext(self, key)

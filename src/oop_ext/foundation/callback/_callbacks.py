@@ -8,7 +8,7 @@ from typing import TypeVar
 from typing import cast
 
 from ._callback import Callback
-from ._callback import _UnregisterContext
+from ._callback import UnregisterContext
 from ._shortcuts import After
 from ._shortcuts import Before
 from ._shortcuts import Remove
@@ -44,7 +44,7 @@ class Callbacks:
 
     def __init__(self) -> None:
         self._function_callbacks: List[Tuple[Callable, Callable]] = []
-        self._contexts: List[_UnregisterContext] = []
+        self._contexts: List[UnregisterContext] = []
 
     def Before(
         self, sender: T, callback: Callable, *, sender_as_parameter: bool = False

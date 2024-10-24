@@ -2,6 +2,7 @@
 ------------------
 
 * ``PriorityCallback`` now has type checking support, similar to ``Callback``, with type checked variants: ``PriorityCallback0``, ``PriorityCallback1``, etc (`#128`_).
+* ``UnregisterContext`` is now public, meant to be used in type annotations.
 * Added support for Python 3.10.
 
 .. _#128: https://github.com/ESSS/oop-ext/pull/128
