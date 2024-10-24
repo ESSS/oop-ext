@@ -16,10 +16,11 @@ Note the separate classes are needed for now, but after Python 3.11, we should b
 implement the generic variants (`pep-0646 <https://www.python.org/dev/peps/pep-0646>`__) into ``Callback`` itself.
 """
 from typing import TYPE_CHECKING
-from typing import Callable
 from typing import Generic
-from typing import Sequence
 from typing import TypeVar
+
+from collections.abc import Callable
+from collections.abc import Sequence
 
 from ._callback import Callback
 from ._callback import UnregisterContext

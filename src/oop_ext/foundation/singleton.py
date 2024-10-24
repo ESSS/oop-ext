@@ -50,9 +50,9 @@ class Singleton(Generic[T]):
     __singleton_stack_start_index = 0
     __lock = threading.RLock()
 
-    _singleton_classes: Set[Type["Singleton"]] = set()
+    _singleton_classes: set[type["Singleton"]] = set()
 
-    __singleton_singleton_stack__: List[T]
+    __singleton_singleton_stack__: list[T]
 
     @staticmethod
     def ResetDefaultSingletonInstances() -> None:
@@ -74,7 +74,7 @@ class Singleton(Generic[T]):
                 instance.ResetInstance()
 
     @classmethod
-    def GetSingleton(cls: Type[T]) -> T:
+    def GetSingleton(cls: type[T]) -> T:
         """
         :rtype: Singleton
         :returns:
@@ -101,7 +101,7 @@ class Singleton(Generic[T]):
                 return stack[-1]
 
     @classmethod
-    def SetSingleton(cls: Type[T], instance: Optional[T]) -> T:
+    def SetSingleton(cls: type[T], instance: T | None) -> T:
         """
         Sets the current singleton.
 
@@ -203,7 +203,7 @@ class Singleton(Generic[T]):
         return len(stack) > 0
 
     @classmethod
-    def CreateDefaultSingleton(cls: Type[T]) -> T:
+    def CreateDefaultSingleton(cls: type[T]) -> T:
         """
         Creates the default singleton instance, that will be used when no singleton has been installed.
         By default, tries to create the class without constructor.
@@ -217,7 +217,7 @@ class Singleton(Generic[T]):
     # Push/Pop -------------------------------------------------------------------------------------
 
     @classmethod
-    def PushSingleton(cls, instance: Optional[T] = None) -> T:
+    def PushSingleton(cls, instance: T | None = None) -> T:
         """
         Pushes the given singleton to the top of the stack. The previous singleton will be restored
         when PopSingleton is called.
@@ -244,7 +244,7 @@ class Singleton(Generic[T]):
         return instance
 
     @classmethod
-    def PopSingleton(cls: Type[T]) -> T:
+    def PopSingleton(cls: type[T]) -> T:
         """
         Restores the singleton that was the current before the last PushSingleton.
 
@@ -268,7 +268,7 @@ class Singleton(Generic[T]):
         return cls._ObtainStack().pop(-1)
 
     @classmethod
-    def _ObtainStack(cls) -> List[T]:
+    def _ObtainStack(cls) -> list[T]:
         """
         Obtains the stack of singletons.
 
@@ -282,7 +282,7 @@ class Singleton(Generic[T]):
             assert (
                 cls is not Singleton
             ), "This method can only be called from a Singleton subclass."
-            stack: List[T] = []
+            stack: list[T] = []
             cls.__singleton_singleton_stack__ = stack
             return stack
 

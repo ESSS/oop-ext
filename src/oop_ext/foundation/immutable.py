@@ -5,7 +5,6 @@
     USER: The cache-manager uses this module to generate a valid KEY for its cache dictionary.
 """
 from typing import Any
-from typing import Callable
 from typing import Dict
 from typing import Generic
 from typing import NoReturn
@@ -13,10 +12,12 @@ from typing import Tuple
 from typing import Type
 from typing import TypeVar
 
+from collections.abc import Callable
+
 _IMMUTABLE_TYPES = {float, int, str, bytes, bool, type(None)}
 
 
-def RegisterAsImmutable(immutable_type: Type[object]) -> None:
+def RegisterAsImmutable(immutable_type: type[object]) -> None:
     """
     Registers the given class as being immutable. This makes it be immutable for this module and
     also registers a faster copy in the copy module (to return the same instance being copied).
@@ -129,14 +130,14 @@ class ImmutableDict(dict):
 
         return self._hash
 
-    def AsMutable(self) -> Dict:
+    def AsMutable(self) -> dict:
         """
         :rtype: this dict as a new dict that can be changed (without altering the state
         of this immutable dict).
         """
         return dict(self.items())
 
-    def __reduce__(self) -> Tuple[Callable, Tuple[object]]:
+    def __reduce__(self) -> tuple[Callable, tuple[object]]:
         """
         Making ImmutableDict work with newer versions of pickle protocol.
 

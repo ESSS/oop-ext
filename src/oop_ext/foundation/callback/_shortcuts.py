@@ -1,13 +1,13 @@
 # mypy: disallow-untyped-defs
 # mypy: disallow-any-decorated
 from typing import Any
-from typing import Callable
 from typing import Optional
-from typing import Sequence
 from typing import Tuple
 from typing import Union
 
 import weakref
+from collections.abc import Callable
+from collections.abc import Sequence
 
 from oop_ext.foundation.types_ import Method
 from oop_ext.foundation.weak_ref import WeakMethodRef
@@ -98,8 +98,8 @@ class _MethodWrapper(
     __slots__ = ["_before", "_after", "_method", "_name", "OriginalMethod"]
 
     def __init__(self, method: Union[Method, "_MethodWrapper", Callable]):
-        self._before: Optional[Callback] = None
-        self._after: Optional[Callback] = None
+        self._before: Callback | None = None
+        self._after: Callback | None = None
         self._method = WeakMethodRef(method)
         self._name = method.__name__
 
@@ -107,7 +107,7 @@ class _MethodWrapper(
         self.OriginalMethod = self._method
 
     def __repr__(self) -> str:
-        return "_MethodWrapper({}): {}".format(id(self), self._name)
+        return f"_MethodWrapper({id(self)}): {self._name}"
 
     def __call__(self, *args: object, **kwargs: object) -> Any:
         if self._before is not None:
@@ -128,7 +128,7 @@ class _MethodWrapper(
         return result
 
     def AppendBefore(
-        self, callback: Callable, extra_args: Optional[Sequence[object]] = None
+        self, callback: Callable, extra_args: Sequence[object] | None = None
     ) -> None:
         """
         Append the given callbacks in the list of callback to be executed BEFORE the method.
@@ -141,7 +141,7 @@ class _MethodWrapper(
         self._before.Register(callback, extra_args)
 
     def AppendAfter(
-        self, callback: Callable, extra_args: Optional[Sequence[object]] = None
+        self, callback: Callable, extra_args: Sequence[object] | None = None
     ) -> None:
         """
         Append the given callbacks in the list of callback to be executed AFTER the method.
@@ -167,9 +167,7 @@ class _MethodWrapper(
         return False
 
 
-def _GetWrapped(
-    method: Union[Method, _MethodWrapper, Callable]
-) -> Optional[_MethodWrapper]:
+def _GetWrapped(method: Method | _MethodWrapper | Callable) -> _MethodWrapper | None:
     """
     Returns true if the given method is already wrapped.
     """
@@ -181,7 +179,7 @@ def _GetWrapped(
         return None
 
 
-def WrapForCallback(method: Union[Method, _MethodWrapper, Callable]) -> _MethodWrapper:
+def WrapForCallback(method: Method | _MethodWrapper | Callable) -> _MethodWrapper:
     """Generates a wrapper for the given method, or returns the method itself
     if it is already a wrapper.
     """

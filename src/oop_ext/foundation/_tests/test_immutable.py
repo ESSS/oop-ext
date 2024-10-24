@@ -41,10 +41,8 @@ def testImmutable() -> None:
     AssertIsSame(True)
     AssertIsSame(1.0)
     AssertIsSame(1)
-    AssertIsSame("a")  # native string
-    AssertIsSame(b"b")  # native bytes
-    AssertIsSame(str("a"))  # future's str compatibility type
-    AssertIsSame(bytes(b"b"))  # future's byte compatibility type
+    AssertIsSame("a")
+    AssertIsSame(b"b")
 
     # Dealing with derived values
     a = MyClass()

@@ -315,7 +315,7 @@ def CustomAssertEqual(a, b):
     if a == b:
         pass
     else:
-        assert False, "{} != {}".format(a, b)
+        assert False, f"{a} != {b}"
 
 
 def SetupTestAttributes() -> Any:

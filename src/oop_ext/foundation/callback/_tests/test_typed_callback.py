@@ -180,7 +180,7 @@ def testAllCallbacksSmokeTest(
     Callback overloads.
     """
 
-    def gen_signature_and_args(count: int) -> Tuple[str, str, str]:
+    def gen_signature_and_args(count: int) -> tuple[str, str, str]:
         # Generates "v1: int, v2: int" etc
         signature = ", ".join(f"v{i}: int" for i in range(count))
         # Generates "10, 20" etc

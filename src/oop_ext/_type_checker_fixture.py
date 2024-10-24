@@ -19,9 +19,9 @@ class _Result:
     that output.
     """
 
-    output: Tuple[str, str, int]
+    output: tuple[str, str, int]
 
-    def assert_errors(self, messages: List[str]) -> None:
+    def assert_errors(self, messages: list[str]) -> None:
         assert self.error_report == ""
         lines = self.report_lines
         assert len(lines) == len(
@@ -56,7 +56,7 @@ class _Result:
         return self.output[2]
 
     @property
-    def report_lines(self) -> List[str]:
+    def report_lines(self) -> list[str]:
         lines = [x.strip() for x in self.normal_report.split("\n") if x.strip()]
         # Drop last line (summary).
         return lines[:-1]

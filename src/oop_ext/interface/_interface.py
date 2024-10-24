@@ -38,14 +38,12 @@ AssertImplements(impl, IMyCalculator)
 """
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Callable
 from typing import Dict
 from typing import FrozenSet
 from typing import Generic
 from typing import List
 from typing import NoReturn
 from typing import Optional
-from typing import Sequence
 from typing import Set
 from typing import Tuple
 from typing import Type
@@ -55,6 +53,8 @@ from typing import cast
 
 import inspect
 import sys
+from collections.abc import Callable
+from collections.abc import Sequence
 from contextlib import suppress
 from functools import lru_cache
 
@@ -102,11 +102,11 @@ class BadImplementationError(InterfaceError):
 
 # InterfaceType should be changed to ``Type[Interface]`` after https://github.com/python/mypy/issues/5374
 # is fixed.
-InterfaceType = Type[Any]
+InterfaceType = type[Any]
 
 
 class InterfaceImplementationMetaClass(type):
-    def __new__(cls, name: str, bases: Tuple, dct: Dict) -> Any:
+    def __new__(cls, name: str, bases: tuple, dct: dict) -> Any:
         C = type.__new__(cls, name, bases, dct)
         if IsDevelopment():  # Only doing check in dev mode.
             for I in dct.get("__implements__", []):
@@ -126,7 +126,7 @@ class InterfaceImplementorStub(Generic[T]):
     It forwards the calls to the actual implementor (the wrapped object)
     """
 
-    def __init__(self, wrapped: T, implemented_interface: Type["Interface"]) -> None:
+    def __init__(self, wrapped: T, implemented_interface: type["Interface"]) -> None:
         self.__wrapped = wrapped
         self.__implemented_interface = implemented_interface
 
@@ -202,8 +202,7 @@ class Interface(TypeCheckingSupport):
         from oop_ext.interface import Interface, TypeCheckingSupport
 
 
-        class IDataSaver(Interface, TypeCheckingSupport):
-            ...
+        class IDataSaver(Interface, TypeCheckingSupport): ...
 
 
     The ``TypeCheckingSupport`` exists solely for the benefit of type checkers, and has zero runtime
@@ -273,7 +272,7 @@ class Interface(TypeCheckingSupport):
                         ) from None
 
 
-def _GetClassForInterfaceChecking(class_or_instance: Any) -> Type:
+def _GetClassForInterfaceChecking(class_or_instance: Any) -> type:
     if _IsClass(class_or_instance):
         return class_or_instance  # is class
     elif isinstance(class_or_instance, InterfaceImplementorStub):
@@ -426,15 +425,13 @@ def AssertImplements(
 
 
 # Using explicit memoization, because we need to forget some values at some times
-__ImplementsCache: Dict[
-    Tuple[Type, InterfaceType, bool], Tuple[bool, Optional[str]]
-] = {}
-__ImplementedInterfacesCache: Dict[Type, FrozenSet[InterfaceType]] = {}
+__ImplementsCache: dict[tuple[type, InterfaceType, bool], tuple[bool, str | None]] = {}
+__ImplementedInterfacesCache: dict[type, frozenset[InterfaceType]] = {}
 
 
 def _CheckIfClassImplements(
-    class_: Type, interface: InterfaceType, *, requires_declaration: bool = True
-) -> Tuple[bool, Optional[str]]:
+    class_: type, interface: InterfaceType, *, requires_declaration: bool = True
+) -> tuple[bool, str | None]:
     """
     :type class_: type or classobj
     :param class_:
@@ -512,7 +509,7 @@ def _IsImplementationFullChecking(
         return True
 
 
-def _IsInterfaceDeclared(class_: Optional[Type], interface: InterfaceType) -> bool:
+def _IsInterfaceDeclared(class_: type | None, interface: InterfaceType) -> bool:
     """
     :type interface: Interface
     :param interface:
@@ -529,7 +526,7 @@ def _IsInterfaceDeclared(class_: Optional[Type], interface: InterfaceType) -> bo
     declared_interfaces = GetImplementedInterfaces(class_)
 
     # This set will include all interfaces (and its subclasses) declared for the given object
-    declared_and_subclasses: Set[Type] = set()
+    declared_and_subclasses: set[type] = set()
     for implemented in declared_interfaces:
         declared_and_subclasses.update(implemented.__mro__)
 
@@ -547,7 +544,7 @@ if not TYPE_CHECKING:
         _do_not_check_instance = object()
 
         def __init__(
-            self, attribute_type: Type, instance: object = _do_not_check_instance
+            self, attribute_type: type, instance: object = _do_not_check_instance
         ) -> None:
             """
             :param type attribute_type:
@@ -561,7 +558,7 @@ if not TYPE_CHECKING:
             self.attribute_type = attribute_type
             self.instance = instance
 
-        def Match(self, attribute: object) -> Tuple[bool, Optional[str]]:
+        def Match(self, attribute: object) -> tuple[bool, str | None]:
             """
             :param object attribute:
                 Object that will be compared to see if it matches the expected interface.
@@ -612,11 +609,11 @@ else:
     # attributes.
 
     def Attribute(  # type:ignore[empty-body]
-        attribute_type: Type[T], instance: object = ...
+        attribute_type: type[T], instance: object = ...
     ) -> T: ...
 
     def ReadOnlyAttribute(  # type:ignore[empty-body]
-        attribute_type: Type[T], instance: object = ...
+        attribute_type: type[T], instance: object = ...
     ) -> T: ...
 
 
@@ -625,7 +622,7 @@ class CacheInterfaceAttrs:
     Cache for holding the attrs for a given interface (separated by attrs and methods).
     """
 
-    _ATTRIBUTE_CLASSES: Tuple[Any, ...] = (Attribute, ReadOnlyAttribute)
+    _ATTRIBUTE_CLASSES: tuple[Any, ...] = (Attribute, ReadOnlyAttribute)
     INTERFACE_OWN_METHODS = {
         i for i in dir(Interface) if inspect.isfunction(getattr(Interface, i))
     }
@@ -639,8 +636,8 @@ class CacheInterfaceAttrs:
 
     @classmethod
     def RegisterAttributeClass(
-        cls: Type["CacheInterfaceAttrs"], attribute_class: Type[object]
-    ) -> Set[object]:
+        cls: type["CacheInterfaceAttrs"], attribute_class: type[object]
+    ) -> set[object]:
         """
         Registers a class to be considered as an attribute class.
 
@@ -653,14 +650,14 @@ class CacheInterfaceAttrs:
         :return set(Attribute):
             Returns a set with all the current attribute classes.
         """
-        result: Set[Any] = set(cls._ATTRIBUTE_CLASSES)
+        result: set[Any] = set(cls._ATTRIBUTE_CLASSES)
         result.add(attribute_class)
         cls._ATTRIBUTE_CLASSES = tuple(result)
         return result
 
     def __GetInterfaceMethodsAndAttrs(
         self, interface: InterfaceType
-    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         """
         :type interface: the interface from where the methods and attributes should be gotten.
         :param interface:
@@ -697,7 +694,7 @@ class CacheInterfaceAttrs:
 
     def GetInterfaceMethodsAndAttrs(
         self, interface: InterfaceType
-    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         """
         We have to make the creation of the ImmutableParamsCacheManager lazy because
         otherwise we'd enter a cyclic import.
@@ -881,8 +878,7 @@ def ImplementsInterface(*interfaces: Any, no_check: bool = False) -> Callable[[T
     .. code-block:: python
 
         @ImplementsInterface(IFoo)
-        class Foo(object):
-            ...
+        class Foo(object): ...
 
     :param no_check:
         If ``True``, does not check if the class implements the declared interfaces
@@ -962,7 +958,7 @@ def ImplementsInterface(*interfaces: Any, no_check: bool = False) -> Callable[[T
     return Check()
 
 
-def DeclareClassImplements(class_: Type, *interfaces: InterfaceType) -> None:
+def DeclareClassImplements(class_: type, *interfaces: InterfaceType) -> None:
     """
     This is a way to tell, from outside of the class, that a given :arg class_: implements the
     given :arg interfaces:.
@@ -992,7 +988,7 @@ def DeclareClassImplements(class_: Type, *interfaces: InterfaceType) -> None:
     from itertools import chain
 
     old_implements = getattr(class_, "__implements__", [])
-    class_.__implements__ = list(chain(old_implements, interfaces))
+    setattr(class_, "__implements__", list(chain(old_implements, interfaces)))
 
     # This check must be done *after* adding the interfaces to __implements__, because it will
     # also check that the interfaces are declared there.
@@ -1006,11 +1002,11 @@ def DeclareClassImplements(class_: Type, *interfaces: InterfaceType) -> None:
             AssertImplements(class_, interface, requires_declaration=False)
     except:
         # Roll back...
-        class_.__implements__ = old_implements
+        setattr(class_, "__implements__", old_implements)
         raise
 
 
-def _GetMROForOldStyleClass(class_: Type) -> List[Type]:
+def _GetMROForOldStyleClass(class_: type) -> list[type]:
     """
     :type class_: classobj
     :param class_:
@@ -1032,7 +1028,7 @@ def _GetMROForOldStyleClass(class_: Type) -> List[Type]:
     return mro
 
 
-def _GetClassImplementedInterfaces(class_: Type) -> FrozenSet[InterfaceType]:
+def _GetClassImplementedInterfaces(class_: type) -> frozenset[InterfaceType]:
     with suppress(KeyError):
         return __ImplementedInterfacesCache[class_]
 
@@ -1055,7 +1051,7 @@ def _GetClassImplementedInterfaces(class_: Type) -> FrozenSet[InterfaceType]:
     return result
 
 
-def GetImplementedInterfaces(class_or_object: Any) -> FrozenSet[InterfaceType]:
+def GetImplementedInterfaces(class_or_object: Any) -> frozenset[InterfaceType]:
     """
     Return the interfaces implemented by the object or class passed.
     """
@@ -1103,7 +1099,7 @@ def AssertDeclaresInterface(
 
 
 @lru_cache(maxsize=1)
-def _GetGenericImplementationSignatures() -> FrozenSet[inspect.Signature]:
+def _GetGenericImplementationSignatures() -> frozenset[inspect.Signature]:
     """
     Return a set of signatures that should always be considered a match against interface
     methods: they represent generic signatures that are commonly used by wrappers.

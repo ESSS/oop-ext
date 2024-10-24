@@ -4,11 +4,12 @@ Extensions to python native types.
 """
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Iterator
 from typing import NoReturn
 
+from collections.abc import Iterator
+
 if TYPE_CHECKING:
-    from typing_extensions import Literal
+    from typing import Literal
 
 
 class Method:

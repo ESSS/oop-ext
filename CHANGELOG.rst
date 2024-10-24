@@ -3,7 +3,7 @@
 
 * ``PriorityCallback`` now has type checking support, similar to ``Callback``, with type checked variants: ``PriorityCallback0``, ``PriorityCallback1``, etc (`#128`_).
 * ``UnregisterContext`` is now public, meant to be used in type annotations.
-* Added support for Python 3.10.
+* Python 3.10+ is now required.
 
 .. _#128: https://github.com/ESSS/oop-ext/pull/128
 
@@ -80,8 +80,7 @@
       from oop_ext.foundation.callback import Callback2
 
 
-      def changed(x: int, v: float) -> None:
-          ...
+      def changed(x: int, v: float) -> None: ...
 
 
       on_changed = Callback2[int, float]()

@@ -51,10 +51,7 @@ with :meth:`UnregisterAll <Callback.UnregisterAll>`.
 """
 import types
 from typing import Any
-from typing import Callable
-from typing import Hashable
 from typing import Optional
-from typing import Sequence
 from typing import Tuple
 from typing import Union
 from typing import cast
@@ -64,6 +61,9 @@ import functools
 import inspect
 import logging
 import weakref
+from collections.abc import Callable
+from collections.abc import Hashable
+from collections.abc import Sequence
 
 from oop_ext.foundation.compat import GetClassForUnboundMethod
 from oop_ext.foundation.is_frozen import IsDevelopment
@@ -211,8 +211,8 @@ class Callback:
             return id(func)
 
     def _GetInfo(
-        self, func: Union[None, WeakMethodProxy, Method, Callable]
-    ) -> Tuple[Any, Any, Any]:
+        self, func: None | WeakMethodProxy | Method | Callable
+    ) -> tuple[Any, Any, Any]:
         """
         :rtype: tuple(func_obj, func_func, func_class)
         :returns:
@@ -228,12 +228,12 @@ class Callback:
 
         if _IsCallableObject(func):
             if self.DEBUG_NEW_WEAKREFS:
-                obj_str = "{}".format(func.__class__)
+                obj_str = f"{func.__class__}"
                 print("Changed behavior for: %s" % obj_str)
 
                 def on_die(r: Any) -> None:
                     # I.e.: the hint here is that a reference may die before expected
-                    print("Reference died: {}".format(obj_str))
+                    print(f"Reference died: {obj_str}")
 
                 return (weakref.ref(func, on_die), None, None)
             return (weakref.ref(func), None, None)
@@ -327,7 +327,7 @@ class Callback:
         """
         return to_call
 
-    _EXTRA_ARGS_CONSTANT: Tuple[object, ...] = tuple()
+    _EXTRA_ARGS_CONSTANT: tuple[object, ...] = tuple()
 
     def Register(
         self,
@@ -389,7 +389,7 @@ class Callback:
         if info_and_extra_args is None:
             return False
 
-        real_func: Optional[Callable] = func
+        real_func: Callable | None = func
 
         if isinstance(real_func, WeakMethodProxy):
             real_func = real_func.GetWrappedFunction()

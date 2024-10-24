@@ -2,10 +2,7 @@
 from types import LambdaType
 from types import MethodType
 from typing import Any
-from typing import Callable
 from typing import Generic
-from typing import Iterable
-from typing import Iterator
 from typing import List
 from typing import Optional
 from typing import Set
@@ -16,6 +13,9 @@ from typing import overload
 
 import inspect
 import weakref
+from collections.abc import Callable
+from collections.abc import Iterable
+from collections.abc import Iterator
 from weakref import ReferenceType
 
 from oop_ext.foundation.decorators import Implements
@@ -37,8 +37,8 @@ class WeakList(Generic[T]):
         https://github.com/apieum/weakreflist
     """
 
-    def __init__(self, initlist: Optional[Iterable[T]] = None):
-        self.data: List[SomeWeakRef] = []
+    def __init__(self, initlist: Iterable[T] | None = None):
+        self.data: list[SomeWeakRef] = []
 
         if initlist is not None:
             for x in initlist:
@@ -91,16 +91,16 @@ class WeakList(Generic[T]):
             i += 1
         return i
 
-    def __delitem__(self, i: Union[int, slice]) -> None:
+    def __delitem__(self, i: int | slice) -> None:
         self.data.__delitem__(i)
 
     @overload
-    def __getitem__(self, i: int) -> Optional[T]: ...
+    def __getitem__(self, i: int) -> T | None: ...
 
     @overload
     def __getitem__(self, i: slice) -> "WeakList": ...
 
-    def __getitem__(self, i: Union[int, slice]) -> Union[Optional[T], "WeakList"]:
+    def __getitem__(self, i: int | slice) -> Union[T | None, "WeakList"]:
         if isinstance(i, slice):
             slice_ = []
             for ref in self.data[i.start : i.stop : i.step]:
@@ -139,7 +139,7 @@ class WeakMethodRef:
     __slots__ = ["_obj", "_func", "_class", "_hash", "__weakref__"]
 
     def __init__(self, method: Any):
-        self._obj: Optional[weakref.ReferenceType]
+        self._obj: weakref.ReferenceType | None
         try:
             if method.__self__ is not None:
                 # bound method
@@ -218,13 +218,13 @@ class WeakMethodProxy(WeakMethodRef):
     arguments. If the referent's object no longer lives, ReferenceError is raised.
     """
 
-    def GetWrappedFunction(self) -> Optional[Callable]:
+    def GetWrappedFunction(self) -> Callable | None:
         return WeakMethodRef.__call__(self)
 
     def __call__(self, *args: object, **kwargs: object) -> Any:
         func = WeakMethodRef.__call__(self)
         if func is None:
-            raise ReferenceError("Object is dead. Was of class: {}".format(self._class))
+            raise ReferenceError(f"Object is dead. Was of class: {self._class}")
         else:
             return func(*args, **kwargs)
 
@@ -249,7 +249,7 @@ class WeakSet(Generic[T]):
     """
 
     def __init__(self) -> None:
-        self.data: Set[SomeWeakRef] = set()
+        self.data: set[SomeWeakRef] = set()
 
     def add(self, item: T) -> None:
         self.data.add(GetWeakRef(item))
