@@ -121,8 +121,7 @@ Release
 -------
 A reminder for the maintainers on how to make a new release.
 
-Note that the VERSION should follow the semantic versioning as X.Y.Z
-Ex.: v1.0.5
+Note that the VERSION should follow the semantic versioning as ``X.Y.Z`` (e.g. ``v1.0.5``).
 
 1. Create a ``release-VERSION`` branch from ``upstream/master``.
 2. Update ``CHANGELOG.rst``.
