@@ -34,7 +34,7 @@ jobs:
       run: |
         tox -e py
     - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v4.6.0
+      uses: codecov/codecov-action@v5.0.2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: true
@@ -67,7 +67,7 @@ jobs:
         password: ${{ secrets.pypi_token }}
         attestations: true
     - name: GitHub Release
-      uses: softprops/action-gh-release@v2.0.9
+      uses: softprops/action-gh-release@v2.1.0
       with:
         files: dist/*
 
