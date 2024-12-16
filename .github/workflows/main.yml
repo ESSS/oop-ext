@@ -61,13 +61,13 @@ jobs:
       run: |
         python -m build
     - name: Publish package to PyPI
-      uses: pypa/gh-action-pypi-publish@v1.12.2
+      uses: pypa/gh-action-pypi-publish@v1.12.3
       with:
         user: __token__
         password: ${{ secrets.pypi_token }}
         attestations: true
     - name: GitHub Release
-      uses: softprops/action-gh-release@v2.1.0
+      uses: softprops/action-gh-release@v2.2.0
       with:
         files: dist/*
 
