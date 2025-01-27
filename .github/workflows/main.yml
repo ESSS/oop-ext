@@ -34,7 +34,7 @@ jobs:
       run: |
         tox -e py
     - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v5.1.2
+      uses: codecov/codecov-action@v5.3.1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: true
@@ -61,7 +61,7 @@ jobs:
       run: |
         python -m build
     - name: Publish package to PyPI
-      uses: pypa/gh-action-pypi-publish@v1.12.3
+      uses: pypa/gh-action-pypi-publish@v1.12.4
       with:
         user: __token__
         password: ${{ secrets.pypi_token }}
