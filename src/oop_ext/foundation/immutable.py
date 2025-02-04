@@ -1,8 +1,8 @@
 # mypy: disallow-untyped-defs
 """
-    Defines types and functions to generate immutable structures.
+Defines types and functions to generate immutable structures.
 
-    USER: The cache-manager uses this module to generate a valid KEY for its cache dictionary.
+USER: The cache-manager uses this module to generate a valid KEY for its cache dictionary.
 """
 from typing import Any
 from typing import Dict
