@@ -4,6 +4,7 @@
 **Release**: 2025-08-01
 
 * Fix type annotations:
+
   * ``oop_ext.foundation.weak_ref.IsWeakProxy``.
   * ``oop_ext.foundation.weak_ref.IsWeakRef``.
   * ``oop_ext.foundation.weak_ref.GetWeakProxy``.
