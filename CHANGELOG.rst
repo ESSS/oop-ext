@@ -1,10 +1,18 @@
-2.3.0
+2.3.1
 -----
+
+**Release**: 2025-08-01
 
 * Fix type annotations:
   * ``oop_ext.foundation.weak_ref.IsWeakProxy``.
   * ``oop_ext.foundation.weak_ref.IsWeakRef``.
   * ``oop_ext.foundation.weak_ref.GetWeakProxy``.
+
+
+2.3.0
+-----
+
+Not released due to a problem during deploy.
 
 2.2.0
 -----
