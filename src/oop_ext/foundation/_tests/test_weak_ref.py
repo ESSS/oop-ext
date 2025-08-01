@@ -92,11 +92,11 @@ def testGeneral() -> None:
     assert IsWeakRef(r)
     assert not IsWeakProxy(r)
 
-    r = GetWeakProxy(b.Method)
-    assert callable(r)
-    r()
-    assert IsWeakProxy(r)
-    assert not IsWeakRef(r)
+    r_method = GetWeakProxy(b.Method)
+    assert callable(r_method)
+    r_method()
+    assert IsWeakProxy(r_method)
+    assert not IsWeakRef(r_method)
 
     r = weakref.ref(b)
     b2 = _Stub()
