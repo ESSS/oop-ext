@@ -1,5 +1,5 @@
-UNRELEASED
-----------
+2.3.0
+-----
 
 * Fix type annotations:
   * ``oop_ext.foundation.weak_ref.IsWeakProxy``.

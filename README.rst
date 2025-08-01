@@ -125,6 +125,9 @@ Note that the VERSION should follow the semantic versioning as ``X.Y.Z`` (e.g. `
 
 1. Create a ``release-VERSION`` branch from ``upstream/master``.
 2. Update ``CHANGELOG.rst``.
-3. Push a branch with the changes.
-4. Once all builds pass, push a ``VERSION`` tag to ``upstream``.
+3. Push the branch to ``upstream``.
+4. Once all tests pass, start the ``deploy`` workflow manually or via::
+
+    gh workflow run deploy.yml --repo pytest-dev/pytest-mock --ref release-VERSION -f version=VERSION
+
 5. Merge the PR.

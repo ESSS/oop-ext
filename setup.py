@@ -40,6 +40,7 @@ setup(
     extras_require=extras_require,
     install_requires=requirements,
     license="MIT license",
+    long_description_content_type="text/x-rst",
     long_description=readme + "\n\n" + history,
     include_package_data=True,
     python_requires=">=3.10",
