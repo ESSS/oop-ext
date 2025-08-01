@@ -1,11 +1,10 @@
 # mypy: disallow-untyped-defs
+from __future__ import annotations
+
 from types import LambdaType
 from types import MethodType
 from typing import Any
 from typing import Generic
-from typing import List
-from typing import Optional
-from typing import Set
 from typing import TypeVar
 from typing import Union
 from typing import cast
@@ -16,6 +15,7 @@ import weakref
 from collections.abc import Callable
 from collections.abc import Iterable
 from collections.abc import Iterator
+from typing_extensions import TypeGuard
 from weakref import ReferenceType
 
 from oop_ext.foundation.decorators import Implements
@@ -317,16 +317,16 @@ class WeakSet(Generic[T]):
         return "\n".join(str(x) for x in self)
 
 
-def IsWeakProxy(obj: object) -> bool:
+def IsWeakProxy(obj: T) -> TypeGuard[weakref.ProxyType[T]]:
     """
-    Returns whether the given object is a weak-proxy
+    Returns whether the given object is a weak-proxy.
     """
     return isinstance(obj, (weakref.ProxyType, WeakMethodProxy))
 
 
-def IsWeakRef(obj: object) -> bool:
+def IsWeakRef(obj: T) -> TypeGuard[weakref.ReferenceType[T]]:
     """
-    Returns wheter ths given object is a weak-reference.
+    Returns whether ths given object is a weak-reference.
     """
     return isinstance(obj, (weakref.ReferenceType, WeakMethodRef)) and not isinstance(
         obj, WeakMethodProxy
@@ -354,7 +354,7 @@ def GetRealObj(obj: Any) -> Any:
     return obj
 
 
-def GetWeakProxy(obj: Any) -> Any:
+def GetWeakProxy(obj: T) -> weakref.ProxyType[T]:
     """
     :param obj: This is the object we want to get as a proxy
     :return:
@@ -362,17 +362,18 @@ def GetWeakProxy(obj: Any) -> Any:
         is returned itself)
     """
     if obj is None:
-        return None
+        return obj  # type:ignore[return-value]
 
     if not IsWeakProxy(obj):
         if IsWeakRef(obj):
-            obj = obj()
+            real_obj = obj()
+        else:
+            real_obj = obj
 
-        # for methods we cannot create regular weak-refs
-        if inspect.ismethod(obj):
-            return WeakMethodProxy(obj)
+        if inspect.ismethod(real_obj):
+            return WeakMethodProxy(real_obj)  # type:ignore[return-value]
 
-        return weakref.proxy(obj)
+        return weakref.proxy(real_obj)
 
     return obj
 
