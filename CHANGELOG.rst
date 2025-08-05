@@ -1,3 +1,11 @@
+2.3.2
+-----
+
+**Release**: 2025-08-05
+
+* Changed ``GetWeakProxy`` return type to ``T``. Unfortunately type-checkers understand that ``ProxyType[T]`` is not the same as ``T``, generating a lot of false negatives.
+
+
 2.3.1
 -----
 

@@ -354,13 +354,16 @@ def GetRealObj(obj: Any) -> Any:
     return obj
 
 
-def GetWeakProxy(obj: T) -> weakref.ProxyType[T]:
+def GetWeakProxy(obj: T) -> T:
     """
     :param obj: This is the object we want to get as a proxy
     :return:
-        Returns the object as a proxy (if it is still not already a proxy or a weak ref, in which case the passed object
-        is returned itself)
+        Returns the object as a proxy. If already a proxy, return it unchanged.
     """
+    # Note: we need to ignore the typing errors below because otherwise the type-checker will
+    # complain that we return `ProxyType[T]` instead of `T`. The problem is that the type-checker is not
+    # smart enough to understand that a function receiving `T` can also receive a `ProxyType[T]` without problems,
+    # but it does not. For this reason, we have to lie here and say this functions returns `T`.
     if obj is None:
         return obj  # type:ignore[return-value]
 
@@ -373,9 +376,9 @@ def GetWeakProxy(obj: T) -> weakref.ProxyType[T]:
         if inspect.ismethod(real_obj):
             return WeakMethodProxy(real_obj)  # type:ignore[return-value]
 
-        return weakref.proxy(real_obj)
+        return weakref.proxy(real_obj)  # type:ignore[return-value]
 
-    return obj
+    return obj  # type:ignore[return-value]
 
 
 # Keep the same lambda for weak-refs (to be reused among all places that use GetWeakRef(None)
