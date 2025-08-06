@@ -1,9 +1,24 @@
+2.3.3
+-----
+
+**Release**: 2025-08-06
+
+* Fix type annotations:
+
+  * ``oop_ext.foundation.weak_ref.IsWeakProxy``.
+  * ``oop_ext.foundation.weak_ref.IsWeakRef``.
+  * ``oop_ext.foundation.weak_ref.GetWeakProxy``.
+
+
+
 2.3.2
 -----
 
 **Release**: 2025-08-05
 
-* Changed ``GetWeakProxy`` return type to ``T``. Unfortunately type-checkers understand that ``ProxyType[T]`` is not the same as ``T``, generating a lot of false negatives.
+**Broken Release**
+
+This version contains the incorrect patch -- nothing serious, just the ``master`` version instead of the expected patch.
 
 
 2.3.1
@@ -11,11 +26,9 @@
 
 **Release**: 2025-08-01
 
-* Fix type annotations:
+**Broken Release**
 
-  * ``oop_ext.foundation.weak_ref.IsWeakProxy``.
-  * ``oop_ext.foundation.weak_ref.IsWeakRef``.
-  * ``oop_ext.foundation.weak_ref.GetWeakProxy``.
+This version contains the incorrect patch -- nothing serious, just the ``master`` version instead of the expected patch.
 
 
 2.3.0

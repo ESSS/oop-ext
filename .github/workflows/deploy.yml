@@ -55,3 +55,4 @@ jobs:
       with:
         files: dist/*
         tag_name: v${{ github.event.inputs.version }}
+        target_commitish: ${{ github.sha }}
