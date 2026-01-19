@@ -107,27 +107,27 @@ def testCacheMethodAttributeBasedCachedMethod() -> None:
             return "%s %d" % (par, self.id)
 
     alpha = TestObject()
-    alpha.Foo = AttributeBasedCachedMethod(  # type:ignore[assignment]
+    alpha.Foo = AttributeBasedCachedMethod(  # type: ignore[assignment]
         alpha.Foo, "id", cache_size=3
     )
-    alpha.Foo("test1")  # type:ignore[misc]
-    alpha.Foo("test1")  # type:ignore[misc]
+    alpha.Foo("test1")  # type: ignore[misc]
+    alpha.Foo("test1")  # type: ignore[misc]
 
     assert alpha.n_calls == 1
 
-    alpha.Foo("test2")  # type:ignore[misc]
+    alpha.Foo("test2")  # type: ignore[misc]
     assert alpha.n_calls == 2
-    assert len(alpha.Foo._results) == 2  # type:ignore[attr-defined]
+    assert len(alpha.Foo._results) == 2  # type: ignore[attr-defined]
 
     alpha.id = 3
-    alpha.Foo("test2")  # type:ignore[misc]
+    alpha.Foo("test2")  # type: ignore[misc]
     assert alpha.n_calls == 3
 
-    assert len(alpha.Foo._results) == 3  # type:ignore[attr-defined]
+    assert len(alpha.Foo._results) == 3  # type: ignore[attr-defined]
 
-    alpha.Foo("test3")  # type:ignore[misc]
+    alpha.Foo("test3")  # type: ignore[misc]
     assert alpha.n_calls == 4
-    assert len(alpha.Foo._results) == 3  # type:ignore[attr-defined]
+    assert len(alpha.Foo._results) == 3  # type: ignore[attr-defined]
 
 
 @pytest.fixture

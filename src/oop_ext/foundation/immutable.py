@@ -4,6 +4,7 @@ Defines types and functions to generate immutable structures.
 
 USER: The cache-manager uses this module to generate a valid KEY for its cache dictionary.
 """
+
 from typing import Any
 from typing import Dict
 from typing import Generic
@@ -30,11 +31,9 @@ def RegisterAsImmutable(immutable_type: type[object]) -> None:
     # Fix it for the copy too!
     import copy
 
-    copy._copy_dispatch[  # type:ignore[attr-defined]
+    copy._copy_dispatch[  # type: ignore[attr-defined]
         immutable_type
-    ] = (
-        copy._copy_immutable  # type:ignore[attr-defined]
-    )
+    ] = copy._copy_immutable  # type: ignore[attr-defined]
 
 
 def AsImmutable(value: Any, return_str_if_not_expected: bool = True) -> Any:
@@ -119,10 +118,10 @@ class ImmutableDict(dict):
     def popitem(self) -> NoReturn:
         raise NotImplementedError("dict is immutable")
 
-    def update(self, *args: object) -> NoReturn:  # type:ignore[override]
+    def update(self, *args: object) -> NoReturn:  # type: ignore[override]
         raise NotImplementedError("dict is immutable")
 
-    def __hash__(self) -> int:  # type:ignore[override]
+    def __hash__(self) -> int:  # type: ignore[override]
         if not hasattr(self, "_hash"):
             # must be sorted (could give different results for dicts that should be the same
             # if it's not).

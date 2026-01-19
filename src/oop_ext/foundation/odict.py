@@ -47,4 +47,4 @@ class odict(collections.OrderedDict):
                 collections.OrderedDict.__delitem__(self, k)
 
         else:
-            collections.OrderedDict.__delitem__(self, key)  # type:ignore[arg-type]
+            collections.OrderedDict.__delitem__(self, key)  # type: ignore[arg-type]

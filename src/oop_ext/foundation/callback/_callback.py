@@ -49,6 +49,7 @@ We can unregister functions using :meth:`Unregister <Callback.Unregister>`, chec
 is registered with :meth:`Contains <Callback.Contains>`, and unregister all connected functions
 with :meth:`UnregisterAll <Callback.UnregisterAll>`.
 """
+
 import types
 from typing import Any
 from typing import Optional
@@ -192,16 +193,16 @@ class Callback:
             func = func.OriginalMethod()
 
         try:
-            if func.__self__ is not None:  # type:ignore[union-attr]
+            if func.__self__ is not None:  # type: ignore[union-attr]
                 # bound method
                 return (
-                    id(func.__self__),  # type:ignore[union-attr]
-                    id(func.__func__),  # type:ignore[union-attr]
-                    id(func.__self__.__class__),  # type:ignore[union-attr]
+                    id(func.__self__),  # type: ignore[union-attr]
+                    id(func.__func__),  # type: ignore[union-attr]
+                    id(func.__self__.__class__),  # type: ignore[union-attr]
                 )
             else:
                 return (
-                    id(func.__func__),  # type:ignore[union-attr]
+                    id(func.__func__),  # type: ignore[union-attr]
                     id(GetClassForUnboundMethod(func)),
                 )
 
@@ -240,20 +241,20 @@ class Callback:
 
         try:
             if (
-                func.__self__ is not None  # type:ignore[union-attr]
-                and func.__func__ is not None  # type:ignore[union-attr]
+                func.__self__ is not None  # type: ignore[union-attr]
+                and func.__func__ is not None  # type: ignore[union-attr]
             ):
                 # bound method
                 return (
-                    weakref.ref(func.__self__),  # type:ignore[union-attr]
-                    func.__func__,  # type:ignore[union-attr]
-                    func.__self__.__class__,  # type:ignore[union-attr]
+                    weakref.ref(func.__self__),  # type: ignore[union-attr]
+                    func.__func__,  # type: ignore[union-attr]
+                    func.__self__.__class__,  # type: ignore[union-attr]
                 )
             else:
                 # unbound method
                 return (
                     None,
-                    func.__func__,  # type:ignore[union-attr]
+                    func.__func__,  # type: ignore[union-attr]
                     GetClassForUnboundMethod(func),
                 )
         except AttributeError:
@@ -424,7 +425,7 @@ class Callback:
             if func_func == real_func:
                 return True
             try:
-                f = real_func.__func__  # type:ignore[union-attr]
+                f = real_func.__func__  # type: ignore[union-attr]
             except AttributeError:
                 return False
             else:

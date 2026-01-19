@@ -15,6 +15,7 @@ Implemented so far up to 5 arguments, more can be added if we think it is necess
 Note the separate classes are needed for now, but after Python 3.11, we should be able to
 implement the generic variants (`pep-0646 <https://www.python.org/dev/peps/pep-0646>`__) into ``Callback`` itself.
 """
+
 from typing import TYPE_CHECKING
 from typing import Generic
 from typing import TypeVar
@@ -36,7 +37,7 @@ T5 = TypeVar("T5")
 class Callback0(Callback):
     if TYPE_CHECKING:
 
-        def __call__(self) -> None:  # type:ignore[override]
+        def __call__(self) -> None:  # type: ignore[override]
             ...
 
         def Register(
@@ -61,7 +62,7 @@ class Callback0(Callback):
 class Callback1(Callback, Generic[T1]):
     if TYPE_CHECKING:
 
-        def __call__(self, v1: T1) -> None:  # type:ignore[override]
+        def __call__(self, v1: T1) -> None:  # type: ignore[override]
             ...
 
         def Register(
@@ -86,7 +87,7 @@ class Callback1(Callback, Generic[T1]):
 class Callback2(Callback, Generic[T1, T2]):
     if TYPE_CHECKING:
 
-        def __call__(self, v1: T1, v2: T2) -> None:  # type:ignore[override]
+        def __call__(self, v1: T1, v2: T2) -> None:  # type: ignore[override]
             ...
 
         def Register(
@@ -111,7 +112,7 @@ class Callback2(Callback, Generic[T1, T2]):
 class Callback3(Callback, Generic[T1, T2, T3]):
     if TYPE_CHECKING:
 
-        def __call__(self, v1: T1, v2: T2, v3: T3) -> None:  # type:ignore[override]
+        def __call__(self, v1: T1, v2: T2, v3: T3) -> None:  # type: ignore[override]
             ...
 
         def Register(
@@ -136,7 +137,7 @@ class Callback3(Callback, Generic[T1, T2, T3]):
 class Callback4(Callback, Generic[T1, T2, T3, T4]):
     if TYPE_CHECKING:
 
-        def __call__(  # type:ignore[override]
+        def __call__(  # type: ignore[override]
             self, v1: T1, v2: T2, v3: T3, v4: T4
         ) -> None: ...
 
@@ -162,7 +163,7 @@ class Callback4(Callback, Generic[T1, T2, T3, T4]):
 class Callback5(Callback, Generic[T1, T2, T3, T4, T5]):
     if TYPE_CHECKING:
 
-        def __call__(  # type:ignore[override]
+        def __call__(  # type: ignore[override]
             self, v1: T1, v2: T2, v3: T3, v4: T4, v5: T5
         ) -> None: ...
 
@@ -188,7 +189,7 @@ class Callback5(Callback, Generic[T1, T2, T3, T4, T5]):
 class PriorityCallback0(PriorityCallback):
     if TYPE_CHECKING:
 
-        def __call__(self) -> None:  # type:ignore[override]
+        def __call__(self) -> None:  # type: ignore[override]
             ...
 
         def Register(
@@ -214,9 +215,7 @@ class PriorityCallback0(PriorityCallback):
 class PriorityCallback1(PriorityCallback, Generic[T1]):
     if TYPE_CHECKING:
 
-        def __call__(  # type:ignore[override]
-            self, v1: T1
-        ) -> None: ...
+        def __call__(self, v1: T1) -> None: ...  # type: ignore[override]
 
         def Register(
             self,
@@ -241,9 +240,7 @@ class PriorityCallback1(PriorityCallback, Generic[T1]):
 class PriorityCallback2(PriorityCallback, Generic[T1, T2]):
     if TYPE_CHECKING:
 
-        def __call__(  # type:ignore[override]
-            self, v1: T1, v2: T2
-        ) -> None: ...
+        def __call__(self, v1: T1, v2: T2) -> None: ...  # type: ignore[override]
 
         def Register(
             self,
@@ -268,7 +265,7 @@ class PriorityCallback2(PriorityCallback, Generic[T1, T2]):
 class PriorityCallback3(PriorityCallback, Generic[T1, T2, T3]):
     if TYPE_CHECKING:
 
-        def __call__(  # type:ignore[override]
+        def __call__(  # type: ignore[override]
             self, v1: T1, v2: T2, v3: T3
         ) -> None: ...
 
@@ -295,7 +292,7 @@ class PriorityCallback3(PriorityCallback, Generic[T1, T2, T3]):
 class PriorityCallback4(PriorityCallback, Generic[T1, T2, T3, T4]):
     if TYPE_CHECKING:
 
-        def __call__(  # type:ignore[override]
+        def __call__(  # type: ignore[override]
             self, v1: T1, v2: T2, v3: T3, v4: T4
         ) -> None: ...
 
@@ -322,7 +319,7 @@ class PriorityCallback4(PriorityCallback, Generic[T1, T2, T3, T4]):
 class PriorityCallback5(PriorityCallback, Generic[T1, T2, T3, T4, T5]):
     if TYPE_CHECKING:
 
-        def __call__(  # type:ignore[override]
+        def __call__(  # type: ignore[override]
             self, v1: T1, v2: T2, v3: T3, v4: T4, v5: T5
         ) -> None: ...
 

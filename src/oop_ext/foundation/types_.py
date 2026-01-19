@@ -2,6 +2,7 @@
 """
 Extensions to python native types.
 """
+
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import NoReturn
