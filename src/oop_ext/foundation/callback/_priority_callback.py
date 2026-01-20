@@ -20,7 +20,7 @@ class PriorityCallback(Callback):
     INFO_POS_PRIORITY = 3
 
     @Override(Callback._GetInfo)
-    def _GetInfo(  # type:ignore[misc, override]
+    def _GetInfo(  # type: ignore[misc, override]
         self, func: Callable, priority: int
     ) -> Any:
         """
@@ -33,7 +33,7 @@ class PriorityCallback(Callback):
         return info + (priority,)
 
     @Override(Callback.Register)
-    def Register(  # type:ignore[misc, override]
+    def Register(  # type: ignore[misc, override]
         self,
         func: Callable,
         extra_args: tuple[object, ...] = Callback._EXTRA_ARGS_CONSTANT,

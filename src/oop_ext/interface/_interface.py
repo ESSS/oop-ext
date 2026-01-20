@@ -36,6 +36,7 @@ AssertImplements(impl, IMyCalculator)
 
 
 """
+
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
@@ -157,7 +158,7 @@ class InterfaceImplementorStub(Generic[T]):
                     self.__implemented_interface, "__getitem__"
                 )
             )
-        return self.__wrapped.__getitem__(*args, **kwargs)  # type:ignore[index]
+        return self.__wrapped.__getitem__(*args, **kwargs)  # type: ignore[index]
 
     def __setitem__(self, *args: Any, **kwargs: Any) -> Any:
         if "__setitem__" not in self.__interface_methods:
@@ -166,7 +167,7 @@ class InterfaceImplementorStub(Generic[T]):
                     self.__implemented_interface, "__setitem__"
                 )
             )
-        return self.__wrapped.__setitem__(*args, **kwargs)  # type:ignore[index]
+        return self.__wrapped.__setitem__(*args, **kwargs)  # type: ignore[index]
 
     def __repr__(self) -> str:
         return "<InterfaceImplementorStub %s>" % self.__wrapped
@@ -178,7 +179,7 @@ class InterfaceImplementorStub(Generic[T]):
                     self.__implemented_interface, "__call__"
                 )
             )
-        return self.__wrapped.__call__(*args, **kwargs)  # type:ignore[operator]
+        return self.__wrapped.__call__(*args, **kwargs)  # type: ignore[operator]
 
 
 # Instance to check if we are receiving an argument during Interface.__new__
@@ -608,11 +609,11 @@ else:
     # by Interface during runtime when checking if an implementation has the required
     # attributes.
 
-    def Attribute(  # type:ignore[empty-body]
+    def Attribute(  # type: ignore[empty-body]
         attribute_type: type[T], instance: object = ...
     ) -> T: ...
 
-    def ReadOnlyAttribute(  # type:ignore[empty-body]
+    def ReadOnlyAttribute(  # type: ignore[empty-body]
         attribute_type: type[T], instance: object = ...
     ) -> T: ...
 
@@ -938,7 +939,7 @@ def ImplementsInterface(*interfaces: Any, no_check: bool = False) -> Callable[[T
                 all_interfaces = curr + interfaces
             else:
                 all_interfaces = interfaces
-            namespace.__implements__ = all_interfaces  # type:ignore[attr-defined]
+            namespace.__implements__ = all_interfaces  # type: ignore[attr-defined]
 
             if not no_check:
                 if IsDevelopment():  # Only doing check in dev mode.
@@ -1087,7 +1088,7 @@ def GetProxy(interface: InterfaceType, obj: T) -> T:
         Hopefully this will be improved in the future.
 
     """
-    x = interface(obj)  # type:ignore[call-arg]
+    x = interface(obj)  # type: ignore[call-arg]
     return x
 
 
@@ -1108,13 +1109,13 @@ def _GetGenericImplementationSignatures() -> frozenset[inspect.Signature]:
     uses this information.
     """
 
-    def func1(*args, **kwargs):  # type:ignore[no-untyped-def]
+    def func1(*args, **kwargs):  # type: ignore[no-untyped-def]
         ...
 
-    def func2(self, *args, **kwargs):  # type:ignore[no-untyped-def]
+    def func2(self, *args, **kwargs):  # type: ignore[no-untyped-def]
         ...
 
-    def func3(cls, *args, **kwargs):  # type:ignore[no-untyped-def]
+    def func3(cls, *args, **kwargs):  # type: ignore[no-untyped-def]
         ...
 
     return frozenset(

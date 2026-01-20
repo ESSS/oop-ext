@@ -7,8 +7,7 @@ from oop_ext._type_checker_fixture import TypeCheckerFixture
 
 
 def testCallback0(type_checker: TypeCheckerFixture) -> None:
-    type_checker.make_file(
-        """
+    type_checker.make_file("""
         from oop_ext.foundation.callback import Callback0
 
         c = Callback0()
@@ -16,8 +15,7 @@ def testCallback0(type_checker: TypeCheckerFixture) -> None:
 
         def fail(x): pass
         c.Register(fail)
-        """
-    )
+        """)
     result = type_checker.run()
     result.assert_errors(
         [
@@ -26,8 +24,7 @@ def testCallback0(type_checker: TypeCheckerFixture) -> None:
         ]
     )
 
-    type_checker.make_file(
-        """
+    type_checker.make_file("""
         from oop_ext.foundation.callback import Callback0
 
         c = Callback0()
@@ -35,15 +32,13 @@ def testCallback0(type_checker: TypeCheckerFixture) -> None:
 
         def ok(): pass
         c.Register(ok)
-        """
-    )
+        """)
     result = type_checker.run()
     result.assert_ok()
 
 
 def testCallback1(type_checker: TypeCheckerFixture) -> None:
-    type_checker.make_file(
-        """
+    type_checker.make_file("""
         from oop_ext.foundation.callback import Callback1
 
         c = Callback1[int]()
@@ -55,8 +50,7 @@ def testCallback1(type_checker: TypeCheckerFixture) -> None:
 
         def fail2(x: str): pass
         c.Register(fail2)
-        """
-    )
+        """)
     result = type_checker.run()
     result.assert_errors(
         [
@@ -71,8 +65,7 @@ def testCallback1(type_checker: TypeCheckerFixture) -> None:
         ]
     )
 
-    type_checker.make_file(
-        """
+    type_checker.make_file("""
         from oop_ext.foundation.callback import Callback1
 
         c = Callback1[int]()
@@ -80,15 +73,13 @@ def testCallback1(type_checker: TypeCheckerFixture) -> None:
 
         def ok(x: int): pass
         c.Register(ok)
-        """
-    )
+        """)
     result = type_checker.run()
     result.assert_ok()
 
 
 def testPriorityCallback0(type_checker: TypeCheckerFixture) -> None:
-    type_checker.make_file(
-        """
+    type_checker.make_file("""
         from oop_ext.foundation.callback import PriorityCallback0
 
         c = PriorityCallback0()
@@ -96,8 +87,7 @@ def testPriorityCallback0(type_checker: TypeCheckerFixture) -> None:
 
         def fail(x): pass
         c.Register(fail, priority=2)
-        """
-    )
+        """)
     result = type_checker.run()
     result.assert_errors(
         [
@@ -106,8 +96,7 @@ def testPriorityCallback0(type_checker: TypeCheckerFixture) -> None:
         ]
     )
 
-    type_checker.make_file(
-        """
+    type_checker.make_file("""
         from oop_ext.foundation.callback import PriorityCallback0
 
         c = PriorityCallback0()
@@ -115,15 +104,13 @@ def testPriorityCallback0(type_checker: TypeCheckerFixture) -> None:
 
         def ok(): pass
         c.Register(ok, priority=2)
-        """
-    )
+        """)
     result = type_checker.run()
     result.assert_ok()
 
 
 def testPriorityCallback1(type_checker: TypeCheckerFixture) -> None:
-    type_checker.make_file(
-        """
+    type_checker.make_file("""
         from oop_ext.foundation.callback import PriorityCallback1
 
         c = PriorityCallback1[int]()
@@ -135,8 +122,7 @@ def testPriorityCallback1(type_checker: TypeCheckerFixture) -> None:
 
         def fail2(x: str): pass
         c.Register(fail2, priority=2)
-        """
-    )
+        """)
     result = type_checker.run()
     result.assert_errors(
         [
@@ -151,8 +137,7 @@ def testPriorityCallback1(type_checker: TypeCheckerFixture) -> None:
         ]
     )
 
-    type_checker.make_file(
-        """
+    type_checker.make_file("""
         from oop_ext.foundation.callback import PriorityCallback1
 
         c = PriorityCallback1[int]()
@@ -160,8 +145,7 @@ def testPriorityCallback1(type_checker: TypeCheckerFixture) -> None:
 
         def ok(x: int): pass
         c.Register(ok, priority=2)
-        """
-    )
+        """)
     result = type_checker.run()
     result.assert_ok()
 
@@ -193,8 +177,7 @@ def testAllCallbacksSmokeTest(
     sig_too_many, args_too_many, types_too_many = gen_signature_and_args(args_count + 1)
     sig_ok, args_ok, types_ok = gen_signature_and_args(args_count)
 
-    type_checker.make_file(
-        f"""
+    type_checker.make_file(f"""
         from oop_ext.foundation.callback import Callback{args_count}
 
         c = Callback{args_count}[{types_ok}]()
@@ -210,8 +193,7 @@ def testAllCallbacksSmokeTest(
         def ok_func({sig_ok}) -> None: ...
         c.Register(ok_func)
         c({args_ok})
-        """
-    )
+        """)
     result = type_checker.run()
     result.assert_errors(
         [

@@ -2,6 +2,7 @@
 """
 Collection of decorator with ONLY standard library dependencies.
 """
+
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import NoReturn

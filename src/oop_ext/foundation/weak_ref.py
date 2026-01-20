@@ -182,7 +182,7 @@ class WeakMethodRef:
     def __eq__(self, other: object) -> bool:
         try:
             return (
-                type(self) is type(other) and self() == other()  # type:ignore[operator]
+                type(self) is type(other) and self() == other()  # type: ignore[operator]
             )
         except:
             return False
@@ -231,7 +231,7 @@ class WeakMethodProxy(WeakMethodRef):
     def __eq__(self, other: object) -> bool:
         try:
             func1 = WeakMethodRef.__call__(self)
-            func2 = WeakMethodRef.__call__(other)  # type:ignore[arg-type]
+            func2 = WeakMethodRef.__call__(other)  # type: ignore[arg-type]
             return type(self) == type(other) and func1 == func2
         except:
             return False
@@ -365,7 +365,7 @@ def GetWeakProxy(obj: T) -> T:
     # smart enough to understand that a function receiving `T` can also receive a `ProxyType[T]` without problems,
     # but it does not. For this reason, we have to lie here and say this functions returns `T`.
     if obj is None:
-        return obj  # type:ignore[return-value]
+        return obj  # type: ignore[return-value]
 
     if not IsWeakProxy(obj):
         if IsWeakRef(obj):
@@ -374,11 +374,11 @@ def GetWeakProxy(obj: T) -> T:
             real_obj = obj
 
         if inspect.ismethod(real_obj):
-            return WeakMethodProxy(real_obj)  # type:ignore[return-value]
+            return WeakMethodProxy(real_obj)  # type: ignore[return-value]
 
-        return weakref.proxy(real_obj)  # type:ignore[return-value]
+        return weakref.proxy(real_obj)  # type: ignore[return-value]
 
-    return obj  # type:ignore[return-value]
+    return obj  # type: ignore[return-value]
 
 
 # Keep the same lambda for weak-refs (to be reused among all places that use GetWeakRef(None)

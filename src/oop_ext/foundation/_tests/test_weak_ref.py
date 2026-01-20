@@ -510,13 +510,13 @@ def testWeakList() -> None:
     def m1() -> None:
         "Never called"
 
-    weak_list.append(m1)  # type:ignore[arg-type]
+    weak_list.append(m1)  # type: ignore[arg-type]
     assert 1 == len(weak_list[:])
     del m1
     assert 0 == len(weak_list[:])
 
     s = _Stub()
-    weak_list.append(s.Method)  # type:ignore[arg-type]
+    weak_list.append(s.Method)  # type: ignore[arg-type]
     assert 1 == len(weak_list[:])
     ref_s = weakref.ref(s)
     del s

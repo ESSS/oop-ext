@@ -174,7 +174,7 @@ def _GetWrapped(method: Method | _MethodWrapper | Callable) -> _MethodWrapper | 
     if isinstance(method, _MethodWrapper):
         return method
     try:
-        return method._wrapped_instance  # type:ignore[attr-defined, union-attr]
+        return method._wrapped_instance  # type: ignore[attr-defined, union-attr]
     except AttributeError:
         return None
 
@@ -194,7 +194,7 @@ def WrapForCallback(method: Method | _MethodWrapper | Callable) -> _MethodWrappe
         # Note that the other way around does not work at all (i.e.: if a callback is first added
         # to the instance, there's no way we'll find about that when adding it to the class
         # anyways).
-        if method.__self__ is None:  # type:ignore[union-attr]
+        if method.__self__ is None:  # type: ignore[union-attr]
             if wrapped._method._obj is None:
                 return wrapped
 
@@ -208,10 +208,10 @@ def WrapForCallback(method: Method | _MethodWrapper | Callable) -> _MethodWrappe
             return wrapper(*args, **kwargs)
 
         call.__name__ = method.__name__
-        call._wrapped_instance = wrapper  # type:ignore[attr-defined]
+        call._wrapped_instance = wrapper  # type: ignore[attr-defined]
 
         setattr(GetClassForUnboundMethod(method), method.__name__, call)
     else:
         # override the instance method
-        setattr(method.__self__, method.__name__, wrapper)  # type:ignore[union-attr]
+        setattr(method.__self__, method.__name__, wrapper)  # type: ignore[union-attr]
     return wrapper

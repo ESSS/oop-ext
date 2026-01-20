@@ -26,10 +26,10 @@ def testNull() -> None:
     n.method1().attr1
 
     n.attr1 = "value"
-    n.attr1.attr2 = "value"  # type:ignore[attr-defined]
+    n.attr1.attr2 = "value"  # type: ignore[attr-defined]
 
     del n.attr1
-    del n.attr1.attr2.attr3  # type:ignore[attr-defined]
+    del n.attr1.attr2.attr3  # type: ignore[attr-defined]
 
     # Iteration
     for _ in n:

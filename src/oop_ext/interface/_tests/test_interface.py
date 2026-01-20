@@ -81,8 +81,8 @@ def testBasics() -> None:
     assert IsImplementation(C2, I, requires_declaration=True) == False
     assert not IsImplementation(D, I) == True  # nope
 
-    assert I(C) is C  # type:ignore[comparison-overlap]
-    assert I(C2) is C2  # type:ignore[comparison-overlap]
+    assert I(C) is C  # type: ignore[comparison-overlap]
+    assert I(C2) is C2  # type: ignore[comparison-overlap]
     with pytest.raises(InterfaceError):
         I()
 
@@ -119,13 +119,11 @@ def testMissingMethod() -> None:
 
     with pytest.raises(AssertionError) as e:
         TestMissingSignature()
-    assert str(e.value) == textwrap.dedent(
-        """
+    assert str(e.value) == textwrap.dedent("""
         Method C.foo signature:
           (self, a)
         differs from defined in interface I
-          (self, a, b=None)"""
-    )
+          (self, a, b=None)""")
 
     def TestMissingSignatureOptional():
         @ImplementsInterface(I)
@@ -135,13 +133,11 @@ def testMissingMethod() -> None:
 
     with pytest.raises(AssertionError) as e:
         TestMissingSignatureOptional()
-    assert str(e.value) == textwrap.dedent(
-        """
+    assert str(e.value) == textwrap.dedent("""
         Method C.foo signature:
           (self, a, b)
         differs from defined in interface I
-          (self, a, b=None)"""
-    )
+          (self, a, b=None)""")
 
     def TestWrongParameterName():
         @ImplementsInterface(I)
@@ -151,13 +147,11 @@ def testMissingMethod() -> None:
 
     with pytest.raises(AssertionError) as e:
         TestWrongParameterName()
-    assert str(e.value) == textwrap.dedent(
-        """
+    assert str(e.value) == textwrap.dedent("""
         Method C.foo signature:
           (self, a, c)
         differs from defined in interface I
-          (self, a, b=None)"""
-    )
+          (self, a, b=None)""")
 
 
 def testSubclasses() -> None:
@@ -240,13 +234,13 @@ def testAttributes() -> None:
         pass
 
     c1 = C()
-    c1.foo = 10  # type:ignore[attr-defined]
-    c1.bar = "hello"  # type:ignore[attr-defined]
-    c1.foobar = 20  # type:ignore[attr-defined]
+    c1.foo = 10  # type: ignore[attr-defined]
+    c1.bar = "hello"  # type: ignore[attr-defined]
+    c1.foobar = 20  # type: ignore[attr-defined]
 
     a_zoo = Zoo()
-    a_zoo.zoo = 99  # type:ignore[attr-defined]
-    c1.a_zoo = a_zoo  # type:ignore[attr-defined]
+    a_zoo.zoo = 99  # type: ignore[attr-defined]
+    c1.a_zoo = a_zoo  # type: ignore[attr-defined]
 
     c2 = C()
 
@@ -266,15 +260,15 @@ def testAttributes() -> None:
 
     # must not be true if including an object that doesn't implement IZoo interface expected for
     # a_zoo attribute
-    c1.a_zoo = "wrong"  # type:ignore[attr-defined]
+    c1.a_zoo = "wrong"  # type: ignore[attr-defined]
     assert not _IsImplementationFullChecking(c1, I) == True  # failed, invalid attr type
-    c1.a_zoo = a_zoo  # type:ignore[attr-defined]
+    c1.a_zoo = a_zoo  # type: ignore[attr-defined]
 
     # test if we can set foobar to None
-    c1.foobar = None  # type:ignore[attr-defined]
+    c1.foobar = None  # type: ignore[attr-defined]
     assert IsImplementation(c1, I) == True  # OK
 
-    c1.foobar = "hello"  # type:ignore[attr-defined]
+    c1.foobar = "hello"  # type: ignore[attr-defined]
     assert not _IsImplementationFullChecking(c1, I) == True  # failed, invalid attr type
 
 
@@ -334,7 +328,7 @@ def testInterfaceStubFromClasses(mode: str) -> None:
     m1: _InterfM1
     # Proxy will make sure that we only access the attributes/methods declared in the interface
     if mode == "call":
-        m1 = _InterfM1(m0)  # type:ignore[misc]
+        m1 = _InterfM1(m0)  # type: ignore[misc]
     else:
         assert mode == "proxy"
         m1 = GetProxy(_InterfM1, m0)
@@ -363,7 +357,7 @@ def testStubsFromInstances() -> None:
     assert stub.foo() == 10
 
     with pytest.raises(AttributeError):
-        stub.bar()  # type:ignore[attr-defined]
+        stub.bar()  # type: ignore[attr-defined]
 
 
 def testIsImplementationWithSubclasses() -> None:
@@ -442,20 +436,20 @@ def testClassImplementMethod() -> None:
     # NOTE: It doesn't matter runtime modifications in the instance, what is really being tested
     #       is the *class* of the object (My) is what is really being tested.
     m = My()
-    m.m1 = MyWrongMethod()  # type:ignore[assignment]
+    m.m1 = MyWrongMethod()  # type: ignore[assignment]
     assert IsImplementation(m, _InterfM1) == True
 
-    m.m1 = MyRightMethod()  # type:ignore[assignment]
+    m.m1 = MyRightMethod()  # type: ignore[assignment]
     assert IsImplementation(m, _InterfM1) == True
 
     # NOTE: Testing behaviour of private methods here.
     from oop_ext.interface._interface import _IsImplementationFullChecking
 
     m = My()
-    m.m1 = MyWrongMethod()  # type:ignore[assignment]
+    m.m1 = MyWrongMethod()  # type: ignore[assignment]
     assert not _IsImplementationFullChecking(m, _InterfM1)
 
-    m.m1 = MyRightMethod()  # type:ignore[assignment]
+    m.m1 = MyRightMethod()  # type: ignore[assignment]
     assert _IsImplementationFullChecking(m, _InterfM1)
 
     del m.m1
@@ -518,7 +512,7 @@ def testAdaptableInterface() -> None:
         _InterfM1, a
     )  # will try to adapt, as it does not directly implement m1
     assert b is not None
-    b.m1()  # type:ignore[attr-defined]
+    b.m1()  # type: ignore[attr-defined]
     with pytest.raises(AttributeError):
         getattr(b, "non_existent")
 
@@ -600,10 +594,10 @@ def testInterfaceCheckRequiresInterface() -> None:
             """ """
 
     with pytest.raises(InterfaceError):
-        AssertImplements(M3(), M3)  # type:ignore[arg-type]
+        AssertImplements(M3(), M3)  # type: ignore[arg-type]
 
     with pytest.raises(InterfaceError):
-        IsImplementation(M3(), M3)  # type:ignore[arg-type]
+        IsImplementation(M3(), M3)  # type: ignore[arg-type]
 
     assert IsImplementation(M3(), _InterfM3, requires_declaration=False)
     assert not IsImplementation(M3(), _InterfM3, requires_declaration=True)
@@ -771,7 +765,7 @@ def testCallableInterfaceStub() -> None:
     bar = Bar()
     stub2 = IBar(bar)
     with pytest.raises(AttributeError):
-        stub2(stuff=None)  # type:ignore[operator]
+        stub2(stuff=None)  # type: ignore[operator]
 
 
 def testImplementsInterfaceAsBoolError() -> None:
@@ -795,7 +789,7 @@ def testImplementsInterfaceAsBoolError() -> None:
     assert IsImplementation(obj, I1)
 
     with pytest.raises(RuntimeError):
-        if ImplementsInterface(obj, I1):  # type:ignore[arg-type, truthy-function]
+        if ImplementsInterface(obj, I1):  # type: ignore[arg-type, truthy-function]
             pytest.fail('Managed to test "if ImplementsInterface(obj, I1):"')
 
 
@@ -906,7 +900,7 @@ class TestTypeAnnotations:
 
         @interface.ImplementsInterface(IFoo)
         class Foo3:
-            def foo(self, x: int) -> tuple:  # type:ignore[empty-body]
+            def foo(self, x: int) -> tuple:  # type: ignore[empty-body]
                 pass
 
 
@@ -972,8 +966,7 @@ def testInterfaceTypeChecking(type_checker) -> None:
     """
     Check that TypeCheckingSupport makes interfaces recognizable by mypy.
     """
-    type_checker.make_file(
-        """
+    type_checker.make_file("""
         from oop_ext.interface import Interface
         class IAcme(Interface):
             def Foo(self, a, b=None) -> int:  # type:ignore[empty-body]
@@ -987,8 +980,7 @@ def testInterfaceTypeChecking(type_checker) -> None:
             return a.Foo(2)
 
         Foo(Acme())
-        """
-    )
+        """)
     result = type_checker.run()
     result.assert_errors(
         [
@@ -997,8 +989,7 @@ def testInterfaceTypeChecking(type_checker) -> None:
     )
 
     # Using TypeCheckingSupport, now mypy understands Acme implements IAcme.
-    type_checker.make_file(
-        """
+    type_checker.make_file("""
         from oop_ext.interface import Interface, TypeCheckingSupport
         class IAcme(Interface, TypeCheckingSupport):
             def Foo(self, a, b=None) -> int:
@@ -1012,8 +1003,7 @@ def testInterfaceTypeChecking(type_checker) -> None:
             return a.Foo(2)
 
         Foo(Acme())
-        """
-    )
+        """)
     result = type_checker.run()
     result.assert_ok()
 
@@ -1029,24 +1019,24 @@ def testDecorators(register_callback: bool):
     """Interfaces and the foundation decorators/callbacks need to play nice together."""
 
     class IFoo(Interface):
-        def GetValues(self, unit: str) -> list[float]:  # type:ignore[empty-body]
+        def GetValues(self, unit: str) -> list[float]:  # type: ignore[empty-body]
             ...
 
         @classmethod
-        def GetCaption(cls) -> str:  # type:ignore[empty-body]
+        def GetCaption(cls) -> str:  # type: ignore[empty-body]
             ...
 
     @ImplementsInterface(IFoo)
     class AbstractFoo:
         @Implements(IFoo.GetValues)
         @Abstract
-        def GetValues(self, unit: str) -> list[float]:  # type:ignore[empty-body]
+        def GetValues(self, unit: str) -> list[float]:  # type: ignore[empty-body]
             ...
 
         @classmethod
         @Implements(IFoo.GetCaption)
         @Abstract
-        def GetCaption(cls) -> str:  # type:ignore[empty-body]
+        def GetCaption(cls) -> str:  # type: ignore[empty-body]
             ...
 
     class Foo(AbstractFoo):

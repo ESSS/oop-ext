@@ -2,6 +2,7 @@
 """
 A compatibility module for quirks when porting from py2->py3.
 """
+
 from typing import Any
 
 

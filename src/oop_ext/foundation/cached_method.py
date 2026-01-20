@@ -148,7 +148,7 @@ class LastResultCachedMethod(AbstractCachedMethod, Generic[ResultType]):
     def _GetCacheResult(self, key: Hashable, result: ResultType) -> ResultType:
         # This could return None (_result is Optional), but not doing an assert
         # here to avoid breaking code.
-        return self._result  # type:ignore[return-value]
+        return self._result  # type: ignore[return-value]
 
 
 class AttributeBasedCachedMethod(CachedMethod, Generic[ResultType]):

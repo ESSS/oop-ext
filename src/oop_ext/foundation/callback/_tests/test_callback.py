@@ -53,8 +53,8 @@ def restore_test_classes() -> Generator[None, None, None]:
     original_c_foo = C.foo
 
     yield
-    Stub.call = original_stub_call  # type:ignore[assignment]
-    C.foo = original_c_foo  # type:ignore[assignment]
+    Stub.call = original_stub_call  # type: ignore[assignment]
+    C.foo = original_c_foo  # type: ignore[assignment]
 
 
 class Test:
