@@ -62,4 +62,3 @@ jobs:
       shell: bash
       run: |
         tox run -e py --installpkg `find dist/*.tar.gz`
-
