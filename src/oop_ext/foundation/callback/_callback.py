@@ -55,7 +55,6 @@ from typing import Any
 from typing import Optional
 from typing import Tuple
 from typing import Union
-from typing import cast
 
 import attr
 import functools
@@ -189,7 +188,6 @@ class Callback:
         is garbage collected, a new function may end up having the same key.
         """
         if func.__class__ == _CallbackWrapper:
-            func = cast(_CallbackWrapper, func)
             func = func.OriginalMethod()
 
         try:
@@ -224,7 +222,6 @@ class Callback:
         # at this point, but if it's a WeakMethodProxy, register the original method (we'll make a
         # weak reference later anyways).
         if func.__class__ == WeakMethodProxy:
-            func = cast(WeakMethodProxy, func)
             func = func.GetWrappedFunction()
 
         if _IsCallableObject(func):
